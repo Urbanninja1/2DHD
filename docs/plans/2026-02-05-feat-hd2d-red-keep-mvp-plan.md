@@ -594,7 +594,7 @@ const { px, py, pz } = entity.read(Transform);
 
 **Tasks:**
 
-- [ ] Define `RoomData` interface (`src/rooms/room-data/types.ts`):
+- [x] Define `RoomData` interface (`src/rooms/room-data/types.ts`):
   ```typescript
   interface RoomData {
     id: number;
@@ -612,7 +612,7 @@ const { px, py, pz } = entity.read(Transform);
     postProcessOverrides?: Partial<HD2DSettings>; // per-room DoF, bloom, vignette tweaks
   }
   ```
-- [ ] Create `RoomManager` (`src/rooms/RoomManager.ts`) with **transition state machine**:
+- [x] Create `RoomManager` (`src/rooms/RoomManager.ts`) with **transition state machine**:
   - States: `IDLE`, `FADING_OUT`, `UNLOADING`, `LOADING`, `FADING_IN`
   - Door triggers ONLY checked in `IDLE` state
   - Input disabled during transition (checked by InputSystem via GameState)
@@ -621,7 +621,7 @@ const { px, py, pz } = entity.read(Transform);
   - **Timing:** 800ms fade-out, 200ms hold-black, 800ms fade-in (1.8s total). The hold creates a breath of anticipation between spaces.
   - **Adjacent room preloading:** When player enters door proximity zone (before triggering transition), start async preload of target room's textures. Actual room build should be near-instant if preloaded.
   - **Memory strategy:** Current room fully loaded + adjacent rooms' textures preloaded into cache. Non-adjacent rooms fully unloaded. Peak memory = 2-3 rooms, not 10.
-- [ ] Create `RoomBuilder` (`src/rooms/RoomBuilder.ts`):
+- [x] Create `RoomBuilder` (`src/rooms/RoomBuilder.ts`):
   - Returns a dedicated `THREE.Group` per room (`roomGroup.name = 'room-{id}'`). ALL room objects are children of this group. On unload, `scene.remove(roomGroup)` + traverse and dispose. This prevents leaked references.
   - **Use `InstancedMesh` from the start** for repeated props (columns, torch sconces, armor stands). 1 draw call per instanced group regardless of count.
   - Consider `BufferGeometryUtils.mergeGeometries()` for static room shell (floor + walls + ceiling → 1-2 draw calls if same material)
@@ -631,7 +631,7 @@ const { px, py, pz } = entity.read(Transform);
   - Places NPC sprites as plain Three.js billboard meshes (NOT ECS entities)
   - Creates particle `THREE.Points` systems (NOT ECS entities)
   - Applies per-room color grading by updating `HueSaturationEffect` / `BrightnessContrastEffect` uniforms
-- [ ] Create `src/loaders/asset-manager.ts` with **reference-counted cache**:
+- [x] Create `src/loaders/asset-manager.ts` with **reference-counted cache**:
   ```typescript
   // Key patterns:
   // 1. Cache entry inserted BEFORE fetch starts (prevents double-load)
@@ -643,13 +643,13 @@ const { px, py, pz } = entity.read(Transform);
   // 7. Call renderer.initTexture(tex) after loading to force GPU upload immediately
   //    (prevents frame spikes when texture is first rendered during gameplay)
   ```
-- [ ] Create `RoomTransitionSystem` (`src/ecs/systems/room-transition.ts`):
+- [x] Create `RoomTransitionSystem` (`src/ecs/systems/room-transition.ts`):
   - Checks player proximity to door trigger AABBs (only in IDLE state)
   - Delegates to RoomManager state machine
   - Sets `GameState.teleported = true` after spawn so `CameraFollowSystem` snaps (not lerps)
   - **Copy door data before yielding** in Becsy coroutines (handles invalidate across yields)
   - **Fallback if coroutines are buggy:** implement as a state machine with `transitionState` + `transitionProgress` fields in `GameState`
-- [ ] Build 2 connected test rooms (Throne Room + Antechamber) with a door between them
+- [x] Build 2 connected test rooms (Throne Room + Antechamber) with a door between them
 
 ### Research Insights: Phase 3
 

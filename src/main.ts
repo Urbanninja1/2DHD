@@ -8,7 +8,9 @@ import { GameLoop } from './game-loop.js';
 import { Transform, MovementIntent, transformInit } from './ecs/components/transform.js';
 import { Object3DRef, FlickerLight } from './ecs/components/rendering.js';
 import { PlayerTag } from './ecs/components/tags.js';
-import { buildTestRoom, getTestRoomTorches } from './test-room.js';
+import { RoomId } from './ecs/components/singletons.js';
+import { RoomTransitionSystem } from './ecs/systems/room-transition.js';
+import { RoomManager } from './rooms/RoomManager.js';
 import { createSpriteMesh, createBlobShadow } from './rendering/sprite-factory.js';
 import { createPlayerSpriteTexture } from './rendering/placeholder-textures.js';
 import { getKeyboard, disposeKeyboard } from './input/keyboard.js';
@@ -30,26 +32,29 @@ async function init(): Promise<void> {
   renderContext.renderer = renderer;
   renderContext.composer = pipeline.composer;
 
-  // --- Build test room ---
-  const roomGroup = buildTestRoom();
-  scene.add(roomGroup);
-
-  // Trigger shadow map render once (static scene)
-  renderer.shadowMap.needsUpdate = true;
-
   // --- ECS setup ---
   const world = await createWorld();
 
-  // Create player entity
+  // --- Room Manager ---
+  const roomManager = new RoomManager({ scene, renderer, pipeline });
+  RoomTransitionSystem.roomManager = roomManager;
+
+  // --- Load initial room (before world.build — queues flicker lights) ---
+  await roomManager.loadRoom(RoomId.ThroneRoom);
+
+  // --- Create player entity ---
   const playerTex = createPlayerSpriteTexture();
   const playerMesh = createSpriteMesh(playerTex);
   const playerShadow = createBlobShadow(0.5);
   playerMesh.add(playerShadow);
-  playerShadow.position.set(0, -0.74, 0); // Relative to sprite (origin is at feet + offset)
+  playerShadow.position.set(0, -0.74, 0);
   scene.add(playerMesh);
 
-  // Create all initial entities in a single build call (Becsy only allows one)
-  const torches = getTestRoomTorches(roomGroup);
+  // Create ALL initial entities in a single world.build() call
+  // (Becsy only allows build() before execution starts)
+  const initialFlickerLights = roomManager.pendingFlickerLights;
+  roomManager.pendingFlickerLights = [];
+
   world.build((sys) => {
     sys.createEntity(
       PlayerTag,
@@ -58,15 +63,15 @@ async function init(): Promise<void> {
       Object3DRef, { object3d: playerMesh },
     );
 
-    for (let i = 0; i < torches.length; i++) {
-      const torch = torches[i]!;
+    for (let i = 0; i < initialFlickerLights.length; i++) {
+      const light = initialFlickerLights[i]!;
       sys.createEntity(
         FlickerLight, {
-          baseIntensity: torch.intensity,
-          baseColor: torch.color.getHex(),
-          noiseOffset: i * 37.5, // Different offset per torch
+          baseIntensity: light.intensity,
+          baseColor: light.color.getHex(),
+          noiseOffset: i * 37.5,
         },
-        Object3DRef, { object3d: torch },
+        Object3DRef, { object3d: light },
       );
     }
   });
@@ -110,7 +115,6 @@ async function init(): Promise<void> {
   }, evtOpts);
 
   renderer.domElement.addEventListener('webglcontextrestored', () => {
-    // Force re-upload of all textures after context invalidation
     scene.traverse((obj) => {
       if (obj instanceof THREE.Mesh) {
         const mat = obj.material;
@@ -120,7 +124,6 @@ async function init(): Promise<void> {
         mat.needsUpdate = true;
       }
     });
-    // Recreate EffectComposer render targets
     pipeline.composer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.needsUpdate = true;
     loop.resetDeltaTime();
@@ -135,7 +138,6 @@ async function init(): Promise<void> {
   });
   document.body.appendChild(stats.dom);
   await stats.init(renderer);
-  // Wire stats into game loop
   loop.onBeforeExecute = () => stats.begin();
   loop.onAfterExecute = () => { stats.end(); stats.update(); };
 
@@ -144,7 +146,6 @@ async function init(): Promise<void> {
     const { createDebugOverlay } = await import('./debug/debug-overlay.js');
     const debugOverlay = createDebugOverlay(pipeline);
 
-    // Log renderer info periodically
     const logInterval = setInterval(() => {
       const info = renderer.info;
       console.log(
@@ -161,9 +162,10 @@ async function init(): Promise<void> {
         disposeKeyboard();
         clearInterval(logInterval);
         debugOverlay.dispose();
+        roomManager.dispose();
+        RoomTransitionSystem.roomManager = null;
         stats.dispose();
         stats.dom.remove();
-        // Dispose scene graph resources (textures, geometries, materials)
         scene.traverse((obj) => {
           if (obj instanceof THREE.Mesh) {
             obj.geometry?.dispose();
