@@ -818,7 +818,7 @@ All rooms well under the 100 draw call budget. InstancedMesh for repeated column
 
 **Tasks per room:**
 
-- [ ] **Room 1 — Iron Throne Room** (Grand / Imposing)
+- [x] **Room 1 — Iron Throne Room** (Grand / Imposing)
   - 50m x 25m x 15m ceiling — truly massive
   - Iron Throne on raised stone dais (center-back wall)
   - 2 rows of 8 stone columns (InstancedMesh) along the length
@@ -831,7 +831,7 @@ All rooms well under the 100 draw call budget. InstancedMesh for repeated column
   - Doors: N→Grand Gallery, S→Antechamber, E→Maegor's Entry, W→Small Council
   - Particles: dust motes in god ray shafts, torch embers
 
-- [ ] **Room 2 — Throne Room Antechamber** (Formal / Tense)
+- [x] **Room 2 — Throne Room Antechamber** (Formal / Tense)
   - 15m x 12m x 6m ceiling
   - Heavy oak double doors (north wall, decorative model)
   - 4 Kingsguard armor display stands along walls
@@ -840,7 +840,7 @@ All rooms well under the 100 draw call budget. InstancedMesh for repeated column
   - Floor: rough-cut stone (different texture than Throne Room — less polished)
   - NPCs: 2 guards flanking the north door
 
-- [ ] **Room 3 — Small Council Chamber** (Intimate / Political)
+- [x] **Room 3 — Small Council Chamber** (Intimate / Political)
   - 10m x 8m x 5m ceiling — deliberately small, intimate
   - Long rectangular table (center) with 8 high-backed chairs
   - Painted map on west wall (textured plane)
@@ -849,7 +849,7 @@ All rooms well under the 100 draw call budget. InstancedMesh for repeated column
   - Floor: dark polished wood
   - NPCs: 3 council members seated at table
 
-- [ ] **Room 4 — Hand's Solar** (Studious / Warm)
+- [x] **Room 4 — Hand's Solar** (Studious / Warm)
   - 8m x 8m x 5m ceiling (slightly round tower room)
   - Large desk with scrolls/books/inkwell props
   - Floor-to-ceiling bookshelf on one wall
@@ -858,7 +858,7 @@ All rooms well under the 100 draw call budget. InstancedMesh for repeated column
   - Floor: wooden planks with a woven rug
   - NPCs: 1 Hand of the King seated at desk
 
-- [ ] **Room 5 — Grand Gallery** (Majestic / Airy)
+- [x] **Room 5 — Grand Gallery** (Majestic / Airy)
   - 30m x 6m x 8m ceiling — long, narrow corridor
   - 6 columns per side (InstancedMesh) with arched windows between them
   - 6 Targaryen conquest tapestries between windows (textured planes)
@@ -867,7 +867,7 @@ All rooms well under the 100 draw call budget. InstancedMesh for repeated column
   - Floor: polished stone (same as Throne Room)
   - NPCs: 2 servants, 1 noble strolling
 
-- [ ] **Room 6 — Royal Guard Post** (Martial / Stark)
+- [x] **Room 6 — Royal Guard Post** (Martial / Stark)
   - 10m x 8m x 4m — low ceiling, utilitarian
   - 3 weapon racks (swords, spears), 2 armor stands
   - 1 iron brazier (center) with hot coals (emissive + FlickerLight + embers)
@@ -875,7 +875,7 @@ All rooms well under the 100 draw call budget. InstancedMesh for repeated column
   - Floor: bare stone with scattered straw (particle or texture)
   - NPCs: 3 guards (1 warming at brazier, 2 at weapon racks)
 
-- [ ] **Room 7 — Maegor's Holdfast Entry** (Foreboding / Heavy)
+- [x] **Room 7 — Maegor's Holdfast Entry** (Foreboding / Heavy)
   - 20m x 5m x 6m — narrow, oppressive passage
   - Thick double-layered stone walls
   - Visible murder holes in ceiling (modeled recesses)
@@ -884,7 +884,7 @@ All rooms well under the 100 draw call budget. InstancedMesh for repeated column
   - Floor: rough stone with iron drainage grate
   - NPCs: 2 guards at passage ends
 
-- [ ] **Room 8 — Queen's Ballroom** (Elegant / Intimate)
+- [x] **Room 8 — Queen's Ballroom** (Elegant / Intimate)
   - 18m x 18m x 8m ceiling
   - 2 hanging chandeliers (emissive + FlickerLight, multiple candle points)
   - 6 ornate wall sconces
@@ -893,7 +893,7 @@ All rooms well under the 100 draw call budget. InstancedMesh for repeated column
   - Floor: polished dark stone (slightly reflective — use `MeshStandardMaterial.roughness: 0.3`)
   - NPCs: 4 nobles, 2 musicians on gallery
 
-- [ ] **Room 9 — Tower Stairwell** (Claustrophobic / Mysterious)
+- [x] **Room 9 — Tower Stairwell** (Claustrophobic / Mysterious)
   - 5m x 5m x 12m (vertical) — represented as a spiral in top-down
   - Curved stone walls (could be a custom geometry or pre-made model)
   - 2 arrow-slit windows (thin bright lines)
@@ -902,7 +902,7 @@ All rooms well under the 100 draw call budget. InstancedMesh for repeated column
   - NPCs: none — just atmosphere
   - Particles: minimal dust
 
-- [ ] **Room 10 — Battlements Overlook** (Open / Dramatic)
+- [x] **Room 10 — Battlements Overlook** (Open / Dramatic)
   - 25m x 4m x open sky
   - Crenellated parapet walls (box geometry with merlons)
   - **Parallax background:** 3-4 layered planes at increasing depth:

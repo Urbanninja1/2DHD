@@ -30,7 +30,7 @@ const antechamber: RoomData = {
       spawnPoint: { x: 0, y: 0, z: 7.5 },
       wall: 'north',
     },
-    // South door → Queen's Ballroom (stub for future)
+    // South door → Queen's Ballroom
     {
       position: { x: 0, y: 0, z: 6 },
       halfExtents: { x: 1.5, z: 0.8 },

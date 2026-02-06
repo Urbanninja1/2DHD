@@ -1,0 +1,62 @@
+import { RoomId } from '../../ecs/components/singletons.js';
+import type { RoomData } from './types.js';
+
+const towerStairwell: RoomData = {
+  id: RoomId.TowerStairwell,
+  name: 'Tower Stairwell',
+  dimensions: { width: 5, depth: 5, height: 12 },
+  mood: 'dark',
+
+  floorColor: 0x2A2520,
+  wallColor: 0x3A3530,
+  ceilingColor: 0x1A1510,
+
+  ambientLight: { color: 0x1A1A2E, intensity: 0.08 },
+
+  lights: [
+    // 2 torches, 180° apart on curved walls
+    { type: 'point', position: { x: -2, y: 3, z: -2 }, color: 0xFFAA44, intensity: 1.8, distance: 8, decay: 1.2, flicker: true },
+    { type: 'point', position: { x: 2, y: 3, z: 2 }, color: 0xFFAA44, intensity: 1.8, distance: 8, decay: 1.2, flicker: true },
+  ],
+
+  doors: [
+    // South door → Grand Gallery
+    {
+      position: { x: 0, y: 0, z: 2.5 },
+      halfExtents: { x: 1, z: 0.6 },
+      targetRoomId: RoomId.GrandGallery,
+      spawnPoint: { x: 0, y: 0, z: -2 },
+      wall: 'south',
+    },
+    // North door → Battlements
+    {
+      position: { x: 0, y: 0, z: -2.5 },
+      halfExtents: { x: 1, z: 0.6 },
+      targetRoomId: RoomId.Battlements,
+      spawnPoint: { x: 0, y: 0, z: 1.5 },
+      wall: 'north',
+    },
+  ],
+
+  npcs: [],
+
+  particles: [
+    // Minimal dust in the tight space
+    {
+      type: 'dust',
+      region: { minX: -2, maxX: 2, minY: 1, maxY: 8, minZ: -2, maxZ: 2 },
+      count: 15,
+    },
+    // Torch embers
+    { type: 'embers', position: { x: -2, y: 3, z: -2 }, count: 8 },
+    { type: 'embers', position: { x: 2, y: 3, z: 2 }, count: 8 },
+  ],
+
+  postProcessOverrides: {
+    bloom: { intensity: 0.4, luminanceThreshold: 0.88 },
+    tiltShift: { focusArea: 0.20, feather: 0.20 },
+    vignette: { darkness: 0.70 },
+  },
+};
+
+export default towerStairwell;
