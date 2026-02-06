@@ -56,6 +56,23 @@ const throneRoom: RoomData = {
     { spriteColor: '#4A4A4A', position: { x: 10, y: 0, z: -3 }, label: 'Petitioner' },
   ],
 
+  particles: [
+    // Dust motes floating in the directional light from stained glass windows
+    {
+      type: 'dust',
+      region: { minX: -10, maxX: 10, minY: 1, maxY: 8, minZ: -7, maxZ: 5 },
+      count: 80,
+    },
+    // Torch embers — one emitter per flickering torch
+    { type: 'embers', position: { x: 14, y: 4, z: -7 }, count: 12 },
+    { type: 'embers', position: { x: 14, y: 4, z: 0 }, count: 12 },
+    { type: 'embers', position: { x: 14, y: 4, z: 7 }, count: 12 },
+    { type: 'embers', position: { x: -14, y: 4, z: -7 }, count: 12 },
+    { type: 'embers', position: { x: -14, y: 4, z: 0 }, count: 12 },
+    { type: 'embers', position: { x: -14, y: 4, z: 7 }, count: 12 },
+    { type: 'embers', position: { x: 0, y: 5, z: -8.5 }, count: 15 },
+  ],
+
   postProcessOverrides: {
     bloom: { intensity: 0.7, luminanceThreshold: 0.80 },
     tiltShift: { focusArea: 0.40, feather: 0.30 },

@@ -6,6 +6,10 @@ import {
   createNPCSpriteTexture,
 } from '../rendering/placeholder-textures.js';
 import { createSpriteMesh, createBlobShadow } from '../rendering/sprite-factory.js';
+import { createDustMotes, type DustMoteSystem } from '../rendering/particles/dust-motes.js';
+import { createTorchEmbers, type EmberSystem } from '../rendering/particles/torch-embers.js';
+
+export type ParticleSystem = DustMoteSystem | EmberSystem;
 
 export interface BuiltRoom {
   /** Root group containing all room objects — scene.remove(group) cleans everything */
@@ -16,6 +20,8 @@ export interface BuiltRoom {
   doorTriggers: DoorTrigger[];
   /** Room AABB bounds for player collision */
   bounds: { minX: number; maxX: number; minZ: number; maxZ: number };
+  /** Active particle systems — must be updated each frame and disposed on room unload */
+  particleSystems: ParticleSystem[];
 }
 
 export interface DoorTrigger {
@@ -174,6 +180,29 @@ export function buildRoom(data: RoomData): BuiltRoom {
     door,
   }));
 
+  // --- Particle systems ---
+  const particleSystems: ParticleSystem[] = [];
+
+  if (data.particles) {
+    for (const pDef of data.particles) {
+      if (pDef.type === 'dust') {
+        const dust = createDustMotes({
+          count: pDef.count,
+          region: pDef.region,
+        });
+        group.add(dust.points);
+        particleSystems.push(dust);
+      } else if (pDef.type === 'embers') {
+        const embers = createTorchEmbers({
+          position: pDef.position,
+          count: pDef.count,
+        });
+        group.add(embers.points);
+        particleSystems.push(embers);
+      }
+    }
+  }
+
   // Room collision bounds (player can't go beyond walls, with a small margin)
   const margin = 0.5;
   const bounds = {
@@ -183,7 +212,7 @@ export function buildRoom(data: RoomData): BuiltRoom {
     maxZ: halfD - margin,
   };
 
-  return { group, flickerLights, doorTriggers, bounds };
+  return { group, flickerLights, doorTriggers, bounds, particleSystems };
 }
 
 function buildWall(
@@ -245,7 +274,8 @@ function buildWall(
  */
 export function disposeRoom(group: THREE.Group): void {
   group.traverse((obj) => {
-    if (obj instanceof THREE.Mesh) {
+    // Handle both Mesh and Points (particles)
+    if (obj instanceof THREE.Mesh || obj instanceof THREE.Points) {
       // Don't dispose shared geometries from sprite cache
       if (!obj.geometry.userData.shared) {
         obj.geometry.dispose();

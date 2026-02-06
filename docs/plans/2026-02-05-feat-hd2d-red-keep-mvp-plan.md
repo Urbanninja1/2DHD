@@ -703,7 +703,7 @@ document.addEventListener('visibilitychange', () => {
 
 **Tasks:**
 
-- [ ] Create `LightFlickerSystem` (`src/ecs/systems/light-flicker.ts`):
+- [x] Create `LightFlickerSystem` (`src/ecs/systems/light-flicker.ts`):
   - Uses `SimplexNoise` from Three.js addons
   - Layers 3 noise frequencies for natural flicker:
     - Slow sway: `noise(time * 0.5 + offset) * 0.15` — gradual intensity drift
@@ -713,7 +713,7 @@ document.addEventListener('visibilitychange', () => {
   - Color temperature shift: when intensity is higher, shift color toward `0xFFE0B0` (warm); when lower, toward `0xFFA050` (amber)
   - Each light gets a unique `noiseOffset` so they don't flicker in sync
   - **Performance tip:** Pre-compute a 1024-sample noise table at world creation, then index into it with `(time * freq) & 1023`. Cheaper than live `SimplexNoise` at 60fps × 8 lights × 3 frequencies.
-- [ ] Create room-level particle systems (plain Three.js, not ECS):
+- [x] Create room-level particle systems (plain Three.js, not ECS):
   - **Dust motes:** `THREE.Points` + `ShaderMaterial`
     - Soft circle via `gl_PointCoord` distance check in fragment shader
     - `blending: THREE.AdditiveBlending`, `depthWrite: false`
@@ -734,7 +734,7 @@ document.addEventListener('visibilitychange', () => {
   - Rooms with god rays: Throne Room (stained glass), Hand's Solar (window), Grand Gallery (arched windows), Battlements (sun)
   - Rooms without: Small Council, Guard Post, Maegor's Entry, Stairwell (no/minimal windows)
   - **Note:** God rays are ~1-2ms/frame. Build rooms with strong directional + ambient light first. Add god rays as visual polish once rooms are proven stable at 60fps.
-- [ ] Create per-room lighting presets (`src/rooms/room-presets/lighting-presets.ts`):
+- [x] Create per-room lighting presets (`src/rooms/room-presets/lighting-presets.ts`):
 
   | Mood | Ambient Color | Ambient Intensity | Direct Color | Direct Intensity | Point Lights | Color Grading |
   |---|---|---|---|---|---|---|
@@ -743,7 +743,7 @@ document.addEventListener('visibilitychange', () => {
   | **Dark** | `0x1A1A2E` | 0.1 | none | 0 | 2-3 sparse torches | hue: -5, sat: -0.1, bright: -0.1, contrast: +0.15 |
   | **Open** | `0x6688BB` | 0.5 | `0xFFF5E0` | 1.5 | 0-1 | hue: -10, sat: 0, bright: +0.05, contrast: +0.2 |
 
-- [ ] Per-room post-processing overrides:
+- [x] Per-room post-processing overrides:
   - Grand rooms: `bloom.intensity: 0.7, tiltShift.focusArea: 0.4` (wider focus for big spaces)
   - Dark rooms: `bloom.intensity: 0.4, tiltShift.focusArea: 0.25, vignette.darkness: 0.6` (tighter, moodier)
   - Open rooms: `bloom.intensity: 0.5, vignette.darkness: 0.3, tiltShift.focusArea: 0.5` (wider, airier)

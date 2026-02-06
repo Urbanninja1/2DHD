@@ -14,6 +14,8 @@ export class GameLoop {
   /** Optional hooks for stats-gl profiling */
   onBeforeExecute: (() => void) | null = null;
   onAfterExecute: (() => void) | null = null;
+  /** Per-frame callback for non-ECS updates (e.g. particles). Receives delta in seconds. */
+  onFrameTick: ((dt: number) => void) | null = null;
 
   constructor(private readonly world: World) {}
 
@@ -52,6 +54,7 @@ export class GameLoop {
 
     this.executing = true;
     this.onBeforeExecute?.();
+    this.onFrameTick?.(delta / 1000);
     this.world
       .execute(timestamp, delta)
       .then(() => {

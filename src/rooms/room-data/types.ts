@@ -43,6 +43,24 @@ export interface NPCDef {
   label: string;
 }
 
+export interface DustParticleDef {
+  type: 'dust';
+  /** Region bounds where dust spawns (room-local coords) */
+  region: { minX: number; maxX: number; minY: number; maxY: number; minZ: number; maxZ: number };
+  /** Number of dust motes */
+  count: number;
+}
+
+export interface EmberParticleDef {
+  type: 'embers';
+  /** Position of the torch emitting embers */
+  position: Vec3;
+  /** Number of ember particles */
+  count: number;
+}
+
+export type ParticleDef = DustParticleDef | EmberParticleDef;
+
 export interface RoomData {
   id: RoomIdValue;
   name: string;
@@ -61,4 +79,6 @@ export interface RoomData {
   wallColor?: number;
   /** Ceiling color */
   ceilingColor?: number;
+  /** Particle system definitions */
+  particles?: ParticleDef[];
 }

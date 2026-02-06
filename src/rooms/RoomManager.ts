@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import type { RoomIdValue } from '../ecs/components/singletons.js';
 import { TransitionState, type TransitionStateValue } from '../ecs/components/singletons.js';
 import { getRoomData, hasRoomData } from './room-data/registry.js';
-import { buildRoom, disposeRoom, type BuiltRoom, type DoorTrigger } from './RoomBuilder.js';
+import { buildRoom, disposeRoom, type BuiltRoom, type DoorTrigger, type ParticleSystem } from './RoomBuilder.js';
 import { CollisionSystem } from '../ecs/systems/collision.js';
 import { updatePipelineSettings, type HD2DPipeline } from '../rendering/hd2d-pipeline.js';
 
@@ -43,6 +43,9 @@ export class RoomManager {
 
   /** Pending flicker lights — consumed by RoomTransitionSystem to create ECS entities */
   pendingFlickerLights: THREE.PointLight[] = [];
+
+  /** Active particle systems for the current room — updated each frame */
+  private activeParticles: ParticleSystem[] = [];
 
   constructor(deps: RoomManagerDeps) {
     this.deps = deps;
@@ -100,6 +103,9 @@ export class RoomManager {
     // Queue flicker lights for ECS entity creation (consumed by RoomTransitionSystem)
     this.pendingFlickerLights = built.flickerLights;
 
+    // Store particle systems for per-frame updates
+    this.activeParticles = built.particleSystems;
+
     // Force shadow map update for static scene
     this.deps.renderer.shadowMap.needsUpdate = true;
 
@@ -155,6 +161,9 @@ export class RoomManager {
       // Queue flicker lights for ECS entity creation
       this.pendingFlickerLights = built.flickerLights;
 
+      // Store particle systems for per-frame updates
+      this.activeParticles = built.particleSystems;
+
       // Queue player spawn (consumed by RoomTransitionSystem)
       this.pendingSpawn = { x: spawnX, y: spawnY, z: spawnZ };
 
@@ -179,6 +188,15 @@ export class RoomManager {
   }
 
   /**
+   * Update all active particle systems. Called once per frame from the game loop.
+   */
+  updateParticles(dt: number): void {
+    for (const ps of this.activeParticles) {
+      ps.update(dt);
+    }
+  }
+
+  /**
    * Dispose the RoomManager and all its resources.
    */
   dispose(): void {
@@ -190,6 +208,7 @@ export class RoomManager {
   private unloadCurrentRoom(): void {
     if (!this.currentRoom) return;
 
+    this.activeParticles = [];
     this.deps.scene.remove(this.currentRoom.group);
     disposeRoom(this.currentRoom.group);
     this.currentRoom = null;
