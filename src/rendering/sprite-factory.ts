@@ -9,6 +9,7 @@ function getSharedSpriteGeometry(width: number, height: number): THREE.PlaneGeom
   if (!geo) {
     geo = new THREE.PlaneGeometry(width, height);
     geo.translate(0, height / 2, 0);
+    geo.userData.shared = true; // Prevents disposeRoom() from disposing shared geometry
     spriteGeoCache.set(key, geo);
   }
   return geo;

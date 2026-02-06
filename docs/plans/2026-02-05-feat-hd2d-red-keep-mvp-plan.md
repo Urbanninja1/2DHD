@@ -948,61 +948,61 @@ All rooms well under the 100 draw call budget. InstancedMesh for repeated column
 
 **Deferred effects (add if performance budget allows):**
 
-- [ ] Add N8AO (SSAO):
+- [x] Add N8AO (SSAO):
   - Replace `RenderPass` with `N8AOPostPass` (it renders the scene AND computes SSAO in one pass)
   - Start with: `aoRadius: 5, intensity: 2, distanceFalloff: 1`
   - Profile before/after — expect ~2-3ms cost. Keep only if still hitting 60fps.
-- [ ] Implement dynamic quality scaling (if frame budget exceeded):
+- [x] Implement dynamic quality scaling (if frame budget exceeded):
   - Step 1: Disable god rays (saves ~2-4ms)
   - Step 2: Set N8AO `halfRes: true` or lower quality mode (saves ~1-2ms)
   - Step 3: Disable tilt-shift (saves ~1-1.5ms)
   - Monitor rolling-average frame time; progressively downgrade when > 14ms
-- [ ] Add god rays to windowed rooms (Throne Room, Hand's Solar, Grand Gallery, Battlements):
+- [x] Add god rays to windowed rooms (Throne Room, Hand's Solar, Grand Gallery, Battlements):
   - Use `three-good-godrays` — requires `castShadow: true` on occluding meshes
   - Create bright emissive planes behind windows as light sources
   - Per-room enable/disable flag in `RoomData.postProcessOverrides`
   - Profile: expect ~1-2ms per room. Disable in rooms where it drops below 50fps.
-- [ ] Add per-room color grading via `HueSaturationEffect` + `BrightnessContrastEffect`:
+- [x] Add per-room color grading via `HueSaturationEffect` + `BrightnessContrastEffect`:
   - Use the per-room palette values from the Visual Art Direction section
   - Swap parameters during room fade transitions (animate during FADING_IN)
 
 **Performance profiling:**
 
-- [ ] Profile every room with `stats-gl` and `renderer.info`:
+- [x] Profile every room with `stats-gl` and `renderer.info`:
   - Target: < 60 draw calls per room (InstancedMesh should keep us under)
   - Target: < 100MB total GPU memory (textures + geometry)
   - Target: 60fps sustained on GTX 1060 / equivalent
   - Log `renderer.info.render.calls` and `renderer.info.memory` per room
-- [ ] Optimize textures:
+- [x] Optimize textures:
   - Compress with KTX2 via `gltf-transform optimize` (ETC1S for diffuse, UASTC for normals)
   - Max texture resolution: 2048x2048 (most can be 1024x1024)
   - Set up `DRACOLoader` for compressed GLB meshes
   - Set up `KTX2Loader` with Basis transcoder
-- [ ] Use `InstancedMesh` for all repeated objects:
+- [x] Use `InstancedMesh` for all repeated objects:
   - Throne Room columns (16 instances), Grand Gallery columns (12), Ballroom columns (8)
   - Torch sconces (shared across rooms)
   - Floor tiles if using modular geometry
-- [ ] Verify GPU resource disposal:
+- [x] Verify GPU resource disposal:
   - After each room unload, check `renderer.info.memory.textures` decreases
   - Run GC-stress test: transition through all 10 rooms 3x and verify no memory growth
-- [ ] Texture sharing across rooms:
+- [x] Texture sharing across rooms:
   - Stone wall texture: shared by Rooms 1, 2, 5, 6, 7, 9, 10
   - Wood texture: shared by Rooms 3, 4
   - Metal texture: shared by Rooms 6, 7
   - AssetManager ref-counting ensures shared textures aren't duplicated or prematurely disposed
-- [ ] Pixel-art rendering QA:
+- [x] Pixel-art rendering QA:
   - `NearestFilter` on ALL sprite textures (verify no bilinear bleeding)
   - Test at 1080p, 1440p, 4K — sprites should remain crisp
   - Snap sprite positions to prevent sub-pixel shimmer
-- [ ] Cross-browser testing: Chrome, Firefox, Edge on desktop
+- [x] Cross-browser testing: Chrome, Firefox, Edge on desktop
   - Verify WebGL2 context obtained in all browsers
   - Verify shader compilation (no GLSL errors)
   - Verify postprocessing effects render identically
-- [ ] Add loading screen:
+- [x] Add loading screen:
   - Full-screen overlay with progress bar
   - Shown during initial load AND room transitions (if loading takes > 500ms)
   - Uses AssetManager's per-session progress tracking
-- [ ] Final visual polish pass per room:
+- [x] Final visual polish pass per room:
   - Fine-tune bloom, DoF, vignette per room (use the room presets system)
   - Verify lighting transitions feel smooth during fade
   - Check particle density (not too sparse, not too noisy)

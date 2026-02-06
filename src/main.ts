@@ -14,6 +14,8 @@ import { RoomManager } from './rooms/RoomManager.js';
 import { createSpriteMesh, createBlobShadow } from './rendering/sprite-factory.js';
 import { createPlayerSpriteTexture } from './rendering/placeholder-textures.js';
 import { getKeyboard, disposeKeyboard } from './input/keyboard.js';
+import { createQualityScaler } from './rendering/quality-scaler.js';
+import { assetManager } from './loaders/asset-manager.js';
 
 async function init(): Promise<void> {
   // --- Three.js setup ---
@@ -36,7 +38,7 @@ async function init(): Promise<void> {
   const world = await createWorld();
 
   // --- Room Manager ---
-  const roomManager = new RoomManager({ scene, renderer, pipeline });
+  const roomManager = new RoomManager({ scene, renderer, camera, pipeline });
   RoomTransitionSystem.roomManager = roomManager;
 
   // --- Load initial room (before world.build — queues flicker lights) ---
@@ -79,10 +81,21 @@ async function init(): Promise<void> {
   // --- Initialize keyboard ---
   getKeyboard();
 
+  // --- Dynamic quality scaler ---
+  const qualityScaler = createQualityScaler(pipeline);
+
   // --- Start game loop ---
   const loop = new GameLoop(world);
   loop.onFrameTick = (dt) => roomManager.updateParticles(dt);
   loop.start();
+
+  // --- Hide loading screen ---
+  const loadingScreen = document.getElementById('loading-screen');
+  if (loadingScreen) {
+    loadingScreen.classList.add('hidden');
+    // Remove from DOM after fade-out completes
+    loadingScreen.addEventListener('transitionend', () => loadingScreen.remove(), { once: true });
+  }
 
   // --- Event handlers (cleaned up via AbortController) ---
   const eventsController = new AbortController();
@@ -140,7 +153,11 @@ async function init(): Promise<void> {
   document.body.appendChild(stats.dom);
   await stats.init(renderer);
   loop.onBeforeExecute = () => stats.begin();
-  loop.onAfterExecute = () => { stats.end(); stats.update(); };
+  loop.onAfterExecute = (deltaMs) => {
+    stats.end();
+    stats.update();
+    qualityScaler.update(deltaMs);
+  };
 
   // --- Dev-mode debug ---
   if (import.meta.env.DEV) {
@@ -177,6 +194,7 @@ async function init(): Promise<void> {
             }
           }
         });
+        assetManager.dispose();
         pipeline.composer.dispose();
         renderer.dispose();
         document.body.removeChild(renderer.domElement);

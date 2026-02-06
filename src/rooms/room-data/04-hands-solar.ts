@@ -52,6 +52,7 @@ const handsSolar: RoomData = {
     bloom: { intensity: 0.5, luminanceThreshold: 0.85 },
     tiltShift: { focusArea: 0.30, feather: 0.30 },
     vignette: { darkness: 0.50 },
+    colorGrading: { hue: 0.175, saturation: 0.15, brightness: -0.05, contrast: 0.05 },
   },
 };
 

@@ -51,6 +51,7 @@ const guardPost: RoomData = {
     bloom: { intensity: 0.4, luminanceThreshold: 0.90 },
     tiltShift: { focusArea: 0.30, feather: 0.25 },
     vignette: { darkness: 0.60 },
+    colorGrading: { hue: -0.087, saturation: -0.1, brightness: -0.1, contrast: 0.15 },
   },
 };
 

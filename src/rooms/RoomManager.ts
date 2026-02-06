@@ -4,7 +4,8 @@ import { TransitionState, type TransitionStateValue } from '../ecs/components/si
 import { getRoomData, hasRoomData } from './room-data/registry.js';
 import { buildRoom, disposeRoom, type BuiltRoom, type DoorTrigger, type ParticleSystem } from './RoomBuilder.js';
 import { CollisionSystem } from '../ecs/systems/collision.js';
-import { updatePipelineSettings, type HD2DPipeline } from '../rendering/hd2d-pipeline.js';
+import { updatePipelineSettings, setGodraysLight, removeGodrays, type HD2DPipeline } from '../rendering/hd2d-pipeline.js';
+import { profileRoom, profileDisposal } from '../debug/room-profiler.js';
 
 const FADE_OUT_MS = 800;
 const HOLD_BLACK_MS = 200;
@@ -13,6 +14,7 @@ const FADE_IN_MS = 800;
 export interface RoomManagerDeps {
   scene: THREE.Scene;
   renderer: THREE.WebGLRenderer;
+  camera: THREE.PerspectiveCamera;
   pipeline: HD2DPipeline;
 }
 
@@ -46,6 +48,9 @@ export class RoomManager {
 
   /** Active particle systems for the current room — updated each frame */
   private activeParticles: ParticleSystem[] = [];
+
+  /** NPC colors from current room — needed for AssetManager release on unload */
+  private currentNpcColors: string[] = [];
 
   constructor(deps: RoomManagerDeps) {
     this.deps = deps;
@@ -100,14 +105,31 @@ export class RoomManager {
       updatePipelineSettings(this.deps.pipeline, data.postProcessOverrides);
     }
 
+    // Set up god rays if room has them and a directional light
+    if (data.godRays && built.directionalLight) {
+      setGodraysLight(this.deps.pipeline, built.directionalLight, this.deps.camera, {
+        color: new THREE.Color(data.godRays.color ?? 0xffffff),
+        density: data.godRays.density ?? 1 / 128,
+        maxDensity: data.godRays.maxDensity ?? 0.5,
+      });
+    } else {
+      removeGodrays(this.deps.pipeline);
+    }
+
     // Queue flicker lights for ECS entity creation (consumed by RoomTransitionSystem)
     this.pendingFlickerLights = built.flickerLights;
 
     // Store particle systems for per-frame updates
     this.activeParticles = built.particleSystems;
 
+    // Track NPC colors for AssetManager release on unload
+    this.currentNpcColors = data.npcs.map(n => n.spriteColor);
+
     // Force shadow map update for static scene
     this.deps.renderer.shadowMap.needsUpdate = true;
+
+    // Profile room after load
+    profileRoom(this.deps.renderer, roomId, data.name);
 
     // Update exposed state
     this.transitionState = TransitionState.IDLE;
@@ -158,17 +180,34 @@ export class RoomManager {
         updatePipelineSettings(this.deps.pipeline, data.postProcessOverrides);
       }
 
+      // Set up god rays if room has them and a directional light
+      if (data.godRays && built.directionalLight) {
+        setGodraysLight(this.deps.pipeline, built.directionalLight, this.deps.camera, {
+          color: new THREE.Color(data.godRays.color ?? 0xffffff),
+          density: data.godRays.density ?? 1 / 128,
+          maxDensity: data.godRays.maxDensity ?? 0.5,
+        });
+      } else {
+        removeGodrays(this.deps.pipeline);
+      }
+
       // Queue flicker lights for ECS entity creation
       this.pendingFlickerLights = built.flickerLights;
 
       // Store particle systems for per-frame updates
       this.activeParticles = built.particleSystems;
 
+      // Track NPC colors for AssetManager release on unload
+      this.currentNpcColors = data.npcs.map(n => n.spriteColor);
+
       // Queue player spawn (consumed by RoomTransitionSystem)
       this.pendingSpawn = { x: spawnX, y: spawnY, z: spawnZ };
 
       // Force shadow map update
       this.deps.renderer.shadowMap.needsUpdate = true;
+
+      // Profile room after load
+      profileRoom(this.deps.renderer, roomId, data.name);
 
       // Hold black
       await this.delay(HOLD_BLACK_MS, signal);
@@ -208,11 +247,22 @@ export class RoomManager {
   private unloadCurrentRoom(): void {
     if (!this.currentRoom) return;
 
+    const roomId = this.currentRoomId;
+
+    // Dispose particle systems before clearing references
+    for (const ps of this.activeParticles) {
+      ps.dispose();
+    }
     this.activeParticles = [];
+
     this.deps.scene.remove(this.currentRoom.group);
-    disposeRoom(this.currentRoom.group);
+    disposeRoom(this.currentRoom.group, this.currentNpcColors);
     this.currentRoom = null;
     this.doorTriggers = [];
+    this.currentNpcColors = [];
+
+    // Log disposal metrics
+    profileDisposal(this.deps.renderer, roomId, `room-${roomId}`);
   }
 
   private fade(targetOpacity: number, durationMs: number, signal: AbortSignal): Promise<void> {

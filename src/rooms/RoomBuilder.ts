@@ -1,9 +1,12 @@
 import * as THREE from 'three';
-import type { RoomData, DoorDef } from './room-data/types.js';
+import type { RoomData, DoorDef, PropDef } from './room-data/types.js';
 import {
   createStoneFloorTexture,
   createStoneWallTexture,
   createNPCSpriteTexture,
+  releaseStoneFloorTexture,
+  releaseStoneWallTexture,
+  releaseNPCSpriteTexture,
 } from '../rendering/placeholder-textures.js';
 import { createSpriteMesh, createBlobShadow } from '../rendering/sprite-factory.js';
 import { createDustMotes, type DustMoteSystem } from '../rendering/particles/dust-motes.js';
@@ -16,6 +19,8 @@ export interface BuiltRoom {
   group: THREE.Group;
   /** Point lights that should become FlickerLight ECS entities */
   flickerLights: THREE.PointLight[];
+  /** First shadow-casting directional light — used for god rays */
+  directionalLight: THREE.DirectionalLight | null;
   /** Door trigger AABBs for collision detection */
   doorTriggers: DoorTrigger[];
   /** Room AABB bounds for player collision */
@@ -106,6 +111,7 @@ export function buildRoom(data: RoomData): BuiltRoom {
   group.add(ambient);
 
   const flickerLights: THREE.PointLight[] = [];
+  let directionalLight: THREE.DirectionalLight | null = null;
 
   for (const lightDef of data.lights) {
     if (lightDef.type === 'directional') {
@@ -121,6 +127,7 @@ export function buildRoom(data: RoomData): BuiltRoom {
         dirLight.shadow.camera.top = halfD;
         dirLight.shadow.camera.bottom = -halfD;
       }
+      if (!directionalLight) directionalLight = dirLight;
       group.add(dirLight);
     } else if (lightDef.type === 'point') {
       const pointLight = new THREE.PointLight(
@@ -203,6 +210,14 @@ export function buildRoom(data: RoomData): BuiltRoom {
     }
   }
 
+  // --- Instanced props (columns, sconces) ---
+  if (data.props) {
+    for (const propDef of data.props) {
+      const mesh = buildInstancedProp(propDef, height);
+      if (mesh) group.add(mesh);
+    }
+  }
+
   // Room collision bounds (player can't go beyond walls, with a small margin)
   const margin = 0.5;
   const bounds = {
@@ -212,7 +227,82 @@ export function buildRoom(data: RoomData): BuiltRoom {
     maxZ: halfD - margin,
   };
 
-  return { group, flickerLights, doorTriggers, bounds, particleSystems };
+  return { group, flickerLights, directionalLight, doorTriggers, bounds, particleSystems };
+}
+
+/** Shared geometry for prop types — prevents recreating per room */
+const propGeoCache = new Map<string, THREE.BufferGeometry>();
+
+function getColumnGeometry(roomHeight: number): THREE.BufferGeometry {
+  const key = `column-${roomHeight}`;
+  let geo = propGeoCache.get(key);
+  if (!geo) {
+    // Octagonal column: cylinder with 8 sides
+    geo = new THREE.CylinderGeometry(0.4, 0.5, roomHeight, 8);
+    geo.translate(0, roomHeight / 2, 0); // Origin at base
+    geo.userData.shared = true;
+    propGeoCache.set(key, geo);
+  }
+  return geo;
+}
+
+function getSconceGeometry(): THREE.BufferGeometry {
+  const key = 'sconce';
+  let geo = propGeoCache.get(key);
+  if (!geo) {
+    // Small bracket sconce: cube base + cone bracket
+    geo = new THREE.BoxGeometry(0.2, 0.3, 0.15);
+    geo.userData.shared = true;
+    propGeoCache.set(key, geo);
+  }
+  return geo;
+}
+
+const COLUMN_MATERIAL = new THREE.MeshStandardMaterial({
+  color: 0x5a554f,
+  roughness: 0.85,
+  metalness: 0.05,
+});
+
+const SCONCE_MATERIAL = new THREE.MeshStandardMaterial({
+  color: 0x4a3a2a,
+  roughness: 0.6,
+  metalness: 0.3,
+});
+
+function buildInstancedProp(propDef: PropDef, roomHeight: number): THREE.InstancedMesh | null {
+  const { type, positions } = propDef;
+  if (positions.length === 0) return null;
+
+  let geometry: THREE.BufferGeometry;
+  let material: THREE.Material;
+
+  if (type === 'column') {
+    geometry = getColumnGeometry(roomHeight);
+    material = COLUMN_MATERIAL;
+  } else if (type === 'sconce') {
+    geometry = getSconceGeometry();
+    material = SCONCE_MATERIAL;
+  } else {
+    return null;
+  }
+
+  const mesh = new THREE.InstancedMesh(geometry, material, positions.length);
+  const dummy = new THREE.Object3D();
+
+  for (let i = 0; i < positions.length; i++) {
+    const p = positions[i]!;
+    dummy.position.set(p.x, p.y, p.z);
+    dummy.updateMatrix();
+    mesh.setMatrixAt(i, dummy.matrix);
+  }
+
+  mesh.instanceMatrix.needsUpdate = true;
+  mesh.castShadow = type === 'column'; // Columns cast shadows, sconces don't
+  mesh.receiveShadow = true;
+  mesh.name = `instanced-${type}`;
+
+  return mesh;
 }
 
 function buildWall(
@@ -271,8 +361,9 @@ function buildWall(
 
 /**
  * Disposes all GPU resources owned by a room group.
+ * Also releases AssetManager references for shared textures.
  */
-export function disposeRoom(group: THREE.Group): void {
+export function disposeRoom(group: THREE.Group, npcColors?: string[]): void {
   group.traverse((obj) => {
     // Handle both Mesh and Points (particles)
     if (obj instanceof THREE.Mesh || obj instanceof THREE.Points) {
@@ -288,5 +379,27 @@ export function disposeRoom(group: THREE.Group): void {
         mat.dispose();
       }
     }
+    // Dispose lights (free shadow maps)
+    if (obj instanceof THREE.DirectionalLight && obj.shadow.map) {
+      obj.shadow.map.dispose();
+    }
   });
+
+  // Release AssetManager references for shared base textures
+  // Each room uses 1 floor texture + 4+ wall textures (each call incremented refCount)
+  releaseStoneFloorTexture();
+  // Walls: 4 walls each called createStoneWallTexture() which clones from AssetManager base
+  // The wall clone disposals above handle GPU resources; release the AssetManager refs:
+  // buildWall is called 4 times, each creates a clone via createStoneWallTexture→AssetManager
+  releaseStoneWallTexture();
+  releaseStoneWallTexture();
+  releaseStoneWallTexture();
+  releaseStoneWallTexture();
+
+  // Release NPC texture refs
+  if (npcColors) {
+    for (const color of npcColors) {
+      releaseNPCSpriteTexture(color);
+    }
+  }
 }

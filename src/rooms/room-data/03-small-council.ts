@@ -60,6 +60,7 @@ const smallCouncil: RoomData = {
     bloom: { intensity: 0.6, luminanceThreshold: 0.80 },
     tiltShift: { focusArea: 0.25, feather: 0.25 },
     vignette: { darkness: 0.55 },
+    colorGrading: { hue: 0.175, saturation: 0.15, brightness: -0.05, contrast: 0.05 },
   },
 };
 

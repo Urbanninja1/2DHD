@@ -61,6 +61,22 @@ export interface EmberParticleDef {
 
 export type ParticleDef = DustParticleDef | EmberParticleDef;
 
+export interface GodRaysDef {
+  /** Color tint of the god rays */
+  color?: number;
+  /** Density multiplier (default 1/128) */
+  density?: number;
+  /** Max brightness cap (default 0.5) */
+  maxDensity?: number;
+}
+
+export interface PropDef {
+  /** Prop type determines the instanced geometry used */
+  type: 'column' | 'sconce';
+  /** Positions for each instance of this prop (room-local coords) */
+  positions: Vec3[];
+}
+
 export interface RoomData {
   id: RoomIdValue;
   name: string;
@@ -81,4 +97,8 @@ export interface RoomData {
   ceilingColor?: number;
   /** Particle system definitions */
   particles?: ParticleDef[];
+  /** God rays configuration — enabled for rooms with windows/directional light */
+  godRays?: GodRaysDef;
+  /** Instanced prop definitions (columns, sconces) */
+  props?: PropDef[];
 }
