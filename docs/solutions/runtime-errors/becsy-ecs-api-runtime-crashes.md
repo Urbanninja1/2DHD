@@ -1,9 +1,10 @@
 ---
-title: "Becsy ECS Runtime Crashes: Query API and world.build() Constraints"
+title: "Becsy ECS Runtime Crashes: Query API, world.build(), and Entity Creation"
 category: runtime-errors
-tags: [becsy-ecs, runtime-error, query-api, world-build, entity-creation, ecs]
+tags: [becsy-ecs, runtime-error, query-api, world-build, entity-creation, createable, ecs]
 module: ecs
 date: 2026-02-06
+updated: 2026-02-06
 status: resolved
 severity: P1
 becsy_version: 0.16.0
@@ -11,6 +12,8 @@ symptoms:
   - Black screen on game launch
   - "Cannot read properties of undefined (reading 'with')" in system query builder
   - "This method cannot be called after the world has started executing" on second world.build()
+  - "System X didn't mark component Y as createable" when creating entities inside execute()
+  - "Frame already executing" cascade after a createEntity error
 ---
 
 # Becsy ECS Runtime Crashes: Query API and world.build() Constraints
@@ -135,6 +138,92 @@ If you need to create entities *after* the world is executing, use `world.create
 
 ---
 
+## Bug 3: `this.createEntity()` Requires `.create` Entitlement
+
+### Symptom
+
+```
+CheckError: System RoomTransitionSystem didn't mark component FlickerLight as createable
+```
+
+Followed by a cascade of:
+
+```
+CheckError: Frame already executing
+```
+
+The first error corrupts the world state, and every subsequent `world.execute()` fails with "Frame already executing" because the `executing` flag was never cleared.
+
+### Root Cause
+
+When a system calls `this.createEntity(ComponentA, data, ComponentB, data)` inside `execute()`, Becsy checks that the system declared each component with `.create` entitlement via a query. Without this declaration, the system doesn't have permission to create entities with those components.
+
+This is a **bitmask check** in Becsy's entity registry — the system's `accessMasks.create` must include each component type used in `createEntity()`.
+
+### Context
+
+During Phase 3, room transitions needed to create FlickerLight entities for torches in newly loaded rooms. Since `world.build()` can't be called after execution starts (Bug 2), the entity creation was moved inside `RoomTransitionSystem.execute()`. But the system didn't declare create access.
+
+### File Affected
+
+`src/ecs/systems/room-transition.ts`
+
+### Fix
+
+Declare a query with `.create` entitlement for each component used in `createEntity()`:
+
+```typescript
+// BEFORE — crashes at runtime
+@system(s => s.after(CollisionSystem))
+export class RoomTransitionSystem extends System {
+  execute(): void {
+    // ERROR: didn't mark FlickerLight as createable
+    this.createEntity(
+      FlickerLight, { baseIntensity: 2.0, ... },
+      Object3DRef, { object3d: light },
+    );
+  }
+}
+
+// AFTER — declare .create entitlement via query
+@system(s => s.after(CollisionSystem))
+export class RoomTransitionSystem extends System {
+  // Declare create access (required for this.createEntity())
+  private _flickerAccess = this.query(
+    q => q.using(FlickerLight).create.and.using(Object3DRef).create,
+  );
+
+  execute(): void {
+    // OK: FlickerLight and Object3DRef are marked createable
+    this.createEntity(
+      FlickerLight, { baseIntensity: 2.0, ... },
+      Object3DRef, { object3d: light },
+    );
+  }
+}
+```
+
+### Key Details
+
+| Entitlement | Meaning | Use case |
+|---|---|---|
+| `.read` | Read component data | Querying state |
+| `.write` | Read + write component data | Mutating state |
+| `.create` | Create entities with this component | Runtime entity spawning |
+
+- `.create` is **more restrictive** than `.write` — you can only use the component in `createEntity()`, not read or write it directly
+- `.create` entitlements can run **concurrently** with other `.create` systems (safe parallelism)
+- Use `q.using(Component).create` (not `q.with(Component).create`) because `using` doesn't require matched entities
+- The query variable (`_flickerAccess`) is never iterated — it exists solely to declare the entitlement
+
+### The Cascade Problem
+
+When `createEntity()` throws, the system's `execute()` aborts mid-frame. Becsy's internal `executing` flag stays `true`. Every subsequent `requestAnimationFrame` tick calls `world.execute()` which immediately throws "Frame already executing". The game loop enters an infinite error cycle.
+
+**Prevention:** Always declare `.create` entitlements before testing entity creation paths. There's no recovery from a corrupted world state — the page must be refreshed.
+
+---
+
 ## Prevention Strategies
 
 ### Becsy Query API
@@ -149,15 +238,27 @@ If you need to create entities *after* the world is executing, use `world.create
 - **Prepare all data before calling build** — gather torches, textures, meshes, etc. first, then pass everything into the single build callback.
 - **For runtime spawning**, use system-internal entity creation or `world.createEntity()` instead of `world.build()`.
 
+### Runtime Entity Creation (Post-Build)
+
+When entities must be created after the game loop starts (e.g., room transitions loading new lights):
+
+1. **Queue the data** outside ECS (e.g., `RoomManager.pendingFlickerLights = [...]`)
+2. **Consume it inside a system's `execute()`** using `this.createEntity()`
+3. **Declare `.create` entitlements** via `this.query(q => q.using(Component).create)`
+
+This pattern bridges the gap between non-ECS managers and Becsy's strict access control.
+
 ### General Becsy Gotchas (v0.16.0)
 
 | Gotcha | Correct Approach |
 |---|---|
 | `.all` on queries | Use `.current` |
 | Multiple `world.build()` | Single call, all entities inside |
+| `this.createEntity()` in system | Declare `q.using(Component).create` in a query |
 | Numeric field defaults | Fields init to `0` — use helpers for non-zero defaults (scale, opacity) |
 | Holding component handles | Destructure immediately — handles invalidate between frames |
 | Singleton `.read` vs `.write` | Use `.write` if the system needs to mutate the singleton |
+| Error during `execute()` | Corrupts world state permanently — must refresh page |
 
 ---
 
