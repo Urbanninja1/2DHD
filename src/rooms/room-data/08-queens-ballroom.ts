@@ -65,6 +65,28 @@ const queensBallroom: RoomData = {
     { type: 'embers', position: { x: 8.5, y: 3.5, z: 6 }, count: 6 },
   ],
 
+  props: [
+    // 8 columns around the perimeter defining the dance floor
+    {
+      type: 'column',
+      positions: [
+        { x: -6, y: 0, z: -6 }, { x: 6, y: 0, z: -6 },
+        { x: -6, y: 0, z: 6 }, { x: 6, y: 0, z: 6 },
+        { x: -6, y: 0, z: 0 }, { x: 6, y: 0, z: 0 },
+        { x: 0, y: 0, z: -6 }, { x: 0, y: 0, z: 6 },
+      ],
+    },
+    // Sconces at wall sconce positions
+    {
+      type: 'sconce',
+      positions: [
+        { x: -8.5, y: 3.3, z: -6 }, { x: -8.5, y: 3.3, z: 6 },
+        { x: 8.5, y: 3.3, z: -6 }, { x: 8.5, y: 3.3, z: 6 },
+        { x: 0, y: 3.3, z: -8.5 }, { x: 0, y: 3.3, z: 8.5 },
+      ],
+    },
+  ],
+
   postProcessOverrides: {
     bloom: { intensity: 0.8, luminanceThreshold: 0.78 },
     tiltShift: { focusArea: 0.40, feather: 0.30 },

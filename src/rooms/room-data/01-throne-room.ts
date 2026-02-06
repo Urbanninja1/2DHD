@@ -97,6 +97,33 @@ const throneRoom: RoomData = {
     { type: 'embers', position: { x: 0, y: 5, z: -8.5 }, count: 15 },
   ],
 
+  props: [
+    // 16 columns — 8 per side, flanking the central aisle
+    {
+      type: 'column',
+      positions: [
+        // East colonnade
+        { x: 10, y: 0, z: -7 }, { x: 10, y: 0, z: -4 }, { x: 10, y: 0, z: -1 }, { x: 10, y: 0, z: 2 },
+        { x: 10, y: 0, z: 5 }, { x: 10, y: 0, z: 8 },
+        // West colonnade
+        { x: -10, y: 0, z: -7 }, { x: -10, y: 0, z: -4 }, { x: -10, y: 0, z: -1 }, { x: -10, y: 0, z: 2 },
+        { x: -10, y: 0, z: 5 }, { x: -10, y: 0, z: 8 },
+        // Near-throne columns
+        { x: -5, y: 0, z: -7 }, { x: 5, y: 0, z: -7 },
+        { x: -5, y: 0, z: -4 }, { x: 5, y: 0, z: -4 },
+      ],
+    },
+    // Sconces at each torch position
+    {
+      type: 'sconce',
+      positions: [
+        { x: 14, y: 3.8, z: -7 }, { x: 14, y: 3.8, z: 0 }, { x: 14, y: 3.8, z: 7 },
+        { x: -14, y: 3.8, z: -7 }, { x: -14, y: 3.8, z: 0 }, { x: -14, y: 3.8, z: 7 },
+        { x: 0, y: 4.8, z: -8.5 },
+      ],
+    },
+  ],
+
   postProcessOverrides: {
     bloom: { intensity: 0.7, luminanceThreshold: 0.80 },
     tiltShift: { focusArea: 0.40, feather: 0.30 },

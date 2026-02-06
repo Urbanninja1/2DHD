@@ -85,6 +85,29 @@ const grandGallery: RoomData = {
     { type: 'embers', position: { x: 10, y: 4, z: -2.5 }, count: 10 },
   ],
 
+  props: [
+    // 12 columns — 6 per side along the gallery length
+    {
+      type: 'column',
+      positions: [
+        // North wall colonnade
+        { x: -12, y: 0, z: -2 }, { x: -8, y: 0, z: -2 }, { x: -4, y: 0, z: -2 },
+        { x: 0, y: 0, z: -2 }, { x: 4, y: 0, z: -2 }, { x: 8, y: 0, z: -2 },
+        // South wall colonnade
+        { x: -12, y: 0, z: 2 }, { x: -8, y: 0, z: 2 }, { x: -4, y: 0, z: 2 },
+        { x: 0, y: 0, z: 2 }, { x: 4, y: 0, z: 2 }, { x: 8, y: 0, z: 2 },
+      ],
+    },
+    // Sconces at torch positions
+    {
+      type: 'sconce',
+      positions: [
+        { x: -10, y: 3.8, z: -2.5 }, { x: -3, y: 3.8, z: -2.5 },
+        { x: 3, y: 3.8, z: -2.5 }, { x: 10, y: 3.8, z: -2.5 },
+      ],
+    },
+  ],
+
   postProcessOverrides: {
     bloom: { intensity: 0.6, luminanceThreshold: 0.82 },
     tiltShift: { focusArea: 0.45, feather: 0.35 },

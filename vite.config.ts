@@ -14,4 +14,16 @@ export default defineConfig({
     },
   },
   assetsInclude: ['**/*.glb', '**/*.hdr', '**/*.ktx2'],
+  build: {
+    target: 'es2022',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'three': ['three'],
+          'postprocessing': ['postprocessing', 'n8ao', 'three-good-godrays'],
+          'ecs': ['@lastolivegames/becsy'],
+        },
+      },
+    },
+  },
 });

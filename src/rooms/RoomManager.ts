@@ -5,6 +5,7 @@ import { getRoomData, hasRoomData } from './room-data/registry.js';
 import { buildRoom, disposeRoom, type BuiltRoom, type DoorTrigger, type ParticleSystem } from './RoomBuilder.js';
 import { CollisionSystem } from '../ecs/systems/collision.js';
 import { updatePipelineSettings, setGodraysLight, removeGodrays, type HD2DPipeline } from '../rendering/hd2d-pipeline.js';
+import { profileRoom, profileDisposal } from '../debug/room-profiler.js';
 
 const FADE_OUT_MS = 800;
 const HOLD_BLACK_MS = 200;
@@ -47,6 +48,9 @@ export class RoomManager {
 
   /** Active particle systems for the current room — updated each frame */
   private activeParticles: ParticleSystem[] = [];
+
+  /** NPC colors from current room — needed for AssetManager release on unload */
+  private currentNpcColors: string[] = [];
 
   constructor(deps: RoomManagerDeps) {
     this.deps = deps;
@@ -118,8 +122,14 @@ export class RoomManager {
     // Store particle systems for per-frame updates
     this.activeParticles = built.particleSystems;
 
+    // Track NPC colors for AssetManager release on unload
+    this.currentNpcColors = data.npcs.map(n => n.spriteColor);
+
     // Force shadow map update for static scene
     this.deps.renderer.shadowMap.needsUpdate = true;
+
+    // Profile room after load
+    profileRoom(this.deps.renderer, roomId, data.name);
 
     // Update exposed state
     this.transitionState = TransitionState.IDLE;
@@ -187,11 +197,17 @@ export class RoomManager {
       // Store particle systems for per-frame updates
       this.activeParticles = built.particleSystems;
 
+      // Track NPC colors for AssetManager release on unload
+      this.currentNpcColors = data.npcs.map(n => n.spriteColor);
+
       // Queue player spawn (consumed by RoomTransitionSystem)
       this.pendingSpawn = { x: spawnX, y: spawnY, z: spawnZ };
 
       // Force shadow map update
       this.deps.renderer.shadowMap.needsUpdate = true;
+
+      // Profile room after load
+      profileRoom(this.deps.renderer, roomId, data.name);
 
       // Hold black
       await this.delay(HOLD_BLACK_MS, signal);
@@ -231,11 +247,22 @@ export class RoomManager {
   private unloadCurrentRoom(): void {
     if (!this.currentRoom) return;
 
+    const roomId = this.currentRoomId;
+
+    // Dispose particle systems before clearing references
+    for (const ps of this.activeParticles) {
+      ps.dispose();
+    }
     this.activeParticles = [];
+
     this.deps.scene.remove(this.currentRoom.group);
-    disposeRoom(this.currentRoom.group);
+    disposeRoom(this.currentRoom.group, this.currentNpcColors);
     this.currentRoom = null;
     this.doorTriggers = [];
+    this.currentNpcColors = [];
+
+    // Log disposal metrics
+    profileDisposal(this.deps.renderer, roomId, `room-${roomId}`);
   }
 
   private fade(targetOpacity: number, durationMs: number, signal: AbortSignal): Promise<void> {
