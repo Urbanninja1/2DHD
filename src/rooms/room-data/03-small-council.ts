@@ -11,6 +11,10 @@ const smallCouncil: RoomData = {
   wallColor: 0x3A2A1A,
   ceilingColor: 0x1A1008,
 
+  floorTexture: { basePath: 'assets/textures/wood/dark-wood-floor' },
+  wallTexture: { basePath: 'assets/textures/stone/stone-wall' },
+  ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
+
   ambientLight: { color: 0x443322, intensity: 0.15 },
 
   lights: [
@@ -37,9 +41,9 @@ const smallCouncil: RoomData = {
 
   npcs: [
     // Council members seated around the table
-    { spriteColor: '#8B4513', position: { x: -2, y: 0, z: -1.5 }, label: 'Master of Coin' },
-    { spriteColor: '#2F4F4F', position: { x: 2, y: 0, z: -1.5 }, label: 'Master of Whispers' },
-    { spriteColor: '#4A0E0E', position: { x: 0, y: 0, z: 1.5 }, label: 'Master of Laws' },
+    { spriteColor: '#8B4513', position: { x: -2, y: 0, z: -1.5 }, label: 'Master of Coin', spritePath: 'assets/sprites/npcs/council-member.png' },
+    { spriteColor: '#2F4F4F', position: { x: 2, y: 0, z: -1.5 }, label: 'Master of Whispers', spritePath: 'assets/sprites/npcs/council-member.png' },
+    { spriteColor: '#4A0E0E', position: { x: 0, y: 0, z: 1.5 }, label: 'Master of Laws', spritePath: 'assets/sprites/npcs/council-member.png' },
   ],
 
   particles: [
@@ -54,6 +58,29 @@ const smallCouncil: RoomData = {
     { type: 'embers', position: { x: 1.5, y: 2.5, z: -1 }, count: 5 },
     { type: 'embers', position: { x: -1.5, y: 2.5, z: 1 }, count: 5 },
     { type: 'embers', position: { x: 1.5, y: 2.5, z: 1 }, count: 5 },
+  ],
+
+  props: [
+    // Council table
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/table-long.glb',
+      positions: [{ x: 0, y: 0, z: 0 }],
+      scale: 0.8,
+    },
+    // Chairs around the table
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/chair-high.glb',
+      positions: [
+        { x: -2, y: 0, z: -1.5 },
+        { x: 2, y: 0, z: -1.5 },
+        { x: 0, y: 0, z: 1.5 },
+        { x: -2, y: 0, z: 1.5 },
+        { x: 2, y: 0, z: 1.5 },
+      ],
+      scale: 0.6,
+    },
   ],
 
   postProcessOverrides: {

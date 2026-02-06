@@ -16,6 +16,7 @@ import { createPlayerSpriteTexture } from './rendering/placeholder-textures.js';
 import { getKeyboard, disposeKeyboard } from './input/keyboard.js';
 import { createQualityScaler } from './rendering/quality-scaler.js';
 import { assetManager } from './loaders/asset-manager.js';
+import { createLoaders, textureLoader } from './loaders/texture-loaders.js';
 
 async function init(): Promise<void> {
   // --- Three.js setup ---
@@ -27,6 +28,9 @@ async function init(): Promise<void> {
   document.body.appendChild(renderer.domElement);
 
   const pipeline = createHD2DPipeline(renderer, scene, camera);
+
+  // Wire up asset loaders (GLTF, KTX2, DRACO)
+  const loaders = createLoaders(renderer);
 
   // Populate render context singleton
   renderContext.scene = scene;
@@ -45,7 +49,17 @@ async function init(): Promise<void> {
   await roomManager.loadRoom(RoomId.ThroneRoom);
 
   // --- Create player entity ---
-  const playerTex = createPlayerSpriteTexture();
+  let playerTex: THREE.Texture;
+  try {
+    playerTex = await textureLoader.loadAsync('assets/sprites/player/knight-idle.png');
+    playerTex.minFilter = THREE.NearestFilter;
+    playerTex.magFilter = THREE.NearestFilter;
+    playerTex.generateMipmaps = false;
+    playerTex.colorSpace = THREE.SRGBColorSpace;
+  } catch {
+    // Fall back to procedural if sprite file not found
+    playerTex = createPlayerSpriteTexture();
+  }
   const playerMesh = createSpriteMesh(playerTex);
   const playerShadow = createBlobShadow(0.5);
   playerMesh.add(playerShadow);
@@ -195,6 +209,7 @@ async function init(): Promise<void> {
           }
         });
         assetManager.dispose();
+        loaders.dispose();
         pipeline.composer.dispose();
         renderer.dispose();
         document.body.removeChild(renderer.domElement);

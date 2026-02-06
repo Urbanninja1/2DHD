@@ -11,6 +11,10 @@ const antechamber: RoomData = {
   wallColor: 0x504840,
   ceilingColor: 0x2a2a2a,
 
+  floorTexture: { basePath: 'assets/textures/stone/worn-stone' },
+  wallTexture: { basePath: 'assets/textures/stone/rough-stone' },
+  ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
+
   ambientLight: { color: 0x443322, intensity: 0.2 },
 
   lights: [
@@ -42,8 +46,8 @@ const antechamber: RoomData = {
 
   npcs: [
     // Guards flanking the north door
-    { spriteColor: '#667788', position: { x: -2.5, y: 0, z: -4 }, label: 'Guard Left' },
-    { spriteColor: '#667788', position: { x: 2.5, y: 0, z: -4 }, label: 'Guard Right' },
+    { spriteColor: '#667788', position: { x: -2.5, y: 0, z: -4 }, label: 'Guard Left', spritePath: 'assets/sprites/npcs/guard.png' },
+    { spriteColor: '#667788', position: { x: 2.5, y: 0, z: -4 }, label: 'Guard Right', spritePath: 'assets/sprites/npcs/guard.png' },
   ],
 
   particles: [

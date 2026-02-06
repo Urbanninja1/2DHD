@@ -11,6 +11,10 @@ const throneRoom: RoomData = {
   wallColor: 0x4a4540,
   ceilingColor: 0x2a2a2a,
 
+  floorTexture: { basePath: 'assets/textures/stone/castle-wall-slates' },
+  wallTexture: { basePath: 'assets/textures/stone/stone-wall' },
+  ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
+
   ambientLight: { color: 0x4466AA, intensity: 0.2 },
 
   lights: [
@@ -71,13 +75,13 @@ const throneRoom: RoomData = {
 
   npcs: [
     // Kingsguard flanking throne
-    { spriteColor: '#CCCCDD', position: { x: -3, y: 0, z: -6 }, label: 'Kingsguard Left' },
-    { spriteColor: '#CCCCDD', position: { x: 3, y: 0, z: -6 }, label: 'Kingsguard Right' },
+    { spriteColor: '#CCCCDD', position: { x: -3, y: 0, z: -6 }, label: 'Kingsguard Left', spritePath: 'assets/sprites/npcs/kingsguard.png' },
+    { spriteColor: '#CCCCDD', position: { x: 3, y: 0, z: -6 }, label: 'Kingsguard Right', spritePath: 'assets/sprites/npcs/kingsguard.png' },
     // Courtiers
-    { spriteColor: '#8B0000', position: { x: -8, y: 0, z: 2 }, label: 'Courtier 1' },
-    { spriteColor: '#2F1B0E', position: { x: 6, y: 0, z: 4 }, label: 'Courtier 2' },
-    { spriteColor: '#C9A84C', position: { x: -5, y: 0, z: -2 }, label: 'Noble' },
-    { spriteColor: '#4A4A4A', position: { x: 10, y: 0, z: -3 }, label: 'Petitioner' },
+    { spriteColor: '#8B0000', position: { x: -8, y: 0, z: 2 }, label: 'Courtier 1', spritePath: 'assets/sprites/npcs/noble-male.png' },
+    { spriteColor: '#2F1B0E', position: { x: 6, y: 0, z: 4 }, label: 'Courtier 2', spritePath: 'assets/sprites/npcs/noble-female.png' },
+    { spriteColor: '#C9A84C', position: { x: -5, y: 0, z: -2 }, label: 'Noble', spritePath: 'assets/sprites/npcs/noble-male.png' },
+    { spriteColor: '#4A4A4A', position: { x: 10, y: 0, z: -3 }, label: 'Petitioner', spritePath: 'assets/sprites/npcs/servant.png' },
   ],
 
   particles: [
@@ -100,7 +104,8 @@ const throneRoom: RoomData = {
   props: [
     // 16 columns — 8 per side, flanking the central aisle
     {
-      type: 'column',
+      type: 'model',
+      modelPath: 'assets/models/props/column-stone.glb',
       positions: [
         // East colonnade
         { x: 10, y: 0, z: -7 }, { x: 10, y: 0, z: -4 }, { x: 10, y: 0, z: -1 }, { x: 10, y: 0, z: 2 },
@@ -112,15 +117,35 @@ const throneRoom: RoomData = {
         { x: -5, y: 0, z: -7 }, { x: 5, y: 0, z: -7 },
         { x: -5, y: 0, z: -4 }, { x: 5, y: 0, z: -4 },
       ],
+      scale: 1.0,
     },
     // Sconces at each torch position
     {
-      type: 'sconce',
+      type: 'model',
+      modelPath: 'assets/models/props/sconce-iron.glb',
       positions: [
         { x: 14, y: 3.8, z: -7 }, { x: 14, y: 3.8, z: 0 }, { x: 14, y: 3.8, z: 7 },
         { x: -14, y: 3.8, z: -7 }, { x: -14, y: 3.8, z: 0 }, { x: -14, y: 3.8, z: 7 },
         { x: 0, y: 4.8, z: -8.5 },
       ],
+      scale: 0.5,
+    },
+    // Iron Throne
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/throne.glb',
+      positions: [{ x: 0, y: 0, z: -7.5 }],
+      scale: 1.5,
+    },
+    // Banners flanking the throne
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/banner.glb',
+      positions: [
+        { x: -3, y: 0, z: -8 },
+        { x: 3, y: 0, z: -8 },
+      ],
+      scale: 1.2,
     },
   ],
 

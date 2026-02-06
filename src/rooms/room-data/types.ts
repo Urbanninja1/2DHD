@@ -36,11 +36,13 @@ export interface LightDef {
 }
 
 export interface NPCDef {
-  /** Color for placeholder sprite (will be replaced with real sprite paths later) */
+  /** Color for placeholder sprite (used when spritePath is not set) */
   spriteColor: string;
   position: Vec3;
   /** Label for debugging */
   label: string;
+  /** Path to sprite image — takes priority over spriteColor when present */
+  spritePath?: string;
 }
 
 export interface DustParticleDef {
@@ -70,11 +72,53 @@ export interface GodRaysDef {
   maxDensity?: number;
 }
 
-export interface PropDef {
-  /** Prop type determines the instanced geometry used */
+// --- Texture Set Definition ---
+
+export interface TextureSetDef {
+  /** Base path to the texture directory (e.g. 'assets/textures/stone/castle-wall-slates') */
+  basePath: string;
+  /** Optional color tint applied to the PBR material */
+  tint?: number;
+  /** Texture repeat — defaults to auto-calculated from room dimensions */
+  repeat?: { x: number; y: number };
+}
+
+// --- Prop Definitions ---
+
+/** Procedural prop — uses built-in geometry (columns, sconces) */
+export interface ProceduralPropDef {
   type: 'column' | 'sconce';
-  /** Positions for each instance of this prop (room-local coords) */
   positions: Vec3[];
+}
+
+/** Model-based prop — loads a GLTF/GLB file */
+export interface ModelPropDef {
+  type: 'model';
+  /** Path to the .glb model file (relative to public/) */
+  modelPath: string;
+  /** Positions for each instance of this prop */
+  positions: Vec3[];
+  /** Uniform scale factor (default 1.0) */
+  scale?: number;
+  /** Y-axis rotation in radians (default 0) */
+  rotationY?: number;
+}
+
+export type PropDef = ProceduralPropDef | ModelPropDef;
+
+// --- Parallax Background ---
+
+export interface ParallaxLayerDef {
+  /** Path to the layer image (relative to public/) */
+  texturePath: string;
+  /** Z depth behind the room (higher = further away) */
+  depth: number;
+  /** Scroll speed multiplier relative to camera movement (0 = static, 1 = full speed) */
+  scrollFactor: number;
+  /** Display height of this layer in world units */
+  height: number;
+  /** Y offset for layer positioning */
+  yOffset: number;
 }
 
 export interface RoomData {
@@ -89,9 +133,9 @@ export interface RoomData {
   ambientLight: { color: number; intensity: number };
   /** Per-room post-processing overrides */
   postProcessOverrides?: Partial<HD2DSettings>;
-  /** Floor color tint (used with placeholder textures) */
+  /** Floor color tint (used with placeholder textures, also tints PBR materials) */
   floorColor?: number;
-  /** Wall color tint (used with placeholder textures) */
+  /** Wall color tint (used with placeholder textures, also tints PBR materials) */
   wallColor?: number;
   /** Ceiling color */
   ceilingColor?: number;
@@ -99,6 +143,14 @@ export interface RoomData {
   particles?: ParticleDef[];
   /** God rays configuration — enabled for rooms with windows/directional light */
   godRays?: GodRaysDef;
-  /** Instanced prop definitions (columns, sconces) */
+  /** Instanced prop definitions (columns, sconces, models) */
   props?: PropDef[];
+  /** PBR floor texture set — falls back to procedural if not set */
+  floorTexture?: TextureSetDef;
+  /** PBR wall texture set — falls back to procedural if not set */
+  wallTexture?: TextureSetDef;
+  /** PBR ceiling texture set — falls back to procedural if not set */
+  ceilingTexture?: TextureSetDef;
+  /** Parallax background layers — rendered behind the north wall */
+  parallaxBackground?: ParallaxLayerDef[];
 }

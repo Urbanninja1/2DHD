@@ -24,6 +24,9 @@ export interface LoaderSet {
 /** Max texture resolution — textures above this are warned about in DEV */
 export const MAX_TEXTURE_SIZE = 2048;
 
+/** Module-level TextureLoader instance — reused across all PBR loads */
+export const textureLoader = new THREE.TextureLoader();
+
 export function createLoaders(renderer: THREE.WebGLRenderer): LoaderSet {
   // DRACO decoder — uses WASM from CDN (Vite can self-host these later)
   const dracoLoader = new DRACOLoader();
@@ -65,4 +68,41 @@ export function validateTexture(texture: THREE.Texture, name: string): void {
       );
     }
   }
+}
+
+export interface PBRTextureSet {
+  diffuse: THREE.Texture;
+  normal: THREE.Texture | null;
+  roughness: THREE.Texture | null;
+}
+
+/**
+ * Load a PBR texture set (diffuse + normal + roughness) in parallel.
+ * Applies correct colorSpace per map type. Validates sizes in DEV.
+ *
+ * @param basePath - Directory containing diffuse.jpg, normal.jpg, roughness.jpg
+ * @param key - Cache key prefix for AssetManager
+ */
+export async function loadPBRTexture(basePath: string, key: string): Promise<PBRTextureSet> {
+  const [diffuse, normal, roughness] = await Promise.all([
+    textureLoader.loadAsync(`${basePath}/diffuse.jpg`),
+    textureLoader.loadAsync(`${basePath}/normal.jpg`).catch(() => null),
+    textureLoader.loadAsync(`${basePath}/roughness.jpg`).catch(() => null),
+  ]);
+
+  // Diffuse uses sRGB
+  diffuse.colorSpace = THREE.SRGBColorSpace;
+  validateTexture(diffuse, `${key}/diffuse`);
+
+  // Normal + roughness are linear data
+  if (normal) {
+    normal.colorSpace = THREE.NoColorSpace;
+    validateTexture(normal, `${key}/normal`);
+  }
+  if (roughness) {
+    roughness.colorSpace = THREE.NoColorSpace;
+    validateTexture(roughness, `${key}/roughness`);
+  }
+
+  return { diffuse, normal, roughness };
 }

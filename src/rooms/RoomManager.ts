@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import type { RoomIdValue } from '../ecs/components/singletons.js';
 import { TransitionState, type TransitionStateValue } from '../ecs/components/singletons.js';
 import { getRoomData, hasRoomData } from './room-data/registry.js';
+import type { RoomData } from './room-data/types.js';
 import { buildRoom, disposeRoom, type BuiltRoom, type DoorTrigger, type ParticleSystem } from './RoomBuilder.js';
 import { CollisionSystem } from '../ecs/systems/collision.js';
 import { updatePipelineSettings, setGodraysLight, removeGodrays, type HD2DPipeline } from '../rendering/hd2d-pipeline.js';
@@ -28,6 +29,7 @@ export interface RoomManagerDeps {
 export class RoomManager {
   private deps: RoomManagerDeps;
   private currentRoom: BuiltRoom | null = null;
+  private currentRoomData: RoomData | null = null;
   private transitioning = false;
   private fadeOverlay: HTMLDivElement;
   private abortController: AbortController | null = null;
@@ -49,7 +51,10 @@ export class RoomManager {
   /** Active particle systems for the current room — updated each frame */
   private activeParticles: ParticleSystem[] = [];
 
-  /** NPC colors from current room — needed for AssetManager release on unload */
+  /** Parallax layer meshes for the current room — UV-scrolled each frame */
+  private parallaxLayers: THREE.Mesh[] = [];
+
+  /** NPC colors from current room — needed for AssetManager release on unload (legacy) */
   private currentNpcColors: string[] = [];
 
   constructor(deps: RoomManagerDeps) {
@@ -89,11 +94,12 @@ export class RoomManager {
     }
 
     const data = getRoomData(roomId)!;
-    const built = buildRoom(data);
+    const built = await buildRoom(data);
 
     // Add room to scene
     this.deps.scene.add(built.group);
     this.currentRoom = built;
+    this.currentRoomData = data;
     this.currentRoomId = roomId;
     this.doorTriggers = built.doorTriggers;
 
@@ -122,7 +128,10 @@ export class RoomManager {
     // Store particle systems for per-frame updates
     this.activeParticles = built.particleSystems;
 
-    // Track NPC colors for AssetManager release on unload
+    // Store parallax layers for per-frame UV scroll
+    this.parallaxLayers = built.parallaxLayers;
+
+    // Track NPC colors for AssetManager release on unload (legacy fallback)
     this.currentNpcColors = data.npcs.map(n => n.spriteColor);
 
     // Force shadow map update for static scene
@@ -166,10 +175,11 @@ export class RoomManager {
       this.currentRoomId = roomId;
 
       const data = getRoomData(roomId)!;
-      const built = buildRoom(data);
+      const built = await buildRoom(data);
 
       this.deps.scene.add(built.group);
       this.currentRoom = built;
+      this.currentRoomData = data;
       this.doorTriggers = built.doorTriggers;
 
       // Update collision bounds
@@ -197,7 +207,10 @@ export class RoomManager {
       // Store particle systems for per-frame updates
       this.activeParticles = built.particleSystems;
 
-      // Track NPC colors for AssetManager release on unload
+      // Store parallax layers for per-frame UV scroll
+      this.parallaxLayers = built.parallaxLayers;
+
+      // Track NPC colors for AssetManager release on unload (legacy fallback)
       this.currentNpcColors = data.npcs.map(n => n.spriteColor);
 
       // Queue player spawn (consumed by RoomTransitionSystem)
@@ -227,11 +240,24 @@ export class RoomManager {
   }
 
   /**
-   * Update all active particle systems. Called once per frame from the game loop.
+   * Update all active particle systems and parallax scrolling.
+   * Called once per frame from the game loop.
    */
   updateParticles(dt: number): void {
     for (const ps of this.activeParticles) {
       ps.update(dt);
+    }
+
+    // Scroll parallax layers based on camera X position
+    if (this.parallaxLayers.length > 0) {
+      const cameraX = this.deps.camera.position.x;
+      for (const layer of this.parallaxLayers) {
+        const scrollFactor = layer.userData.scrollFactor as number;
+        const mat = layer.material as THREE.MeshBasicMaterial;
+        if (mat.map) {
+          mat.map.offset.x = cameraX * scrollFactor * 0.01;
+        }
+      }
     }
   }
 
@@ -254,10 +280,12 @@ export class RoomManager {
       ps.dispose();
     }
     this.activeParticles = [];
+    this.parallaxLayers = [];
 
     this.deps.scene.remove(this.currentRoom.group);
-    disposeRoom(this.currentRoom.group, this.currentNpcColors);
+    disposeRoom(this.currentRoom.group, this.currentRoomData ?? undefined, this.currentNpcColors);
     this.currentRoom = null;
+    this.currentRoomData = null;
     this.doorTriggers = [];
     this.currentNpcColors = [];
 
