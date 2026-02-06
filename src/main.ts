@@ -81,6 +81,7 @@ async function init(): Promise<void> {
 
   // --- Start game loop ---
   const loop = new GameLoop(world);
+  loop.onFrameTick = (dt) => roomManager.updateParticles(dt);
   loop.start();
 
   // --- Event handlers (cleaned up via AbortController) ---

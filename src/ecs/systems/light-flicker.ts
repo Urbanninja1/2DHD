@@ -1,10 +1,16 @@
 import { system, System } from '@lastolivegames/becsy';
+import { Color } from 'three';
 import { FlickerLight } from '../components/rendering.js';
 import { Object3DRef } from '../components/rendering.js';
 import { TransformSyncSystem } from './transform-sync.js';
 import type { PointLight } from 'three';
 
 const NOISE_TABLE_SIZE = 1024;
+
+// Color temperature endpoints
+const WARM_COLOR = new Color(0xFFE0B0); // warm white — brighter flicker
+const AMBER_COLOR = new Color(0xFFA050); // amber — dimmer flicker
+const _tempColor = new Color(); // reusable scratch color
 
 /**
  * Pre-computed noise table for cheap per-frame light animation.
@@ -56,7 +62,14 @@ export class LightFlickerSystem extends System {
       const medium = sampleNoise(time, 1.5, noiseOffset + 100) * 0.10;
       const fast = sampleNoise(time, 4.0, noiseOffset + 200) * 0.05;
 
-      light.intensity = baseIntensity * (1.0 + slow + medium + fast);
+      const variation = slow + medium + fast;
+      light.intensity = baseIntensity * (1.0 + variation);
+
+      // Color temperature shift: brighter → warm white, dimmer → amber
+      // variation range is roughly -0.3 to +0.3, remap to 0-1
+      const colorT = Math.max(0, Math.min(1, variation * 1.67 + 0.5));
+      _tempColor.copy(AMBER_COLOR).lerp(WARM_COLOR, colorT);
+      light.color.copy(_tempColor);
     }
   }
 }

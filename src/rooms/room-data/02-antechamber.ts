@@ -46,6 +46,14 @@ const antechamber: RoomData = {
     { spriteColor: '#667788', position: { x: 2.5, y: 0, z: -4 }, label: 'Guard Right' },
   ],
 
+  particles: [
+    // Torch embers — one emitter per flickering torch
+    { type: 'embers', position: { x: -6, y: 3.5, z: -5.5 }, count: 10 },
+    { type: 'embers', position: { x: 6, y: 3.5, z: -5.5 }, count: 10 },
+    { type: 'embers', position: { x: -6, y: 3.5, z: 5.5 }, count: 10 },
+    { type: 'embers', position: { x: 6, y: 3.5, z: 5.5 }, count: 10 },
+  ],
+
   postProcessOverrides: {
     bloom: { intensity: 0.5, luminanceThreshold: 0.85 },
     tiltShift: { focusArea: 0.35, feather: 0.30 },
