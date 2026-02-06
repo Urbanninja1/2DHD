@@ -48,6 +48,7 @@ const maegorsEntry: RoomData = {
     bloom: { intensity: 0.3, luminanceThreshold: 0.90 },
     tiltShift: { focusArea: 0.25, feather: 0.20 },
     vignette: { darkness: 0.65 },
+    colorGrading: { hue: -0.087, saturation: -0.1, brightness: -0.1, contrast: 0.15 },
   },
 };
 

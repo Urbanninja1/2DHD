@@ -4,7 +4,7 @@ import { TransitionState, type TransitionStateValue } from '../ecs/components/si
 import { getRoomData, hasRoomData } from './room-data/registry.js';
 import { buildRoom, disposeRoom, type BuiltRoom, type DoorTrigger, type ParticleSystem } from './RoomBuilder.js';
 import { CollisionSystem } from '../ecs/systems/collision.js';
-import { updatePipelineSettings, type HD2DPipeline } from '../rendering/hd2d-pipeline.js';
+import { updatePipelineSettings, setGodraysLight, removeGodrays, type HD2DPipeline } from '../rendering/hd2d-pipeline.js';
 
 const FADE_OUT_MS = 800;
 const HOLD_BLACK_MS = 200;
@@ -13,6 +13,7 @@ const FADE_IN_MS = 800;
 export interface RoomManagerDeps {
   scene: THREE.Scene;
   renderer: THREE.WebGLRenderer;
+  camera: THREE.PerspectiveCamera;
   pipeline: HD2DPipeline;
 }
 
@@ -100,6 +101,17 @@ export class RoomManager {
       updatePipelineSettings(this.deps.pipeline, data.postProcessOverrides);
     }
 
+    // Set up god rays if room has them and a directional light
+    if (data.godRays && built.directionalLight) {
+      setGodraysLight(this.deps.pipeline, built.directionalLight, this.deps.camera, {
+        color: new THREE.Color(data.godRays.color ?? 0xffffff),
+        density: data.godRays.density ?? 1 / 128,
+        maxDensity: data.godRays.maxDensity ?? 0.5,
+      });
+    } else {
+      removeGodrays(this.deps.pipeline);
+    }
+
     // Queue flicker lights for ECS entity creation (consumed by RoomTransitionSystem)
     this.pendingFlickerLights = built.flickerLights;
 
@@ -156,6 +168,17 @@ export class RoomManager {
       // Apply per-room post-processing
       if (data.postProcessOverrides) {
         updatePipelineSettings(this.deps.pipeline, data.postProcessOverrides);
+      }
+
+      // Set up god rays if room has them and a directional light
+      if (data.godRays && built.directionalLight) {
+        setGodraysLight(this.deps.pipeline, built.directionalLight, this.deps.camera, {
+          color: new THREE.Color(data.godRays.color ?? 0xffffff),
+          density: data.godRays.density ?? 1 / 128,
+          maxDensity: data.godRays.maxDensity ?? 0.5,
+        });
+      } else {
+        removeGodrays(this.deps.pipeline);
       }
 
       // Queue flicker lights for ECS entity creation

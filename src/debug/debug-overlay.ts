@@ -54,6 +54,8 @@ export function createDebugOverlay(pipeline: HD2DPipeline): DebugOverlay {
     tiltShift: true,
     vignette: true,
     toneMapping: true,
+    ssao: true,
+    godrays: true,
   };
 
   function updatePanel(): void {
@@ -68,6 +70,8 @@ export function createDebugOverlay(pipeline: HD2DPipeline): DebugOverlay {
       `F2: TiltShift  ${effects.tiltShift ? 'ON' : 'OFF'}`,
       `F3: Vignette   ${effects.vignette ? 'ON' : 'OFF'}`,
       `F4: ToneMap    ${effects.toneMapping ? 'ON' : 'OFF'}`,
+      `F5: SSAO       ${effects.ssao ? 'ON' : 'OFF'}`,
+      `F6: GodRays    ${effects.godrays ? 'ON' : 'OFF'}`,
       '',
       '1-9,0: Teleport to room',
     ];
@@ -116,6 +120,20 @@ export function createDebugOverlay(pipeline: HD2DPipeline): DebugOverlay {
         e.preventDefault();
         effects.toneMapping = !effects.toneMapping;
         pipeline.toneMappingEffect.blendMode.opacity.value = effects.toneMapping ? 1 : 0;
+        updatePanel();
+        break;
+      case 'F5':
+        e.preventDefault();
+        effects.ssao = !effects.ssao;
+        pipeline.n8aoPass.enabled = effects.ssao;
+        updatePanel();
+        break;
+      case 'F6':
+        e.preventDefault();
+        effects.godrays = !effects.godrays;
+        if (pipeline.godraysPass) {
+          pipeline.godraysPass.enabled = effects.godrays;
+        }
         updatePanel();
         break;
       default: {

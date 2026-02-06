@@ -69,6 +69,7 @@ const queensBallroom: RoomData = {
     bloom: { intensity: 0.8, luminanceThreshold: 0.78 },
     tiltShift: { focusArea: 0.40, feather: 0.30 },
     vignette: { darkness: 0.40 },
+    colorGrading: { hue: 0, saturation: 0.1, brightness: 0, contrast: 0.1 },
   },
 };
 

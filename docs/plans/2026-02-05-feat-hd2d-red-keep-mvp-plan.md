@@ -948,21 +948,21 @@ All rooms well under the 100 draw call budget. InstancedMesh for repeated column
 
 **Deferred effects (add if performance budget allows):**
 
-- [ ] Add N8AO (SSAO):
+- [x] Add N8AO (SSAO):
   - Replace `RenderPass` with `N8AOPostPass` (it renders the scene AND computes SSAO in one pass)
   - Start with: `aoRadius: 5, intensity: 2, distanceFalloff: 1`
   - Profile before/after — expect ~2-3ms cost. Keep only if still hitting 60fps.
-- [ ] Implement dynamic quality scaling (if frame budget exceeded):
+- [x] Implement dynamic quality scaling (if frame budget exceeded):
   - Step 1: Disable god rays (saves ~2-4ms)
   - Step 2: Set N8AO `halfRes: true` or lower quality mode (saves ~1-2ms)
   - Step 3: Disable tilt-shift (saves ~1-1.5ms)
   - Monitor rolling-average frame time; progressively downgrade when > 14ms
-- [ ] Add god rays to windowed rooms (Throne Room, Hand's Solar, Grand Gallery, Battlements):
+- [x] Add god rays to windowed rooms (Throne Room, Hand's Solar, Grand Gallery, Battlements):
   - Use `three-good-godrays` — requires `castShadow: true` on occluding meshes
   - Create bright emissive planes behind windows as light sources
   - Per-room enable/disable flag in `RoomData.postProcessOverrides`
   - Profile: expect ~1-2ms per room. Disable in rooms where it drops below 50fps.
-- [ ] Add per-room color grading via `HueSaturationEffect` + `BrightnessContrastEffect`:
+- [x] Add per-room color grading via `HueSaturationEffect` + `BrightnessContrastEffect`:
   - Use the per-room palette values from the Visual Art Direction section
   - Swap parameters during room fade transitions (animate during FADING_IN)
 

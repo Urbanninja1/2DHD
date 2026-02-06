@@ -13,7 +13,8 @@ export class GameLoop {
 
   /** Optional hooks for stats-gl profiling */
   onBeforeExecute: (() => void) | null = null;
-  onAfterExecute: (() => void) | null = null;
+  /** Called after world.execute(). Receives the frame delta in ms. */
+  onAfterExecute: ((deltaMs: number) => void) | null = null;
   /** Per-frame callback for non-ECS updates (e.g. particles). Receives delta in seconds. */
   onFrameTick: ((dt: number) => void) | null = null;
 
@@ -58,13 +59,13 @@ export class GameLoop {
     this.world
       .execute(timestamp, delta)
       .then(() => {
-        this.onAfterExecute?.();
+        this.onAfterExecute?.(delta);
         this.executing = false;
         if (this.running) requestAnimationFrame(this.tick);
       })
       .catch((err: unknown) => {
         console.error('World execution failed:', err);
-        this.onAfterExecute?.();
+        this.onAfterExecute?.(delta);
         this.executing = false;
         if (this.running) requestAnimationFrame(this.tick);
       });

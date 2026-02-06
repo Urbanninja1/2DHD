@@ -89,7 +89,10 @@ const grandGallery: RoomData = {
     bloom: { intensity: 0.6, luminanceThreshold: 0.82 },
     tiltShift: { focusArea: 0.45, feather: 0.35 },
     vignette: { darkness: 0.35 },
+    colorGrading: { hue: 0, saturation: 0.1, brightness: 0, contrast: 0.1 },
   },
+
+  godRays: { color: 0xFFF5E0, density: 1 / 128, maxDensity: 0.5 },
 };
 
 export default grandGallery;

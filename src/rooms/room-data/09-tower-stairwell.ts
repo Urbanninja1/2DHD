@@ -56,6 +56,7 @@ const towerStairwell: RoomData = {
     bloom: { intensity: 0.4, luminanceThreshold: 0.88 },
     tiltShift: { focusArea: 0.20, feather: 0.20 },
     vignette: { darkness: 0.70 },
+    colorGrading: { hue: -0.087, saturation: -0.1, brightness: -0.1, contrast: 0.15 },
   },
 };
 

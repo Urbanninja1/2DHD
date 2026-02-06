@@ -54,7 +54,10 @@ const battlements: RoomData = {
     bloom: { intensity: 0.5, luminanceThreshold: 0.85 },
     tiltShift: { focusArea: 0.50, feather: 0.40 },
     vignette: { darkness: 0.25 },
+    colorGrading: { hue: -0.175, saturation: 0, brightness: 0.05, contrast: 0.2 },
   },
+
+  godRays: { color: 0xFFF5E0, density: 1 / 80, maxDensity: 0.7 },
 };
 
 export default battlements;

@@ -16,6 +16,8 @@ export interface BuiltRoom {
   group: THREE.Group;
   /** Point lights that should become FlickerLight ECS entities */
   flickerLights: THREE.PointLight[];
+  /** First shadow-casting directional light — used for god rays */
+  directionalLight: THREE.DirectionalLight | null;
   /** Door trigger AABBs for collision detection */
   doorTriggers: DoorTrigger[];
   /** Room AABB bounds for player collision */
@@ -106,6 +108,7 @@ export function buildRoom(data: RoomData): BuiltRoom {
   group.add(ambient);
 
   const flickerLights: THREE.PointLight[] = [];
+  let directionalLight: THREE.DirectionalLight | null = null;
 
   for (const lightDef of data.lights) {
     if (lightDef.type === 'directional') {
@@ -121,6 +124,7 @@ export function buildRoom(data: RoomData): BuiltRoom {
         dirLight.shadow.camera.top = halfD;
         dirLight.shadow.camera.bottom = -halfD;
       }
+      if (!directionalLight) directionalLight = dirLight;
       group.add(dirLight);
     } else if (lightDef.type === 'point') {
       const pointLight = new THREE.PointLight(
@@ -212,7 +216,7 @@ export function buildRoom(data: RoomData): BuiltRoom {
     maxZ: halfD - margin,
   };
 
-  return { group, flickerLights, doorTriggers, bounds, particleSystems };
+  return { group, flickerLights, directionalLight, doorTriggers, bounds, particleSystems };
 }
 
 function buildWall(

@@ -101,7 +101,10 @@ const throneRoom: RoomData = {
     bloom: { intensity: 0.7, luminanceThreshold: 0.80 },
     tiltShift: { focusArea: 0.40, feather: 0.30 },
     vignette: { darkness: 0.40 },
+    colorGrading: { hue: 0, saturation: 0.1, brightness: 0, contrast: 0.1 },
   },
+
+  godRays: { color: 0xFFE8C0, density: 1 / 100, maxDensity: 0.6 },
 };
 
 export default throneRoom;
