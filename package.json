@@ -1,0 +1,25 @@
+{
+  "name": "2dhd-red-keep",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@lastolivegames/becsy": "^0.16.0",
+    "n8ao": "^1.10.1",
+    "postprocessing": "^6.38.2",
+    "stats-gl": "^4.0.2",
+    "three": "^0.182.0",
+    "three-good-godrays": "^0.9.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.182.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-glsl": "^1.5.5"
+  }
+}
