@@ -69,7 +69,7 @@ export function createDebugOverlay(pipeline: HD2DPipeline): DebugOverlay {
       `F3: Vignette   ${effects.vignette ? 'ON' : 'OFF'}`,
       `F4: ToneMap    ${effects.toneMapping ? 'ON' : 'OFF'}`,
       '',
-      '1-2: Teleport to room',
+      '1-9,0: Teleport to room',
     ];
     panel.textContent = lines.join('\n');
   }
@@ -78,10 +78,18 @@ export function createDebugOverlay(pipeline: HD2DPipeline): DebugOverlay {
   // Update panel periodically to show current room
   const panelInterval = setInterval(updatePanel, 500);
 
-  // Number key → room ID mapping
+  // Number key → room ID mapping (1-9 for rooms 1-9, 0 for room 10)
   const keyToRoom: Record<string, RoomIdValue> = {
     'Digit1': RoomId.ThroneRoom,
     'Digit2': RoomId.Antechamber,
+    'Digit3': RoomId.SmallCouncil,
+    'Digit4': RoomId.HandsSolar,
+    'Digit5': RoomId.GrandGallery,
+    'Digit6': RoomId.GuardPost,
+    'Digit7': RoomId.MaegorsEntry,
+    'Digit8': RoomId.QueensBallroom,
+    'Digit9': RoomId.TowerStairwell,
+    'Digit0': RoomId.Battlements,
   };
 
   window.addEventListener('keydown', (e: KeyboardEvent) => {

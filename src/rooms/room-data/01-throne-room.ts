@@ -43,6 +43,30 @@ const throneRoom: RoomData = {
       spawnPoint: { x: 0, y: 0, z: -5 },
       wall: 'south',
     },
+    // North door → Grand Gallery
+    {
+      position: { x: 0, y: 0, z: -9 },
+      halfExtents: { x: 1.5, z: 0.8 },
+      targetRoomId: RoomId.GrandGallery,
+      spawnPoint: { x: 0, y: 0, z: 2.5 },
+      wall: 'north',
+    },
+    // West door → Small Council Chamber
+    {
+      position: { x: -15, y: 0, z: 0 },
+      halfExtents: { x: 0.8, z: 1.5 },
+      targetRoomId: RoomId.SmallCouncil,
+      spawnPoint: { x: 4, y: 0, z: 0 },
+      wall: 'west',
+    },
+    // East door → Maegor's Holdfast Entry
+    {
+      position: { x: 15, y: 0, z: 0 },
+      halfExtents: { x: 0.8, z: 1.5 },
+      targetRoomId: RoomId.MaegorsEntry,
+      spawnPoint: { x: -9, y: 0, z: 0 },
+      wall: 'east',
+    },
   ],
 
   npcs: [
