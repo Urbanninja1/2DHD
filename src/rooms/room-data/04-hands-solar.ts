@@ -11,6 +11,10 @@ const handsSolar: RoomData = {
   wallColor: 0x5C3317,
   ceilingColor: 0x2A1A0E,
 
+  floorTexture: { basePath: 'assets/textures/wood/wood-planks' },
+  wallTexture: { basePath: 'assets/textures/stone/stone-wall' },
+  ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
+
   ambientLight: { color: 0x443322, intensity: 0.2 },
 
   lights: [
@@ -34,7 +38,7 @@ const handsSolar: RoomData = {
 
   npcs: [
     // The Hand of the King seated at his desk
-    { spriteColor: '#E8C87A', position: { x: 1.5, y: 0, z: 0 }, label: 'Hand of the King' },
+    { spriteColor: '#E8C87A', position: { x: 1.5, y: 0, z: 0 }, label: 'Hand of the King', spritePath: 'assets/sprites/npcs/noble-male.png' },
   ],
 
   particles: [
@@ -46,6 +50,34 @@ const handsSolar: RoomData = {
     },
     // Hearth embers
     { type: 'embers', position: { x: -3.5, y: 1.5, z: 0 }, count: 15 },
+  ],
+
+  props: [
+    // Desk
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/desk.glb',
+      positions: [{ x: 1.5, y: 0, z: 0 }],
+      scale: 0.7,
+    },
+    // Chair at desk
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/chair-high.glb',
+      positions: [{ x: 2.5, y: 0, z: 0 }],
+      scale: 0.6,
+      rotationY: Math.PI / 2,
+    },
+    // Bookshelf against north wall
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/bookshelf.glb',
+      positions: [
+        { x: -2, y: 0, z: -3.5 },
+        { x: 0, y: 0, z: -3.5 },
+      ],
+      scale: 0.8,
+    },
   ],
 
   postProcessOverrides: {

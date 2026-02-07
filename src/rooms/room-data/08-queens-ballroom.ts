@@ -11,6 +11,10 @@ const queensBallroom: RoomData = {
   wallColor: 0x504040,
   ceilingColor: 0x2A2028,
 
+  floorTexture: { basePath: 'assets/textures/stone/castle-wall-slates', tint: 0x1A1018 },
+  wallTexture: { basePath: 'assets/textures/stone/stone-wall' },
+  ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
+
   ambientLight: { color: 0x443344, intensity: 0.25 },
 
   lights: [
@@ -39,13 +43,13 @@ const queensBallroom: RoomData = {
 
   npcs: [
     // 4 nobles scattered
-    { spriteColor: '#800020', position: { x: -5, y: 0, z: -3 }, label: 'Noble Lady 1' },
-    { spriteColor: '#FFD700', position: { x: 3, y: 0, z: -4 }, label: 'Noble Lord 1' },
-    { spriteColor: '#800020', position: { x: -3, y: 0, z: 3 }, label: 'Noble Lady 2' },
-    { spriteColor: '#FFD700', position: { x: 6, y: 0, z: 2 }, label: 'Noble Lord 2' },
+    { spriteColor: '#800020', position: { x: -5, y: 0, z: -3 }, label: 'Noble Lady 1', spritePath: 'assets/sprites/npcs/noble-female.png' },
+    { spriteColor: '#FFD700', position: { x: 3, y: 0, z: -4 }, label: 'Noble Lord 1', spritePath: 'assets/sprites/npcs/noble-male.png' },
+    { spriteColor: '#800020', position: { x: -3, y: 0, z: 3 }, label: 'Noble Lady 2', spritePath: 'assets/sprites/npcs/noble-female.png' },
+    { spriteColor: '#FFD700', position: { x: 6, y: 0, z: 2 }, label: 'Noble Lord 2', spritePath: 'assets/sprites/npcs/noble-male.png' },
     // 2 musicians on south gallery
-    { spriteColor: '#4A3520', position: { x: -3, y: 0, z: 7 }, label: 'Musician 1' },
-    { spriteColor: '#4A3520', position: { x: 3, y: 0, z: 7 }, label: 'Musician 2' },
+    { spriteColor: '#4A3520', position: { x: -3, y: 0, z: 7 }, label: 'Musician 1', spritePath: 'assets/sprites/npcs/musician.png' },
+    { spriteColor: '#4A3520', position: { x: 3, y: 0, z: 7 }, label: 'Musician 2', spritePath: 'assets/sprites/npcs/musician.png' },
   ],
 
   particles: [
@@ -68,22 +72,48 @@ const queensBallroom: RoomData = {
   props: [
     // 8 columns around the perimeter defining the dance floor
     {
-      type: 'column',
+      type: 'model',
+      modelPath: 'assets/models/props/column-stone.glb',
       positions: [
         { x: -6, y: 0, z: -6 }, { x: 6, y: 0, z: -6 },
         { x: -6, y: 0, z: 6 }, { x: 6, y: 0, z: 6 },
         { x: -6, y: 0, z: 0 }, { x: 6, y: 0, z: 0 },
         { x: 0, y: 0, z: -6 }, { x: 0, y: 0, z: 6 },
       ],
+      scale: 1.0,
     },
     // Sconces at wall sconce positions
     {
-      type: 'sconce',
+      type: 'model',
+      modelPath: 'assets/models/props/sconce-iron.glb',
       positions: [
         { x: -8.5, y: 3.3, z: -6 }, { x: -8.5, y: 3.3, z: 6 },
         { x: 8.5, y: 3.3, z: -6 }, { x: 8.5, y: 3.3, z: 6 },
         { x: 0, y: 3.3, z: -8.5 }, { x: 0, y: 3.3, z: 8.5 },
       ],
+      scale: 0.5,
+    },
+    // Chandeliers
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/chandelier.glb',
+      positions: [
+        { x: -4, y: 6, z: 0 },
+        { x: 4, y: 6, z: 0 },
+      ],
+      scale: 0.8,
+    },
+    // Benches along the walls
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/bench.glb',
+      positions: [
+        { x: -7.5, y: 0, z: -3 },
+        { x: -7.5, y: 0, z: 3 },
+        { x: 7.5, y: 0, z: -3 },
+        { x: 7.5, y: 0, z: 3 },
+      ],
+      scale: 0.6,
     },
   ],
 

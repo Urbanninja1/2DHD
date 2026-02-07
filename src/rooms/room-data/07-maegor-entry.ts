@@ -11,6 +11,10 @@ const maegorsEntry: RoomData = {
   wallColor: 0x3D3D5C,
   ceilingColor: 0x1A1A28,
 
+  floorTexture: { basePath: 'assets/textures/stone/rough-stone' },
+  wallTexture: { basePath: 'assets/textures/stone/rough-stone' },
+  ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
+
   ambientLight: { color: 0x1A1A2E, intensity: 0.08 },
 
   lights: [
@@ -33,8 +37,8 @@ const maegorsEntry: RoomData = {
 
   npcs: [
     // Guards at passage ends
-    { spriteColor: '#555555', position: { x: -8, y: 0, z: 1 }, label: 'Guard West' },
-    { spriteColor: '#555555', position: { x: 8, y: 0, z: 1 }, label: 'Guard East' },
+    { spriteColor: '#555555', position: { x: -8, y: 0, z: 1 }, label: 'Guard West', spritePath: 'assets/sprites/npcs/guard.png' },
+    { spriteColor: '#555555', position: { x: 8, y: 0, z: 1 }, label: 'Guard East', spritePath: 'assets/sprites/npcs/guard.png' },
   ],
 
   particles: [
@@ -42,6 +46,20 @@ const maegorsEntry: RoomData = {
     { type: 'embers', position: { x: -7, y: 3.5, z: -2 }, count: 10 },
     { type: 'embers', position: { x: 0, y: 3.5, z: -2 }, count: 10 },
     { type: 'embers', position: { x: 7, y: 3.5, z: -2 }, count: 10 },
+  ],
+
+  props: [
+    // Sconces at torch positions
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/sconce-iron.glb',
+      positions: [
+        { x: -7, y: 3.3, z: -2 },
+        { x: 0, y: 3.3, z: -2 },
+        { x: 7, y: 3.3, z: -2 },
+      ],
+      scale: 0.5,
+    },
   ],
 
   postProcessOverrides: {

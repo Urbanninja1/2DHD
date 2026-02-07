@@ -11,6 +11,9 @@ const battlements: RoomData = {
   wallColor: 0x8B7B6A,
   ceilingColor: 0x87CEEB,
 
+  floorTexture: { basePath: 'assets/textures/stone/worn-stone' },
+  wallTexture: { basePath: 'assets/textures/stone/rough-stone' },
+
   ambientLight: { color: 0x6688BB, intensity: 0.5 },
 
   lights: [
@@ -37,8 +40,8 @@ const battlements: RoomData = {
 
   npcs: [
     // 2 guards at posts
-    { spriteColor: '#667788', position: { x: -8, y: 0, z: 0 }, label: 'Battlement Guard West' },
-    { spriteColor: '#667788', position: { x: 8, y: 0, z: 0 }, label: 'Battlement Guard East' },
+    { spriteColor: '#667788', position: { x: -8, y: 0, z: 0 }, label: 'Battlement Guard West', spritePath: 'assets/sprites/npcs/guard.png' },
+    { spriteColor: '#667788', position: { x: 8, y: 0, z: 0 }, label: 'Battlement Guard East', spritePath: 'assets/sprites/npcs/guard.png' },
   ],
 
   particles: [
@@ -50,6 +53,30 @@ const battlements: RoomData = {
     },
   ],
 
+  props: [
+    // Crenellations along the north wall (overlooking)
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/crenellation.glb',
+      positions: [
+        { x: -10, y: 0, z: -1.5 }, { x: -7, y: 0, z: -1.5 }, { x: -4, y: 0, z: -1.5 },
+        { x: -1, y: 0, z: -1.5 }, { x: 2, y: 0, z: -1.5 }, { x: 5, y: 0, z: -1.5 },
+        { x: 8, y: 0, z: -1.5 }, { x: 11, y: 0, z: -1.5 },
+      ],
+      scale: 1.0,
+    },
+    // Braziers for warmth
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/brazier.glb',
+      positions: [
+        { x: -5, y: 0, z: 0.5 },
+        { x: 5, y: 0, z: 0.5 },
+      ],
+      scale: 0.6,
+    },
+  ],
+
   postProcessOverrides: {
     bloom: { intensity: 0.5, luminanceThreshold: 0.85 },
     tiltShift: { focusArea: 0.50, feather: 0.40 },
@@ -58,6 +85,41 @@ const battlements: RoomData = {
   },
 
   godRays: { color: 0xFFF5E0, density: 1 / 80, maxDensity: 0.7 },
+
+  parallaxBackground: [
+    // Sky gradient — static background
+    {
+      texturePath: 'assets/backgrounds/battlements/layer-sky.png',
+      depth: 20,
+      scrollFactor: 0,
+      height: 16,
+      yOffset: 6,
+    },
+    // Distant hills/bay — very slow parallax
+    {
+      texturePath: 'assets/backgrounds/battlements/layer-far.png',
+      depth: 15,
+      scrollFactor: 0.1,
+      height: 10,
+      yOffset: 3,
+    },
+    // City rooftops — medium parallax
+    {
+      texturePath: 'assets/backgrounds/battlements/layer-mid.png',
+      depth: 10,
+      scrollFactor: 0.3,
+      height: 8,
+      yOffset: 2,
+    },
+    // Nearby towers — faster parallax
+    {
+      texturePath: 'assets/backgrounds/battlements/layer-near.png',
+      depth: 5,
+      scrollFactor: 0.6,
+      height: 8,
+      yOffset: 1,
+    },
+  ],
 };
 
 export default battlements;

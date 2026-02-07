@@ -24,15 +24,18 @@ export interface LoaderSet {
 /** Max texture resolution — textures above this are warned about in DEV */
 export const MAX_TEXTURE_SIZE = 2048;
 
+/** Module-level TextureLoader instance — reused across all PBR loads */
+export const textureLoader = new THREE.TextureLoader();
+
 export function createLoaders(renderer: THREE.WebGLRenderer): LoaderSet {
-  // DRACO decoder — uses WASM from CDN (Vite can self-host these later)
+  // DRACO decoder — self-hosted WASM (copied from node_modules/three)
   const dracoLoader = new DRACOLoader();
-  dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+  dracoLoader.setDecoderPath('/lib/draco/gltf/');
   dracoLoader.preload();
 
-  // KTX2 transcoder — Basis Universal texture decompression
+  // KTX2 transcoder — self-hosted Basis Universal WASM (copied from node_modules/three)
   const ktx2Loader = new KTX2Loader();
-  ktx2Loader.setTranscoderPath('https://cdn.jsdelivr.net/npm/three@0.182.0/examples/jsm/libs/basis/');
+  ktx2Loader.setTranscoderPath('/lib/basis/');
   ktx2Loader.detectSupport(renderer);
 
   // GLTF loader with DRACO + KTX2 support
@@ -65,4 +68,64 @@ export function validateTexture(texture: THREE.Texture, name: string): void {
       );
     }
   }
+}
+
+export interface PBRTextureSet {
+  diffuse: THREE.Texture;
+  normal: THREE.Texture | null;
+  roughness: THREE.Texture | null;
+  ao: THREE.Texture | null;
+}
+
+/**
+ * Load a PBR texture set (diffuse + normal + roughness) in parallel.
+ * Applies correct colorSpace per map type. Validates sizes in DEV.
+ *
+ * @param basePath - Directory containing diffuse.jpg, normal.jpg, roughness.jpg
+ * @param key - Cache key prefix for AssetManager
+ */
+export async function loadPBRTexture(basePath: string, key: string): Promise<PBRTextureSet> {
+  const [diffuseOrNull, normal, roughness, ao] = await Promise.all([
+    textureLoader.loadAsync(`${basePath}/diffuse.jpg`).catch(() => null),
+    textureLoader.loadAsync(`${basePath}/normal.jpg`).catch(() => null),
+    textureLoader.loadAsync(`${basePath}/roughness.jpg`).catch(() => null),
+    textureLoader.loadAsync(`${basePath}/ao.jpg`).catch(() => null),
+  ]);
+
+  // Fall back to a 1x1 white texture if diffuse is missing
+  let diffuse: THREE.Texture;
+  if (diffuseOrNull) {
+    diffuse = diffuseOrNull;
+  } else {
+    if (import.meta.env.DEV) {
+      console.warn(`[texture] "${key}" diffuse not found at "${basePath}/diffuse.jpg" — using white fallback`);
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = 4;
+    canvas.height = 4;
+    const ctx = canvas.getContext('2d')!;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, 4, 4);
+    diffuse = new THREE.CanvasTexture(canvas);
+  }
+
+  // Diffuse uses sRGB
+  diffuse.colorSpace = THREE.SRGBColorSpace;
+  validateTexture(diffuse, `${key}/diffuse`);
+
+  // Normal + roughness are linear data
+  if (normal) {
+    normal.colorSpace = THREE.NoColorSpace;
+    validateTexture(normal, `${key}/normal`);
+  }
+  if (roughness) {
+    roughness.colorSpace = THREE.NoColorSpace;
+    validateTexture(roughness, `${key}/roughness`);
+  }
+  if (ao) {
+    ao.colorSpace = THREE.NoColorSpace;
+    validateTexture(ao, `${key}/ao`);
+  }
+
+  return { diffuse, normal, roughness, ao };
 }

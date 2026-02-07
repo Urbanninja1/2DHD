@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 
+/** Registry of billboard sprite meshes — updated once per frame */
+const billboardSprites = new Set<THREE.Mesh>();
+
 /** Shared geometry cache keyed by "widthxheight" — prevents duplicate VBOs */
 const spriteGeoCache = new Map<string, THREE.PlaneGeometry>();
 
@@ -21,7 +24,7 @@ function getSharedSpriteGeometry(width: number, height: number): THREE.PlaneGeom
  */
 export function createSpriteMesh(
   texture: THREE.Texture,
-  width = 1.5,
+  width = 1.0,
   height = 1.5,
 ): THREE.Mesh {
   // NearestFilter is CRITICAL for pixel art
@@ -43,7 +46,35 @@ export function createSpriteMesh(
   const mesh = new THREE.Mesh(geometry, material);
   mesh.renderOrder = 1; // Render after opaque geometry
 
+  // Auto-register for billboard rotation
+  billboardSprites.add(mesh);
+
   return mesh;
+}
+
+/**
+ * Remove a sprite from the billboard registry (call on dispose).
+ */
+export function unregisterBillboard(mesh: THREE.Mesh): void {
+  billboardSprites.delete(mesh);
+}
+
+/**
+ * Update all registered billboard sprites to face the camera (Y-axis only).
+ * Call once per frame from the game loop.
+ */
+export function updateBillboards(camera: THREE.Camera): void {
+  for (const sprite of billboardSprites) {
+    // Only rotate if the sprite is still in a scene (not disposed)
+    if (!sprite.parent) {
+      billboardSprites.delete(sprite);
+      continue;
+    }
+    sprite.rotation.y = Math.atan2(
+      camera.position.x - sprite.position.x,
+      camera.position.z - sprite.position.z,
+    );
+  }
 }
 
 /**
