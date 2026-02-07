@@ -12,7 +12,7 @@ import { createSpriteMesh, createBlobShadow } from '../rendering/sprite-factory.
 import { createDustMotes, type DustMoteSystem } from '../rendering/particles/dust-motes.js';
 import { createTorchEmbers, type EmberSystem } from '../rendering/particles/torch-embers.js';
 import { assetManager } from '../loaders/asset-manager.js';
-import { loadPBRTexture, textureLoader, type PBRTextureSet } from '../loaders/texture-loaders.js';
+import { loadPBRTexture, textureLoader, type PBRTextureSet, type LoaderSet } from '../loaders/texture-loaders.js';
 
 export type ParticleSystem = DustMoteSystem | EmberSystem;
 
@@ -48,7 +48,7 @@ export interface DoorTrigger {
  * Returns a dedicated THREE.Group per room — all objects are children of this group.
  * Now async to support loading PBR textures, GLTF models, and sprite images.
  */
-export async function buildRoom(data: RoomData): Promise<BuiltRoom> {
+export async function buildRoom(data: RoomData, loaderSet?: LoaderSet): Promise<BuiltRoom> {
   const group = new THREE.Group();
   group.name = `room-${data.id}`;
 
@@ -234,7 +234,7 @@ export async function buildRoom(data: RoomData): Promise<BuiltRoom> {
   if (data.props) {
     for (const propDef of data.props) {
       if (propDef.type === 'model') {
-        const mesh = await buildModelProp(propDef as ModelPropDef);
+        const mesh = await buildModelProp(propDef as ModelPropDef, loaderSet);
         if (mesh) group.add(mesh);
       } else {
         const mesh = buildInstancedProp(propDef as ProceduralPropDef, height);
@@ -270,12 +270,9 @@ export async function buildRoom(data: RoomData): Promise<BuiltRoom> {
 // --- PBR Material Helpers ---
 
 async function loadPBRTextureSet(def: TextureSetDef, cacheKey: string): Promise<PBRTextureSet> {
-  return assetManager.loadTextureAsync(`pbr-${cacheKey}`, () =>
-    loadPBRTexture(def.basePath, cacheKey).then(set => set.diffuse),
-  ).then(async () => {
-    // Load the full set (the diffuse is cached but we need normal+roughness too)
-    return loadPBRTexture(def.basePath, cacheKey);
-  });
+  return assetManager.loadPBRSetAsync(`pbr-${cacheKey}`, () =>
+    loadPBRTexture(def.basePath, cacheKey),
+  );
 }
 
 async function buildPBRMaterial(
@@ -297,11 +294,13 @@ async function buildPBRMaterial(
   configureMap(pbrSet.diffuse, repeatX, repeatY);
   if (pbrSet.normal) configureMap(pbrSet.normal, repeatX, repeatY);
   if (pbrSet.roughness) configureMap(pbrSet.roughness, repeatX, repeatY);
+  if (pbrSet.ao) configureMap(pbrSet.ao, repeatX, repeatY);
 
   return new THREE.MeshStandardMaterial({
     map: pbrSet.diffuse,
     normalMap: pbrSet.normal ?? undefined,
     roughnessMap: pbrSet.roughness ?? undefined,
+    aoMap: pbrSet.ao ?? undefined,
     color: def.tint ?? tintColor ?? 0xffffff,
     roughness: pbrSet.roughness ? 1.0 : 0.8,
     metalness: 0.1,
@@ -324,52 +323,82 @@ function buildProceduralFloorMaterial(data: RoomData, width: number, depth: numb
 
 // --- Model Prop Loading ---
 
-async function buildModelProp(propDef: ModelPropDef): Promise<THREE.InstancedMesh | null> {
+async function buildModelProp(propDef: ModelPropDef, loaderSet?: LoaderSet): Promise<THREE.InstancedMesh | THREE.Group | null> {
   const { modelPath, positions, scale = 1.0, rotationY = 0 } = propDef;
   if (positions.length === 0) return null;
 
   try {
-    // Dynamic import GLTFLoader to load the model
-    const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
-    const loader = new GLTFLoader();
+    // Use the shared GLTF loader (with DRACO/KTX2 support) if available, else create a bare one
+    let gltfLoader: import('three/addons/loaders/GLTFLoader.js').GLTFLoader;
+    if (loaderSet) {
+      gltfLoader = loaderSet.gltfLoader;
+    } else {
+      const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+      gltfLoader = new GLTFLoader();
+    }
 
     const modelGroup = await assetManager.loadModelAsync(modelPath, async () => {
-      const gltf = await loader.loadAsync(modelPath);
+      const gltf = await gltfLoader.loadAsync(modelPath);
       return gltf.scene;
     });
 
-    // Find the first mesh in the model to use for instancing
-    let sourceMesh: THREE.Mesh | null = null;
+    // Collect all meshes from the model
+    const sourceMeshes: THREE.Mesh[] = [];
     modelGroup.traverse((obj) => {
-      if (!sourceMesh && obj instanceof THREE.Mesh) {
-        sourceMesh = obj;
+      if (obj instanceof THREE.Mesh) {
+        sourceMeshes.push(obj);
       }
     });
 
-    if (!sourceMesh) return null;
+    if (sourceMeshes.length === 0) return null;
 
-    const mesh = new THREE.InstancedMesh(
-      (sourceMesh as THREE.Mesh).geometry,
-      (sourceMesh as THREE.Mesh).material,
-      positions.length,
-    );
-    const dummy = new THREE.Object3D();
+    const modelName = modelPath.split('/').pop()?.replace('.glb', '') ?? 'unknown';
 
-    for (let i = 0; i < positions.length; i++) {
-      const p = positions[i]!;
-      dummy.position.set(p.x, p.y, p.z);
-      dummy.rotation.y = rotationY;
-      dummy.scale.setScalar(scale);
-      dummy.updateMatrix();
-      mesh.setMatrixAt(i, dummy.matrix);
+    // Single instance: clone the entire scene group (preserves multi-mesh hierarchy)
+    if (positions.length === 1) {
+      const p = positions[0]!;
+      const clone = modelGroup.clone();
+      clone.position.set(p.x, p.y, p.z);
+      clone.rotation.y = ('rotationY' in p && p.rotationY != null) ? p.rotationY : rotationY;
+      clone.scale.setScalar(scale);
+      clone.traverse((obj) => {
+        if (obj instanceof THREE.Mesh) {
+          obj.castShadow = true;
+          obj.receiveShadow = true;
+        }
+      });
+      clone.name = `model-${modelName}`;
+      return clone;
     }
 
-    mesh.instanceMatrix.needsUpdate = true;
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    mesh.name = `model-${modelPath.split('/').pop()?.replace('.glb', '')}`;
+    // Multiple instances: create InstancedMesh per sub-mesh, grouped together
+    const container = new THREE.Group();
+    container.name = `model-${modelName}`;
+    const dummy = new THREE.Object3D();
 
-    return mesh;
+    for (const src of sourceMeshes) {
+      const instanced = new THREE.InstancedMesh(
+        src.geometry,
+        src.material,
+        positions.length,
+      );
+
+      for (let i = 0; i < positions.length; i++) {
+        const p = positions[i]!;
+        dummy.position.set(p.x, p.y, p.z);
+        dummy.rotation.y = ('rotationY' in p && p.rotationY != null) ? p.rotationY : rotationY;
+        dummy.scale.setScalar(scale);
+        dummy.updateMatrix();
+        instanced.setMatrixAt(i, dummy.matrix);
+      }
+
+      instanced.instanceMatrix.needsUpdate = true;
+      instanced.castShadow = true;
+      instanced.receiveShadow = true;
+      container.add(instanced);
+    }
+
+    return container;
   } catch (e) {
     if (import.meta.env.DEV) {
       console.warn(`[RoomBuilder] Failed to load model "${modelPath}", skipping:`, e);
@@ -550,6 +579,7 @@ function buildWallPBR(
     map: configureMap(pbrSet.diffuse),
     normalMap: pbrSet.normal ? configureMap(pbrSet.normal) : undefined,
     roughnessMap: pbrSet.roughness ? configureMap(pbrSet.roughness) : undefined,
+    aoMap: pbrSet.ao ? configureMap(pbrSet.ao) : undefined,
     color,
     roughness: pbrSet.roughness ? 1.0 : 0.9,
     metalness: 0.05,
@@ -616,6 +646,9 @@ export function disposeRoom(group: THREE.Group, roomData?: RoomData, npcColors?:
         if ('roughnessMap' in mat && (mat as THREE.MeshStandardMaterial).roughnessMap) {
           (mat as THREE.MeshStandardMaterial).roughnessMap!.dispose();
         }
+        if ('aoMap' in mat && (mat as THREE.MeshStandardMaterial).aoMap) {
+          (mat as THREE.MeshStandardMaterial).aoMap!.dispose();
+        }
         mat.dispose();
       }
     }
@@ -626,15 +659,15 @@ export function disposeRoom(group: THREE.Group, roomData?: RoomData, npcColors?:
   });
 
   if (roomData) {
-    // Release PBR texture refs
+    // Release PBR texture set refs (cached as full sets)
     if (roomData.floorTexture) {
-      assetManager.releaseTexture(`pbr-floor-${roomData.id}`);
+      assetManager.releasePBRSet(`pbr-floor-${roomData.id}`);
     } else {
       releaseStoneFloorTexture();
     }
 
     if (roomData.wallTexture) {
-      assetManager.releaseTexture(`pbr-wall-${roomData.id}`);
+      assetManager.releasePBRSet(`pbr-wall-${roomData.id}`);
     } else {
       // Procedural: 4 walls each created a clone via createStoneWallTexture→AssetManager
       releaseStoneWallTexture();
@@ -644,7 +677,7 @@ export function disposeRoom(group: THREE.Group, roomData?: RoomData, npcColors?:
     }
 
     if (roomData.ceilingTexture) {
-      assetManager.releaseTexture(`pbr-ceiling-${roomData.id}`);
+      assetManager.releasePBRSet(`pbr-ceiling-${roomData.id}`);
     }
 
     // Release model refs

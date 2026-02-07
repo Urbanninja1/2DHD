@@ -7,6 +7,7 @@ import { buildRoom, disposeRoom, type BuiltRoom, type DoorTrigger, type Particle
 import { CollisionSystem } from '../ecs/systems/collision.js';
 import { updatePipelineSettings, setGodraysLight, removeGodrays, type HD2DPipeline } from '../rendering/hd2d-pipeline.js';
 import { profileRoom, profileDisposal } from '../debug/room-profiler.js';
+import type { LoaderSet } from '../loaders/texture-loaders.js';
 
 const FADE_OUT_MS = 800;
 const HOLD_BLACK_MS = 200;
@@ -17,6 +18,7 @@ export interface RoomManagerDeps {
   renderer: THREE.WebGLRenderer;
   camera: THREE.PerspectiveCamera;
   pipeline: HD2DPipeline;
+  loaderSet: LoaderSet;
 }
 
 /**
@@ -47,6 +49,9 @@ export class RoomManager {
 
   /** Pending flicker lights — consumed by RoomTransitionSystem to create ECS entities */
   pendingFlickerLights: THREE.PointLight[] = [];
+
+  /** Signal to RoomTransitionSystem to destroy existing FlickerLight entities before creating new ones */
+  pendingFlickerCleanup = false;
 
   /** Active particle systems for the current room — updated each frame */
   private activeParticles: ParticleSystem[] = [];
@@ -94,7 +99,7 @@ export class RoomManager {
     }
 
     const data = getRoomData(roomId)!;
-    const built = await buildRoom(data);
+    const built = await buildRoom(data, this.deps.loaderSet);
 
     // Add room to scene
     this.deps.scene.add(built.group);
@@ -175,7 +180,7 @@ export class RoomManager {
       this.currentRoomId = roomId;
 
       const data = getRoomData(roomId)!;
-      const built = await buildRoom(data);
+      const built = await buildRoom(data, this.deps.loaderSet);
 
       this.deps.scene.add(built.group);
       this.currentRoom = built;
@@ -248,14 +253,16 @@ export class RoomManager {
       ps.update(dt);
     }
 
-    // Scroll parallax layers based on camera X position
-    if (this.parallaxLayers.length > 0) {
+    // Scroll parallax layers based on camera X position normalized to room width.
+    // scrollFactor from ParallaxLayerDef: 0 = static, 1 = moves with camera.
+    if (this.parallaxLayers.length > 0 && this.currentRoomData) {
       const cameraX = this.deps.camera.position.x;
+      const roomWidth = this.currentRoomData.dimensions.width;
       for (const layer of this.parallaxLayers) {
         const scrollFactor = layer.userData.scrollFactor as number;
         const mat = layer.material as THREE.MeshBasicMaterial;
         if (mat.map) {
-          mat.map.offset.x = cameraX * scrollFactor * 0.01;
+          mat.map.offset.x = (cameraX / roomWidth) * scrollFactor;
         }
       }
     }
@@ -274,6 +281,9 @@ export class RoomManager {
     if (!this.currentRoom) return;
 
     const roomId = this.currentRoomId;
+
+    // Signal ECS to destroy FlickerLight entities from this room
+    this.pendingFlickerCleanup = true;
 
     // Dispose particle systems before clearing references
     for (const ps of this.activeParticles) {

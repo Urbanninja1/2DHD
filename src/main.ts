@@ -11,7 +11,8 @@ import { PlayerTag } from './ecs/components/tags.js';
 import { RoomId } from './ecs/components/singletons.js';
 import { RoomTransitionSystem } from './ecs/systems/room-transition.js';
 import { RoomManager } from './rooms/RoomManager.js';
-import { createSpriteMesh, createBlobShadow } from './rendering/sprite-factory.js';
+import { createSpriteMesh, createBlobShadow, updateBillboards } from './rendering/sprite-factory.js';
+import { updateAnimators } from './rendering/sprite-animator.js';
 import { createPlayerSpriteTexture } from './rendering/placeholder-textures.js';
 import { getKeyboard, disposeKeyboard } from './input/keyboard.js';
 import { createQualityScaler } from './rendering/quality-scaler.js';
@@ -42,7 +43,7 @@ async function init(): Promise<void> {
   const world = await createWorld();
 
   // --- Room Manager ---
-  const roomManager = new RoomManager({ scene, renderer, camera, pipeline });
+  const roomManager = new RoomManager({ scene, renderer, camera, pipeline, loaderSet: loaders });
   RoomTransitionSystem.roomManager = roomManager;
 
   // --- Load initial room (before world.build — queues flicker lights) ---
@@ -100,7 +101,11 @@ async function init(): Promise<void> {
 
   // --- Start game loop ---
   const loop = new GameLoop(world);
-  loop.onFrameTick = (dt) => roomManager.updateParticles(dt);
+  loop.onFrameTick = (dt) => {
+    roomManager.updateParticles(dt);
+    updateBillboards(camera);
+    updateAnimators(dt);
+  };
   loop.start();
 
   // --- Hide loading screen ---

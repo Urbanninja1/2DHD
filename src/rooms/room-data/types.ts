@@ -91,16 +91,25 @@ export interface ProceduralPropDef {
   positions: Vec3[];
 }
 
+/** Per-instance position with optional rotation override */
+export interface PropInstance {
+  x: number;
+  y: number;
+  z: number;
+  /** Per-instance Y-axis rotation in radians (overrides definition-level rotationY) */
+  rotationY?: number;
+}
+
 /** Model-based prop — loads a GLTF/GLB file */
 export interface ModelPropDef {
   type: 'model';
   /** Path to the .glb model file (relative to public/) */
   modelPath: string;
-  /** Positions for each instance of this prop */
-  positions: Vec3[];
+  /** Positions for each instance of this prop (Vec3 for backwards compat, or PropInstance for per-instance rotation) */
+  positions: (Vec3 | PropInstance)[];
   /** Uniform scale factor (default 1.0) */
   scale?: number;
-  /** Y-axis rotation in radians (default 0) */
+  /** Y-axis rotation in radians (default 0) — used as fallback when per-instance rotationY is not set */
   rotationY?: number;
 }
 

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import type { PBRTextureSet } from './texture-loaders.js';
 
 interface CacheEntry<T> {
   resource: T | null;
@@ -15,6 +16,7 @@ interface CacheEntry<T> {
 class AssetManager {
   private textures = new Map<string, CacheEntry<THREE.Texture>>();
   private models = new Map<string, CacheEntry<THREE.Group>>();
+  private pbrSets = new Map<string, CacheEntry<PBRTextureSet>>();
 
   /**
    * Load a texture synchronously by key (procedural factory).
@@ -80,6 +82,52 @@ class AssetManager {
   }
 
   /**
+   * Load a full PBR texture set (diffuse + normal + roughness + ao) as a single cached unit.
+   * Prevents double-loading individual textures.
+   */
+  async loadPBRSetAsync(key: string, loader: () => Promise<PBRTextureSet>): Promise<PBRTextureSet> {
+    const existing = this.pbrSets.get(key);
+    if (existing) {
+      existing.refCount++;
+      if (existing.resource) return existing.resource;
+      return existing.loadPromise;
+    }
+
+    const entry: CacheEntry<PBRTextureSet> = {
+      resource: null,
+      loadPromise: null!,
+      refCount: 1,
+    };
+
+    entry.loadPromise = loader().then((set) => {
+      entry.resource = set;
+      return set;
+    });
+
+    this.pbrSets.set(key, entry);
+    return entry.loadPromise;
+  }
+
+  /**
+   * Release a PBR texture set reference. Disposes all textures when refCount reaches 0.
+   */
+  releasePBRSet(key: string): void {
+    const entry = this.pbrSets.get(key);
+    if (!entry) return;
+
+    entry.refCount--;
+    if (entry.refCount <= 0) {
+      if (entry.resource) {
+        entry.resource.diffuse.dispose();
+        entry.resource.normal?.dispose();
+        entry.resource.roughness?.dispose();
+        entry.resource.ao?.dispose();
+      }
+      this.pbrSets.delete(key);
+    }
+  }
+
+  /**
    * Load a GLTF model group asynchronously by key.
    * Cache entry inserted BEFORE load starts to deduplicate concurrent requests.
    */
@@ -140,6 +188,16 @@ class AssetManager {
       entry.resource?.dispose();
     }
     this.textures.clear();
+
+    for (const entry of this.pbrSets.values()) {
+      if (entry.resource) {
+        entry.resource.diffuse.dispose();
+        entry.resource.normal?.dispose();
+        entry.resource.roughness?.dispose();
+        entry.resource.ao?.dispose();
+      }
+    }
+    this.pbrSets.clear();
 
     for (const entry of this.models.values()) {
       if (entry.resource) {
