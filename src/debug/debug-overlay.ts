@@ -1,6 +1,8 @@
+import type * as THREE from 'three';
 import type { HD2DPipeline } from '../rendering/hd2d-pipeline.js';
 import { RoomTransitionSystem } from '../ecs/systems/room-transition.js';
 import { RoomId, type RoomIdValue } from '../ecs/components/singletons.js';
+import { runLeakTest } from './leak-test.js';
 
 /**
  * Dev-mode debug overlay.
@@ -25,7 +27,7 @@ const ROOM_NAMES: Record<number, string> = {
   [RoomId.Battlements]: 'Battlements',
 };
 
-export function createDebugOverlay(pipeline: HD2DPipeline): DebugOverlay {
+export function createDebugOverlay(pipeline: HD2DPipeline, renderer?: THREE.WebGLRenderer): DebugOverlay {
   const controller = new AbortController();
   const opts: AddEventListenerOptions = { signal: controller.signal };
 
@@ -74,6 +76,7 @@ export function createDebugOverlay(pipeline: HD2DPipeline): DebugOverlay {
       `F6: GodRays    ${effects.godrays ? 'ON' : 'OFF'}`,
       '',
       '1-9,0: Teleport to room',
+      'F9:    GPU Leak Test',
     ];
     panel.textContent = lines.join('\n');
   }
@@ -135,6 +138,18 @@ export function createDebugOverlay(pipeline: HD2DPipeline): DebugOverlay {
           pipeline.godraysPass.enabled = effects.godrays;
         }
         updatePanel();
+        break;
+      case 'F9':
+        e.preventDefault();
+        if (renderer) {
+          const rm = RoomTransitionSystem.roomManager;
+          if (rm && !rm.isTransitioning) {
+            console.log('[debug] Starting GPU leak test...');
+            runLeakTest(rm, renderer, 3).then((result) => {
+              console.log('[debug] Leak test complete:', result.passed ? 'PASSED' : 'FAILED');
+            });
+          }
+        }
         break;
       default: {
         // Number key teleport
