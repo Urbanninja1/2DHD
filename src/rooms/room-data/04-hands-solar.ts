@@ -78,6 +78,20 @@ const handsSolar: RoomData = {
       ],
       scale: 0.8,
     },
+    // Lantern on the desk
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/lantern.glb',
+      positions: [{ x: 1.5, y: 1.0, z: -0.5 }],
+      scale: 0.3,
+    },
+    // Small table by the hearth
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/table-small.glb',
+      positions: [{ x: -2.5, y: 0, z: 2 }],
+      scale: 0.4,
+    },
   ],
 
   postProcessOverrides: {

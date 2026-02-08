@@ -147,6 +147,16 @@ const throneRoom: RoomData = {
       ],
       scale: 1.2,
     },
+    // Braziers at base of throne steps
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/brazier.glb',
+      positions: [
+        { x: -4, y: 0, z: -5 },
+        { x: 4, y: 0, z: -5 },
+      ],
+      scale: 0.8,
+    },
   ],
 
   postProcessOverrides: {

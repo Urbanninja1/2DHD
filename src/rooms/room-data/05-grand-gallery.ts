@@ -114,6 +114,29 @@ const grandGallery: RoomData = {
       ],
       scale: 0.5,
     },
+    // Armor stands along the south wall
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/armor-stand.glb',
+      positions: [
+        { x: -10, y: 0, z: 2.2 },
+        { x: -4, y: 0, z: 2.2 },
+        { x: 4, y: 0, z: 2.2 },
+        { x: 10, y: 0, z: 2.2 },
+      ],
+      scale: 0.7,
+    },
+    // Banners between columns on the north wall
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/banner.glb',
+      positions: [
+        { x: -10, y: 0, z: -2.5 },
+        { x: -2, y: 0, z: -2.5 },
+        { x: 6, y: 0, z: -2.5 },
+      ],
+      scale: 1.0,
+    },
   ],
 
   postProcessOverrides: {

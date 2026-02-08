@@ -241,28 +241,69 @@ async function downloadTextures() {
   await checkManualTextures();
 }
 
-// --- Models ---
+// --- Models (Poly Pizza CC0) ---
+// Static download URL: https://static.poly.pizza/{uuid}.glb
+// All models are CC0 1.0 licensed. UUIDs resolved from poly.pizza/m/{slug}.
 
-const EXPECTED_MODELS = [
-  'column-stone', 'sconce-iron', 'throne', 'table-long', 'chair-high',
-  'bookshelf', 'desk', 'weapon-rack', 'armor-stand', 'brazier',
-  'chandelier', 'bench', 'banner', 'crenellation',
+const POLY_PIZZA_MODELS = [
+  // Architecture
+  { uuid: '5239f88f-e30b-452b-a19e-89745d580b1e', dest: 'column-stone',  author: 'Quaternius',   desc: 'Stone column' },
+  { uuid: '105dfd4b-6af3-4732-8c29-a89b15135b07', dest: 'column-round',  author: 'Quaternius',   desc: 'Round column variant' },
+  { uuid: '0dcdbabb-629d-4eee-af16-7c49f6ba6e5e', dest: 'sconce-iron',   author: 'Quaternius',   desc: 'Wall torch/sconce' },
+  { uuid: 'f82fb8a2-974a-43b6-8aa1-4a57da5dd7ca', dest: 'torch-wall',    author: 'CircuitZ',     desc: 'Wall torch variant' },
+  // Furniture
+  { uuid: 'b92206cb-3715-4d6e-9cef-c682b93a2018', dest: 'throne',        author: 'Quaternius',   desc: 'Large ornate chair/throne' },
+  { uuid: '0286d99a-fc62-411f-ac94-fcb006a210d9', dest: 'table-long',    author: 'Quaternius',   desc: 'Large table' },
+  { uuid: '0f319f3b-b0d6-4691-bae5-c6c6e612df99', dest: 'table-small',   author: 'Quaternius',   desc: 'Small table' },
+  { uuid: '84ecc6a3-2751-4f50-912a-b9f4ff033d7a', dest: 'chair-high',    author: 'Quaternius',   desc: 'High-back chair' },
+  { uuid: '91c2bf8d-0876-4801-abd3-8dd5d017ecbd', dest: 'desk',          author: 'Quaternius',   desc: 'Writing desk' },
+  { uuid: '7d59d0aa-6447-4bbb-afc7-0452e9a34353', dest: 'bookshelf',     author: 'Quaternius',   desc: 'Bookcase with books' },
+  { uuid: '1361c268-20f7-4e73-a931-ce434c6b503e', dest: 'bench',         author: 'Quaternius',   desc: 'Wooden bench' },
+  // Weapons & Armor
+  { uuid: '035c4897-22f3-4e9c-b29f-ebafe2b566da', dest: 'weapon-rack',   author: 'Quaternius',   desc: 'Torch stand (weapon rack)' },
+  { uuid: 'cc5afa7b-86ed-44d0-9521-709ade03fda3', dest: 'armor-stand',   author: 'Quaternius',   desc: 'Pedestal (armor stand)' },
+  // Lighting
+  { uuid: '6e5a83ce-6631-4ba3-aff6-990c830a06df', dest: 'chandelier',    author: 'CreativeTrio', desc: 'Hanging chandelier' },
+  { uuid: '95b40dfb-ff6c-446b-a348-725d9b9846f8', dest: 'brazier',       author: 'CircuitZ',     desc: 'Fire pit / brazier' },
+  { uuid: 'ecbc7b04-09ca-4068-bb3c-4e5ce1163c9a', dest: 'lantern',       author: 'Kay Lousberg', desc: 'Hanging lantern' },
+  // Decoration
+  { uuid: '0c1ba162-9d94-4fc7-9a35-23653aacc7ac', dest: 'banner',        author: 'Quaternius',   desc: 'Wall-mounted banner' },
+  { uuid: '02708091-4dee-4da7-b965-dd20a82b5fdb', dest: 'wall-flag',     author: 'Quaternius',   desc: 'Wall flag variant' },
+  // Misc
+  { uuid: 'e96d5573-fa3a-47ad-bae0-0ef9640026fa', dest: 'bonfire',       author: 'Quaternius',   desc: 'Bonfire / large fire' },
+  { uuid: '44d13b75-c154-4f11-8c4e-4e57ac3093f7', dest: 'crenellation',  author: 'Kenney',       desc: 'Bookcase closed wide (merlon)' },
 ];
 
-async function checkModels() {
-  console.log('\n=== GLTF Models (manual download required) ===\n');
-  console.log('  Sources:');
-  console.log('    Quaternius Fantasy Props: https://quaternius.com/packs/fantasyprops.html');
-  console.log('    Kenney Assets:           https://kenney.nl/assets');
-  console.log('    Kay Lousberg:            https://kaylousberg.com/game-assets\n');
+async function downloadModels() {
+  console.log('\n=== 3D Props from Poly Pizza (CC0) ===\n');
 
   const modelsDir = join(PUBLIC_ASSETS, 'models', 'props');
   await ensureDir(modelsDir);
 
-  for (const model of EXPECTED_MODELS) {
-    const destPath = join(modelsDir, `${model}.glb`);
-    const exists = await fileExists(destPath);
-    console.log(`  ${exists ? '[ok]    ' : '[missing]'} models/props/${model}.glb`);
+  for (const model of POLY_PIZZA_MODELS) {
+    const destPath = join(modelsDir, `${model.dest}.glb`);
+
+    if (await fileExists(destPath)) {
+      console.log(`  [skip] ${model.dest}.glb (already exists)`);
+      continue;
+    }
+
+    if (DRY_RUN) {
+      console.log(`  [dry-run] Would download: ${model.dest}.glb (${model.desc} by ${model.author})`);
+      continue;
+    }
+
+    const url = `https://static.poly.pizza/${model.uuid}.glb`;
+    console.log(`  [download] ${model.dest}.glb — ${model.desc} by ${model.author}`);
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`HTTP ${response.status} for ${url}`);
+      const buffer = Buffer.from(await response.arrayBuffer());
+      await writeFile(destPath, buffer);
+      console.log(`  [saved] ${(buffer.length / 1024).toFixed(1)} KB → models/props/${model.dest}.glb`);
+    } catch (err) {
+      console.warn(`  [warn] ${model.dest}.glb: ${err.message}`);
+    }
   }
 }
 
@@ -332,7 +373,7 @@ async function main() {
   await ensureDir(PUBLIC_ASSETS);
 
   if (!ONLY || ONLY === 'textures')    await downloadTextures();
-  if (!ONLY || ONLY === 'models')      await checkModels();
+  if (!ONLY || ONLY === 'models')      await downloadModels();
   if (!ONLY || ONLY === 'sprites')     await checkSprites();
   if (!ONLY || ONLY === 'backgrounds') await checkBackgrounds();
 
