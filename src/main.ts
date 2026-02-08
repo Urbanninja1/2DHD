@@ -200,7 +200,7 @@ async function init(): Promise<void> {
   // --- Dev-mode debug ---
   if (import.meta.env.DEV) {
     const { createDebugOverlay } = await import('./debug/debug-overlay.js');
-    const debugOverlay = createDebugOverlay(pipeline);
+    const debugOverlay = createDebugOverlay(pipeline, renderer);
 
     const logInterval = setInterval(() => {
       const info = renderer.info;
