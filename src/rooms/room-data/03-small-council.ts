@@ -81,6 +81,23 @@ const smallCouncil: RoomData = {
       ],
       scale: 0.6,
     },
+    // Bookshelf against the west wall
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/bookshelf.glb',
+      positions: [{ x: -4.2, y: 0, z: 0 }],
+      scale: 0.7,
+    },
+    // Wall sconces
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/sconce-iron.glb',
+      positions: [
+        { x: -4.5, y: 2.8, z: 0 },
+        { x: 4.5, y: 2.8, z: 0 },
+      ],
+      scale: 0.4,
+    },
   ],
 
   postProcessOverrides: {

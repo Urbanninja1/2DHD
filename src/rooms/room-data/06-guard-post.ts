@@ -79,6 +79,22 @@ const guardPost: RoomData = {
       ],
       scale: 0.7,
     },
+    // Table and bench for guards on break
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/table-small.glb',
+      positions: [{ x: -2, y: 0, z: 2.5 }],
+      scale: 0.5,
+    },
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/bench.glb',
+      positions: [
+        { x: -3.5, y: 0, z: 2.5 },
+        { x: -0.5, y: 0, z: 2.5 },
+      ],
+      scale: 0.5,
+    },
   ],
 
   postProcessOverrides: {

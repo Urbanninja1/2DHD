@@ -75,6 +75,17 @@ const battlements: RoomData = {
       ],
       scale: 0.6,
     },
+    // Banner poles along the battlements
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/banner.glb',
+      positions: [
+        { x: -8, y: 0, z: 0.8 },
+        { x: 0, y: 0, z: 0.8 },
+        { x: 8, y: 0, z: 0.8 },
+      ],
+      scale: 1.0,
+    },
   ],
 
   postProcessOverrides: {

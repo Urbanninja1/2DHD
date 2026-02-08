@@ -58,6 +58,40 @@ const antechamber: RoomData = {
     { type: 'embers', position: { x: 6, y: 3.5, z: 5.5 }, count: 10 },
   ],
 
+  props: [
+    // Wooden benches along walls for waiting petitioners
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/bench.glb',
+      positions: [
+        { x: -6, y: 0, z: -3 },
+        { x: -6, y: 0, z: 3 },
+        { x: 6, y: 0, z: -3 },
+        { x: 6, y: 0, z: 3 },
+      ],
+      scale: 0.6,
+    },
+    // Small table near the center
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/table-small.glb',
+      positions: [{ x: 0, y: 0, z: 0 }],
+      scale: 0.5,
+    },
+    // Wall sconces at each torch position
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/sconce-iron.glb',
+      positions: [
+        { x: -6, y: 3.3, z: -5.5 },
+        { x: 6, y: 3.3, z: -5.5 },
+        { x: -6, y: 3.3, z: 5.5 },
+        { x: 6, y: 3.3, z: 5.5 },
+      ],
+      scale: 0.5,
+    },
+  ],
+
   postProcessOverrides: {
     bloom: { intensity: 0.5, luminanceThreshold: 0.85 },
     tiltShift: { focusArea: 0.35, feather: 0.30 },

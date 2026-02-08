@@ -56,6 +56,26 @@ const towerStairwell: RoomData = {
     { type: 'embers', position: { x: 2, y: 3, z: 2 }, count: 8 },
   ],
 
+  props: [
+    // Wall-mounted torches on the curved walls
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/sconce-iron.glb',
+      positions: [
+        { x: -2, y: 2.8, z: -2 },
+        { x: 2, y: 2.8, z: 2 },
+      ],
+      scale: 0.4,
+    },
+    // Lantern hanging in the stairwell
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/lantern.glb',
+      positions: [{ x: 0, y: 5, z: 0 }],
+      scale: 0.4,
+    },
+  ],
+
   postProcessOverrides: {
     bloom: { intensity: 0.4, luminanceThreshold: 0.88 },
     tiltShift: { focusArea: 0.20, feather: 0.20 },

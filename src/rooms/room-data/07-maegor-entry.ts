@@ -60,6 +60,26 @@ const maegorsEntry: RoomData = {
       ],
       scale: 0.5,
     },
+    // Wall flags along the passage
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/wall-flag.glb',
+      positions: [
+        { x: -4, y: 2.5, z: -2.2 },
+        { x: 4, y: 2.5, z: -2.2 },
+      ],
+      scale: 0.6,
+    },
+    // Standing torch near guard stations
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/torch-wall.glb',
+      positions: [
+        { x: -9, y: 0, z: 1.5 },
+        { x: 9, y: 0, z: 1.5 },
+      ],
+      scale: 0.5,
+    },
   ],
 
   postProcessOverrides: {
