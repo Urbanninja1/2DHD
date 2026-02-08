@@ -9,6 +9,7 @@ import {
   releaseNPCSpriteTexture,
 } from '../rendering/placeholder-textures.js';
 import { createSpriteMesh, createBlobShadow } from '../rendering/sprite-factory.js';
+import { SpriteAnimator, registerAnimator } from '../rendering/sprite-animator.js';
 import { createDustMotes, type DustMoteSystem } from '../rendering/particles/dust-motes.js';
 import { createTorchEmbers, type EmberSystem } from '../rendering/particles/torch-embers.js';
 import { assetManager } from '../loaders/asset-manager.js';
@@ -31,6 +32,8 @@ export interface BuiltRoom {
   particleSystems: ParticleSystem[];
   /** Parallax layer meshes — UVs scrolled based on camera X each frame */
   parallaxLayers: THREE.Mesh[];
+  /** Active sprite animators — unregister on room unload */
+  spriteAnimators: SpriteAnimator[];
 }
 
 export interface DoorTrigger {
@@ -172,8 +175,11 @@ export async function buildRoom(data: RoomData, loaderSet?: LoaderSet): Promise<
   }
 
   // --- NPCs (plain Three.js sprites, not ECS) ---
+  const spriteAnimators: SpriteAnimator[] = [];
+
   for (const npcDef of data.npcs) {
     let tex: THREE.Texture;
+    let hasSpritesheet = false;
     if (npcDef.spritePath) {
       try {
         tex = await textureLoader.loadAsync(npcDef.spritePath);
@@ -181,6 +187,7 @@ export async function buildRoom(data: RoomData, loaderSet?: LoaderSet): Promise<
         tex.magFilter = THREE.NearestFilter;
         tex.generateMipmaps = false;
         tex.colorSpace = THREE.SRGBColorSpace;
+        hasSpritesheet = true;
       } catch {
         // Fall back to procedural if file not found
         tex = createNPCSpriteTexture(npcDef.spriteColor);
@@ -188,6 +195,15 @@ export async function buildRoom(data: RoomData, loaderSet?: LoaderSet): Promise<
     } else {
       tex = createNPCSpriteTexture(npcDef.spriteColor);
     }
+
+    // Wire spritesheet animation (4 cols, 2 rows: idle + walk)
+    if (hasSpritesheet) {
+      const animator = new SpriteAnimator(tex, 4, 2, 4);
+      animator.play(0); // idle row
+      registerAnimator(animator);
+      spriteAnimators.push(animator);
+    }
+
     const sprite = createSpriteMesh(tex);
     sprite.position.set(npcDef.position.x, npcDef.position.y, npcDef.position.z);
     sprite.name = `npc-${npcDef.label}`;
@@ -264,7 +280,7 @@ export async function buildRoom(data: RoomData, loaderSet?: LoaderSet): Promise<
     maxZ: halfD - margin,
   };
 
-  return { group, flickerLights, directionalLight, doorTriggers, bounds, particleSystems, parallaxLayers };
+  return { group, flickerLights, directionalLight, doorTriggers, bounds, particleSystems, parallaxLayers, spriteAnimators };
 }
 
 // --- PBR Material Helpers ---

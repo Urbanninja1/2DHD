@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "download-assets": "node scripts/download-assets.mjs"
+    "download-assets": "node scripts/download-assets.mjs",
+    "generate-sprites": "node scripts/generate-sprites.mjs"
   },
   "dependencies": {
     "@lastolivegames/becsy": "^0.16.0",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@types/three": "^0.182.0",
+    "pngjs": "^7.0.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
     "vite-plugin-glsl": "^1.5.5"
