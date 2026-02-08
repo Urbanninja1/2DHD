@@ -11,6 +11,10 @@ const grandGallery: RoomData = {
   wallColor: 0x504840,
   ceilingColor: 0x2a2a2a,
 
+  floorTexture: { basePath: 'assets/textures/stone/castle-wall-slates' },
+  wallTexture: { basePath: 'assets/textures/stone/stone-wall' },
+  ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
+
   ambientLight: { color: 0x6688BB, intensity: 0.35 },
 
   lights: [
@@ -66,9 +70,9 @@ const grandGallery: RoomData = {
 
   npcs: [
     // Servants and a noble strolling
-    { spriteColor: '#8B7355', position: { x: -7, y: 0, z: 0 }, label: 'Servant 1' },
-    { spriteColor: '#8B7355', position: { x: 5, y: 0, z: -1 }, label: 'Servant 2' },
-    { spriteColor: '#C9A84C', position: { x: -2, y: 0, z: 1 }, label: 'Noble' },
+    { spriteColor: '#8B7355', position: { x: -7, y: 0, z: 0 }, label: 'Servant 1', spritePath: 'assets/sprites/npcs/servant.png' },
+    { spriteColor: '#8B7355', position: { x: 5, y: 0, z: -1 }, label: 'Servant 2', spritePath: 'assets/sprites/npcs/servant.png' },
+    { spriteColor: '#C9A84C', position: { x: -2, y: 0, z: 1 }, label: 'Noble', spritePath: 'assets/sprites/npcs/noble-male.png' },
   ],
 
   particles: [
@@ -88,7 +92,8 @@ const grandGallery: RoomData = {
   props: [
     // 12 columns — 6 per side along the gallery length
     {
-      type: 'column',
+      type: 'model',
+      modelPath: 'assets/models/props/column-stone.glb',
       positions: [
         // North wall colonnade
         { x: -12, y: 0, z: -2 }, { x: -8, y: 0, z: -2 }, { x: -4, y: 0, z: -2 },
@@ -97,14 +102,17 @@ const grandGallery: RoomData = {
         { x: -12, y: 0, z: 2 }, { x: -8, y: 0, z: 2 }, { x: -4, y: 0, z: 2 },
         { x: 0, y: 0, z: 2 }, { x: 4, y: 0, z: 2 }, { x: 8, y: 0, z: 2 },
       ],
+      scale: 1.0,
     },
     // Sconces at torch positions
     {
-      type: 'sconce',
+      type: 'model',
+      modelPath: 'assets/models/props/sconce-iron.glb',
       positions: [
         { x: -10, y: 3.8, z: -2.5 }, { x: -3, y: 3.8, z: -2.5 },
         { x: 3, y: 3.8, z: -2.5 }, { x: 10, y: 3.8, z: -2.5 },
       ],
+      scale: 0.5,
     },
   ],
 

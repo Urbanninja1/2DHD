@@ -11,6 +11,10 @@ const guardPost: RoomData = {
   wallColor: 0x3A3A3A,
   ceilingColor: 0x1A1A1A,
 
+  floorTexture: { basePath: 'assets/textures/stone/rough-stone' },
+  wallTexture: { basePath: 'assets/textures/stone/rough-stone' },
+  ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
+
   ambientLight: { color: 0x1A1A2E, intensity: 0.1 },
 
   lights: [
@@ -34,9 +38,9 @@ const guardPost: RoomData = {
 
   npcs: [
     // Guards — 1 at brazier, 2 at weapon racks
-    { spriteColor: '#4A4A4A', position: { x: -1, y: 0, z: 0.5 }, label: 'Guard at Brazier' },
-    { spriteColor: '#4A4A4A', position: { x: -3.5, y: 0, z: -2.5 }, label: 'Guard at Weapons' },
-    { spriteColor: '#4A4A4A', position: { x: 3.5, y: 0, z: -2.5 }, label: 'Guard at Armor' },
+    { spriteColor: '#4A4A4A', position: { x: -1, y: 0, z: 0.5 }, label: 'Guard at Brazier', spritePath: 'assets/sprites/npcs/guard.png' },
+    { spriteColor: '#4A4A4A', position: { x: -3.5, y: 0, z: -2.5 }, label: 'Guard at Weapons', spritePath: 'assets/sprites/npcs/guard.png' },
+    { spriteColor: '#4A4A4A', position: { x: 3.5, y: 0, z: -2.5 }, label: 'Guard at Armor', spritePath: 'assets/sprites/npcs/guard.png' },
   ],
 
   particles: [
@@ -45,6 +49,36 @@ const guardPost: RoomData = {
     // Wall torch embers
     { type: 'embers', position: { x: -4.5, y: 2.5, z: -3.5 }, count: 8 },
     { type: 'embers', position: { x: 4.5, y: 2.5, z: -3.5 }, count: 8 },
+  ],
+
+  props: [
+    // Central brazier
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/brazier.glb',
+      positions: [{ x: 0, y: 0, z: 0 }],
+      scale: 0.8,
+    },
+    // Weapon racks along north wall
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/weapon-rack.glb',
+      positions: [
+        { x: -3.5, y: 0, z: -3.5 },
+        { x: -1.5, y: 0, z: -3.5 },
+      ],
+      scale: 0.7,
+    },
+    // Armor stands along east wall
+    {
+      type: 'model',
+      modelPath: 'assets/models/props/armor-stand.glb',
+      positions: [
+        { x: 3.5, y: 0, z: -3.5 },
+        { x: 3.5, y: 0, z: -1.5 },
+      ],
+      scale: 0.7,
+    },
   ],
 
   postProcessOverrides: {

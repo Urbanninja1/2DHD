@@ -25,6 +25,11 @@ export class RoomTransitionSystem extends System {
     q => q.current.with(PlayerTag).and.with(Transform).write,
   );
 
+  // Query FlickerLight entities for creation and deletion
+  private flickerLights = this.query(
+    q => q.current.with(FlickerLight).write.and.with(Object3DRef).write,
+  );
+
   // Declare create access — required by Becsy for this.createEntity() with these components
   private _flickerAccess = this.query(
     q => q.using(FlickerLight).create.and.using(Object3DRef).create,
@@ -45,6 +50,14 @@ export class RoomTransitionSystem extends System {
     // Consume teleported flag after syncing (CameraFollowSystem will read it this frame)
     if (rm.teleported) {
       rm.teleported = false;
+    }
+
+    // Destroy existing FlickerLight entities when room is unloaded
+    if (rm.pendingFlickerCleanup) {
+      rm.pendingFlickerCleanup = false;
+      for (const entity of this.flickerLights.current) {
+        entity.delete();
+      }
     }
 
     // Create FlickerLight entities for pending lights from room load
