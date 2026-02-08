@@ -11,9 +11,9 @@ const grandGallery: RoomData = {
   wallColor: 0x504840,
   ceilingColor: 0x2a2a2a,
 
-  floorTexture: { basePath: 'assets/textures/stone/castle-wall-slates' },
-  wallTexture: { basePath: 'assets/textures/stone/stone-wall' },
-  ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
+  floorTexture: { basePath: 'assets/textures/marble/polished-marble', tint: 0xFFF8E7 },
+  wallTexture: { basePath: 'assets/textures/stone/castle-wall-slates' },
+  ceilingTexture: { basePath: 'assets/textures/stone/vaulted-stone' },
 
   ambientLight: { color: 0x6688BB, intensity: 0.35 },
 

@@ -11,8 +11,8 @@ const maegorsEntry: RoomData = {
   wallColor: 0x3D3D5C,
   ceilingColor: 0x1A1A28,
 
-  floorTexture: { basePath: 'assets/textures/stone/rough-stone' },
-  wallTexture: { basePath: 'assets/textures/stone/rough-stone' },
+  floorTexture: { basePath: 'assets/textures/stone/mossy-stone' },
+  wallTexture: { basePath: 'assets/textures/stone/worn-stone' },
   ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
 
   ambientLight: { color: 0x1A1A2E, intensity: 0.08 },

@@ -11,8 +11,8 @@ const throneRoom: RoomData = {
   wallColor: 0x4a4540,
   ceilingColor: 0x2a2a2a,
 
-  floorTexture: { basePath: 'assets/textures/stone/castle-wall-slates' },
-  wallTexture: { basePath: 'assets/textures/stone/stone-wall' },
+  floorTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
+  wallTexture: { basePath: 'assets/textures/stone/castle-wall-slates' },
   ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
 
   ambientLight: { color: 0x4466AA, intensity: 0.2 },

@@ -12,7 +12,7 @@ const guardPost: RoomData = {
   ceilingColor: 0x1A1A1A,
 
   floorTexture: { basePath: 'assets/textures/stone/rough-stone' },
-  wallTexture: { basePath: 'assets/textures/stone/rough-stone' },
+  wallTexture: { basePath: 'assets/textures/stone/worn-stone' },
   ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
 
   ambientLight: { color: 0x1A1A2E, intensity: 0.1 },

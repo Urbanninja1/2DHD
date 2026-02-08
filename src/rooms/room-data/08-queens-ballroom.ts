@@ -11,9 +11,9 @@ const queensBallroom: RoomData = {
   wallColor: 0x504040,
   ceilingColor: 0x2A2028,
 
-  floorTexture: { basePath: 'assets/textures/stone/castle-wall-slates', tint: 0x1A1018 },
-  wallTexture: { basePath: 'assets/textures/stone/stone-wall' },
-  ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
+  floorTexture: { basePath: 'assets/textures/marble/polished-marble', tint: 0xF0F0FF },
+  wallTexture: { basePath: 'assets/textures/plaster/plaster-wall' },
+  ceilingTexture: { basePath: 'assets/textures/ceiling/painted-ceiling' },
 
   ambientLight: { color: 0x443344, intensity: 0.25 },
 
