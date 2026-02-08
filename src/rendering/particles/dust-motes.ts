@@ -23,7 +23,7 @@ const VERT = /* glsl */`
   void main() {
     vAlpha = aAlpha;
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = aSize * (300.0 / -mvPosition.z);
+    gl_PointSize = aSize * (80.0 / -mvPosition.z);
     gl_Position = projectionMatrix * mvPosition;
   }
 `;
@@ -53,8 +53,8 @@ export function createDustMotes(config: DustConfig): DustMoteSystem {
     positions[i3 + 1] = region.minY + Math.random() * (region.maxY - region.minY);
     positions[i3 + 2] = region.minZ + Math.random() * (region.maxZ - region.minZ);
 
-    sizes[i] = 2.0 + Math.random() * 2.0; // 2-4 px
-    alphas[i] = 0.2 + Math.random() * 0.4; // subtle
+    sizes[i] = 0.4 + Math.random() * 0.6; // 0.4-1.0 — tiny specks
+    alphas[i] = 0.08 + Math.random() * 0.15; // very subtle
 
     const i4 = i * 4;
     seeds[i4] = Math.random() * Math.PI * 2;

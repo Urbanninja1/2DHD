@@ -25,7 +25,7 @@ const VERT = /* glsl */`
   void main() {
     vLife = aLife;
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = aSize * (300.0 / -mvPosition.z);
+    gl_PointSize = aSize * (80.0 / -mvPosition.z);
     gl_Position = projectionMatrix * mvPosition;
   }
 `;
@@ -82,7 +82,7 @@ export function createTorchEmbers(config: EmberConfig): EmberSystem {
     velocities[i3 + 1] = 0.5 + Math.random() * 1.0; // upward
     velocities[i3 + 2] = (Math.random() - 0.5) * 0.2;
 
-    sizes[i] = 1.5 + Math.random() * 2.0;
+    sizes[i] = 0.3 + Math.random() * 0.5; // tiny sparks
     maxLifetimes[i] = 1.0 + Math.random() * 2.0; // 1-3 seconds
     ages[i] = 0;
     lifes[i] = 1.0;
