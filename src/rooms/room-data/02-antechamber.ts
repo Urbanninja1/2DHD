@@ -15,7 +15,7 @@ const antechamber: RoomData = {
   wallTexture: { basePath: 'assets/textures/stone/stone-wall' },
   ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
 
-  ambientLight: { color: 0x665544, intensity: 0.5 },
+  ambientLight: { color: 0x665544, intensity: 0.6 },
 
   lights: [
     // 4 wall-mounted torches
@@ -96,7 +96,7 @@ const antechamber: RoomData = {
     bloom: { intensity: 0.5, luminanceThreshold: 0.85 },
     tiltShift: { focusArea: 0.35, feather: 0.30 },
     vignette: { darkness: 0.45 },
-    colorGrading: { hue: 0.175, saturation: 0.15, brightness: -0.05, contrast: 0.05 },
+    colorGrading: { hue: 0.175, saturation: 0.15, brightness: 0, contrast: 0.05 },
   },
 };
 

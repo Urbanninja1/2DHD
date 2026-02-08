@@ -7,7 +7,7 @@ const maegorsEntry: RoomData = {
   dimensions: { width: 20, depth: 5, height: 6 },
   mood: 'dark',
 
-  floorColor: 0x252525,
+  floorColor: 0x353030,
   wallColor: 0x3D3D5C,
   ceilingColor: 0x1A1A28,
 
@@ -15,7 +15,7 @@ const maegorsEntry: RoomData = {
   wallTexture: { basePath: 'assets/textures/stone/worn-stone' },
   ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
 
-  ambientLight: { color: 0x2A2A3E, intensity: 0.3 },
+  ambientLight: { color: 0x2A2A3E, intensity: 0.5 },
 
   lights: [
     // 3 sparse torches — deep shadows between them
@@ -85,8 +85,8 @@ const maegorsEntry: RoomData = {
   postProcessOverrides: {
     bloom: { intensity: 0.3, luminanceThreshold: 0.90 },
     tiltShift: { focusArea: 0.25, feather: 0.20 },
-    vignette: { darkness: 0.65 },
-    colorGrading: { hue: -0.087, saturation: -0.1, brightness: -0.1, contrast: 0.15 },
+    vignette: { darkness: 0.40 },
+    colorGrading: { hue: -0.087, saturation: -0.05, brightness: 0, contrast: 0.1 },
   },
 };
 

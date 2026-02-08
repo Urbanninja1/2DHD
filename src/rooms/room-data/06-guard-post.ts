@@ -7,15 +7,15 @@ const guardPost: RoomData = {
   dimensions: { width: 10, depth: 8, height: 4 },
   mood: 'dark',
 
-  floorColor: 0x2A2A2A,
-  wallColor: 0x3A3A3A,
+  floorColor: 0x3A3530,
+  wallColor: 0x4A4540,
   ceilingColor: 0x1A1A1A,
 
   floorTexture: { basePath: 'assets/textures/stone/rough-stone' },
   wallTexture: { basePath: 'assets/textures/stone/worn-stone' },
   ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
 
-  ambientLight: { color: 0x2A2A3E, intensity: 0.35 },
+  ambientLight: { color: 0x2A2A3E, intensity: 0.55 },
 
   lights: [
     // Central brazier — strong warm glow
@@ -100,8 +100,8 @@ const guardPost: RoomData = {
   postProcessOverrides: {
     bloom: { intensity: 0.4, luminanceThreshold: 0.90 },
     tiltShift: { focusArea: 0.30, feather: 0.25 },
-    vignette: { darkness: 0.60 },
-    colorGrading: { hue: -0.087, saturation: -0.1, brightness: -0.1, contrast: 0.15 },
+    vignette: { darkness: 0.40 },
+    colorGrading: { hue: -0.087, saturation: -0.05, brightness: 0, contrast: 0.1 },
   },
 };
 
