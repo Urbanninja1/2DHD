@@ -11,8 +11,8 @@ const antechamber: RoomData = {
   wallColor: 0x504840,
   ceilingColor: 0x2a2a2a,
 
-  floorTexture: { basePath: 'assets/textures/stone/worn-stone' },
-  wallTexture: { basePath: 'assets/textures/stone/rough-stone' },
+  floorTexture: { basePath: 'assets/textures/stone/rough-stone' },
+  wallTexture: { basePath: 'assets/textures/stone/stone-wall' },
   ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
 
   ambientLight: { color: 0x443322, intensity: 0.2 },

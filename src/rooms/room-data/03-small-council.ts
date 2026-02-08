@@ -11,7 +11,7 @@ const smallCouncil: RoomData = {
   wallColor: 0x3A2A1A,
   ceilingColor: 0x1A1008,
 
-  floorTexture: { basePath: 'assets/textures/wood/dark-wood-floor' },
+  floorTexture: { basePath: 'assets/textures/wood/ornate-wood-panel' },
   wallTexture: { basePath: 'assets/textures/stone/stone-wall' },
   ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
 

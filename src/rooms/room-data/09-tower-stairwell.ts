@@ -11,9 +11,9 @@ const towerStairwell: RoomData = {
   wallColor: 0x3A3530,
   ceilingColor: 0x1A1510,
 
-  floorTexture: { basePath: 'assets/textures/stone/worn-stone' },
-  wallTexture: { basePath: 'assets/textures/stone/rough-stone' },
-  ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
+  floorTexture: { basePath: 'assets/textures/stone/rough-stone' },
+  wallTexture: { basePath: 'assets/textures/stone/worn-stone' },
+  ceilingTexture: { basePath: 'assets/textures/stone/brick-arch' },
 
   ambientLight: { color: 0x1A1A2E, intensity: 0.08 },
 

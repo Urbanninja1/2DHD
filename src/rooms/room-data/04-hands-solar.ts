@@ -12,7 +12,7 @@ const handsSolar: RoomData = {
   ceilingColor: 0x2A1A0E,
 
   floorTexture: { basePath: 'assets/textures/wood/wood-planks' },
-  wallTexture: { basePath: 'assets/textures/stone/stone-wall' },
+  wallTexture: { basePath: 'assets/textures/plaster/plaster-wall' },
   ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
 
   ambientLight: { color: 0x443322, intensity: 0.2 },

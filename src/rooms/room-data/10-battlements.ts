@@ -11,8 +11,8 @@ const battlements: RoomData = {
   wallColor: 0x8B7B6A,
   ceilingColor: 0x87CEEB,
 
-  floorTexture: { basePath: 'assets/textures/stone/worn-stone' },
-  wallTexture: { basePath: 'assets/textures/stone/rough-stone' },
+  floorTexture: { basePath: 'assets/textures/stone/rough-stone' },
+  wallTexture: { basePath: 'assets/textures/stone/castle-wall-slates' },
 
   ambientLight: { color: 0x6688BB, intensity: 0.5 },
 
