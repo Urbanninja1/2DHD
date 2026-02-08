@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "download-assets": "node scripts/download-assets.mjs",
-    "generate-sprites": "node scripts/generate-sprites.mjs"
+    "generate-sprites": "node scripts/generate-sprites.mjs",
+    "generate-parallax": "node scripts/generate-parallax.mjs"
   },
   "dependencies": {
     "@lastolivegames/becsy": "^0.16.0",

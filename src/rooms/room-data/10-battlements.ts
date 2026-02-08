@@ -98,37 +98,45 @@ const battlements: RoomData = {
   godRays: { color: 0xFFF5E0, density: 1 / 80, maxDensity: 0.7 },
 
   parallaxBackground: [
-    // Sky gradient — static background
+    // Layer 0: Gradient sky (dawn/dusk) — static background
     {
       texturePath: 'assets/backgrounds/battlements/layer-sky.png',
-      depth: 20,
+      depth: 25,
       scrollFactor: 0,
       height: 16,
       yOffset: 6,
     },
-    // Distant hills/bay — very slow parallax
+    // Layer 1: Blackwater Bay, distant shore — very slow parallax
     {
       texturePath: 'assets/backgrounds/battlements/layer-far.png',
-      depth: 15,
-      scrollFactor: 0.1,
-      height: 10,
+      depth: 20,
+      scrollFactor: 0.05,
+      height: 12,
       yOffset: 3,
     },
-    // City rooftops — medium parallax
+    // Layer 2: King's Landing far rooftops — slow parallax
+    {
+      texturePath: 'assets/backgrounds/battlements/layer-mid-far.png',
+      depth: 15,
+      scrollFactor: 0.12,
+      height: 10,
+      yOffset: 2,
+    },
+    // Layer 3: Mid-distance buildings, Great Sept — medium parallax
     {
       texturePath: 'assets/backgrounds/battlements/layer-mid.png',
       depth: 10,
-      scrollFactor: 0.3,
-      height: 8,
-      yOffset: 2,
+      scrollFactor: 0.22,
+      height: 10,
+      yOffset: 1.5,
     },
-    // Nearby towers — faster parallax
+    // Layer 4: Near Red Keep walls and towers — faster parallax
     {
       texturePath: 'assets/backgrounds/battlements/layer-near.png',
       depth: 5,
-      scrollFactor: 0.6,
-      height: 8,
-      yOffset: 1,
+      scrollFactor: 0.35,
+      height: 10,
+      yOffset: 0.5,
     },
   ],
 };
