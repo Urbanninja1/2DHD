@@ -4,6 +4,7 @@ import { TransitionState, type TransitionStateValue } from '../ecs/components/si
 import { getRoomData, hasRoomData } from './room-data/registry.js';
 import type { RoomData } from './room-data/types.js';
 import { buildRoom, disposeRoom, type BuiltRoom, type DoorTrigger, type ParticleSystem } from './RoomBuilder.js';
+import { unregisterAnimator } from '../rendering/sprite-animator.js';
 import { CollisionSystem } from '../ecs/systems/collision.js';
 import { updatePipelineSettings, setGodraysLight, removeGodrays, type HD2DPipeline } from '../rendering/hd2d-pipeline.js';
 import { profileRoom, profileDisposal } from '../debug/room-profiler.js';
@@ -284,6 +285,13 @@ export class RoomManager {
 
     // Signal ECS to destroy FlickerLight entities from this room
     this.pendingFlickerCleanup = true;
+
+    // Unregister sprite animators before room disposal
+    if (this.currentRoom.spriteAnimators) {
+      for (const anim of this.currentRoom.spriteAnimators) {
+        unregisterAnimator(anim);
+      }
+    }
 
     // Dispose particle systems before clearing references
     for (const ps of this.activeParticles) {

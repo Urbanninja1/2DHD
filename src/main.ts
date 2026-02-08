@@ -12,7 +12,7 @@ import { RoomId } from './ecs/components/singletons.js';
 import { RoomTransitionSystem } from './ecs/systems/room-transition.js';
 import { RoomManager } from './rooms/RoomManager.js';
 import { createSpriteMesh, createBlobShadow, updateBillboards } from './rendering/sprite-factory.js';
-import { updateAnimators } from './rendering/sprite-animator.js';
+import { SpriteAnimator, registerAnimator, updateAnimators } from './rendering/sprite-animator.js';
 import { createPlayerSpriteTexture } from './rendering/placeholder-textures.js';
 import { getKeyboard, disposeKeyboard } from './input/keyboard.js';
 import { createQualityScaler } from './rendering/quality-scaler.js';
@@ -51,12 +51,17 @@ async function init(): Promise<void> {
 
   // --- Create player entity ---
   let playerTex: THREE.Texture;
+  let playerAnimator: SpriteAnimator | null = null;
   try {
-    playerTex = await textureLoader.loadAsync('assets/sprites/player/knight-idle.png');
+    playerTex = await textureLoader.loadAsync('assets/sprites/player/knight.png');
     playerTex.minFilter = THREE.NearestFilter;
     playerTex.magFilter = THREE.NearestFilter;
     playerTex.generateMipmaps = false;
     playerTex.colorSpace = THREE.SRGBColorSpace;
+    // 4 cols x 2 rows spritesheet (row 0: idle 4fps, row 1: walk 8fps)
+    playerAnimator = new SpriteAnimator(playerTex, 4, 2, 4);
+    playerAnimator.play(0);
+    registerAnimator(playerAnimator);
   } catch {
     // Fall back to procedural if sprite file not found
     playerTex = createPlayerSpriteTexture();
@@ -93,17 +98,31 @@ async function init(): Promise<void> {
     }
   });
 
-  // --- Initialize keyboard ---
-  getKeyboard();
-
   // --- Dynamic quality scaler ---
   const qualityScaler = createQualityScaler(pipeline);
 
   // --- Start game loop ---
+  const keyboard = getKeyboard();
+  let playerWasMoving = false;
+
   const loop = new GameLoop(world);
   loop.onFrameTick = (dt) => {
     roomManager.updateParticles(dt);
     updateBillboards(camera);
+
+    // Switch player animation between idle (row 0) and walk (row 1)
+    if (playerAnimator) {
+      const isMoving = keyboard.up || keyboard.down || keyboard.left || keyboard.right;
+      if (isMoving && !playerWasMoving) {
+        playerAnimator.play(1);    // walk row
+        playerAnimator.setFPS(8);  // walk at 8 FPS
+      } else if (!isMoving && playerWasMoving) {
+        playerAnimator.play(0);    // idle row
+        playerAnimator.setFPS(4);  // idle at 4 FPS
+      }
+      playerWasMoving = isMoving;
+    }
+
     updateAnimators(dt);
   };
   loop.start();
