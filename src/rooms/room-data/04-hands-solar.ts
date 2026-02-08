@@ -15,14 +15,14 @@ const handsSolar: RoomData = {
   wallTexture: { basePath: 'assets/textures/plaster/plaster-wall' },
   ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
 
-  ambientLight: { color: 0x443322, intensity: 0.2 },
+  ambientLight: { color: 0x665544, intensity: 0.5 },
 
   lights: [
     // Hearth — warm glow from west wall
-    { type: 'point', position: { x: -3.5, y: 1.5, z: 0 }, color: 0xFF9944, intensity: 2.5, distance: 10, decay: 1, flicker: true },
+    { type: 'point', position: { x: -3.5, y: 1.5, z: 0 }, color: 0xFF9944, intensity: 4.0, distance: 14, decay: 1, flicker: true },
     // Desk candles
-    { type: 'point', position: { x: 1, y: 2.5, z: -1 }, color: 0xFFCC66, intensity: 1.0, distance: 6, decay: 1.5, flicker: true },
-    { type: 'point', position: { x: 1, y: 2.5, z: 1 }, color: 0xFFCC66, intensity: 1.0, distance: 6, decay: 1.5, flicker: true },
+    { type: 'point', position: { x: 1, y: 2.5, z: -1 }, color: 0xFFCC66, intensity: 2.0, distance: 10, decay: 1.2, flicker: true },
+    { type: 'point', position: { x: 1, y: 2.5, z: 1 }, color: 0xFFCC66, intensity: 2.0, distance: 10, decay: 1.2, flicker: true },
   ],
 
   doors: [

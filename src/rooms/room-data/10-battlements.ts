@@ -14,7 +14,7 @@ const battlements: RoomData = {
   floorTexture: { basePath: 'assets/textures/stone/rough-stone' },
   wallTexture: { basePath: 'assets/textures/stone/castle-wall-slates' },
 
-  ambientLight: { color: 0x6688BB, intensity: 0.5 },
+  ambientLight: { color: 0x7799CC, intensity: 0.7 },
 
   lights: [
     // Strong directional sunlight from the side
@@ -22,7 +22,7 @@ const battlements: RoomData = {
       type: 'directional',
       position: { x: 10, y: 15, z: -5 },
       color: 0xFFF5E0,
-      intensity: 1.8,
+      intensity: 2.5,
       castShadow: true,
     },
   ],

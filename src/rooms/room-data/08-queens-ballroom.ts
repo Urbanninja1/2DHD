@@ -15,19 +15,19 @@ const queensBallroom: RoomData = {
   wallTexture: { basePath: 'assets/textures/plaster/plaster-wall' },
   ceilingTexture: { basePath: 'assets/textures/ceiling/painted-ceiling' },
 
-  ambientLight: { color: 0x443344, intensity: 0.25 },
+  ambientLight: { color: 0x665566, intensity: 0.55 },
 
   lights: [
     // 2 hanging chandeliers — bright, warm, multi-point
-    { type: 'point', position: { x: -4, y: 6, z: 0 }, color: 0xFFD700, intensity: 3.0, distance: 16, decay: 1, flicker: true },
-    { type: 'point', position: { x: 4, y: 6, z: 0 }, color: 0xFFD700, intensity: 3.0, distance: 16, decay: 1, flicker: true },
+    { type: 'point', position: { x: -4, y: 6, z: 0 }, color: 0xFFD700, intensity: 5.0, distance: 22, decay: 1, flicker: true },
+    { type: 'point', position: { x: 4, y: 6, z: 0 }, color: 0xFFD700, intensity: 5.0, distance: 22, decay: 1, flicker: true },
     // 6 ornate wall sconces
-    { type: 'point', position: { x: -8.5, y: 3.5, z: -6 }, color: 0xFFCC66, intensity: 1.2, distance: 10, decay: 1.2, flicker: true },
-    { type: 'point', position: { x: -8.5, y: 3.5, z: 6 }, color: 0xFFCC66, intensity: 1.2, distance: 10, decay: 1.2, flicker: true },
-    { type: 'point', position: { x: 8.5, y: 3.5, z: -6 }, color: 0xFFCC66, intensity: 1.2, distance: 10, decay: 1.2, flicker: true },
-    { type: 'point', position: { x: 8.5, y: 3.5, z: 6 }, color: 0xFFCC66, intensity: 1.2, distance: 10, decay: 1.2, flicker: true },
-    { type: 'point', position: { x: 0, y: 3.5, z: -8.5 }, color: 0xFFCC66, intensity: 1.2, distance: 10, decay: 1.2, flicker: true },
-    { type: 'point', position: { x: 0, y: 3.5, z: 8.5 }, color: 0xFFCC66, intensity: 1.2, distance: 10, decay: 1.2, flicker: true },
+    { type: 'point', position: { x: -8.5, y: 3.5, z: -6 }, color: 0xFFCC66, intensity: 2.5, distance: 15, decay: 1, flicker: true },
+    { type: 'point', position: { x: -8.5, y: 3.5, z: 6 }, color: 0xFFCC66, intensity: 2.5, distance: 15, decay: 1, flicker: true },
+    { type: 'point', position: { x: 8.5, y: 3.5, z: -6 }, color: 0xFFCC66, intensity: 2.5, distance: 15, decay: 1, flicker: true },
+    { type: 'point', position: { x: 8.5, y: 3.5, z: 6 }, color: 0xFFCC66, intensity: 2.5, distance: 15, decay: 1, flicker: true },
+    { type: 'point', position: { x: 0, y: 3.5, z: -8.5 }, color: 0xFFCC66, intensity: 2.5, distance: 15, decay: 1, flicker: true },
+    { type: 'point', position: { x: 0, y: 3.5, z: 8.5 }, color: 0xFFCC66, intensity: 2.5, distance: 15, decay: 1, flicker: true },
   ],
 
   doors: [

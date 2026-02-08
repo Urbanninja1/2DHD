@@ -15,27 +15,27 @@ const throneRoom: RoomData = {
   wallTexture: { basePath: 'assets/textures/stone/castle-wall-slates' },
   ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
 
-  ambientLight: { color: 0x4466AA, intensity: 0.2 },
+  ambientLight: { color: 0x667799, intensity: 0.6 },
 
   lights: [
     // Directional (sun through stained glass windows)
     {
       type: 'directional',
-      position: { x: 8, y: 12, z: -4 },
+      position: { x: 8, y: 14, z: -2 },
       color: 0xFFE8C0,
-      intensity: 1.0,
+      intensity: 1.8,
       castShadow: true,
     },
     // Torches along east wall
-    { type: 'point', position: { x: 14, y: 4, z: -7 }, color: 0xFFCC66, intensity: 2.0, distance: 15, decay: 1, flicker: true },
-    { type: 'point', position: { x: 14, y: 4, z: 0 }, color: 0xFFCC66, intensity: 2.0, distance: 15, decay: 1, flicker: true },
-    { type: 'point', position: { x: 14, y: 4, z: 7 }, color: 0xFFCC66, intensity: 2.0, distance: 15, decay: 1, flicker: true },
+    { type: 'point', position: { x: 14, y: 4, z: -7 }, color: 0xFFCC66, intensity: 3.0, distance: 22, decay: 1, flicker: true },
+    { type: 'point', position: { x: 14, y: 4, z: 0 }, color: 0xFFCC66, intensity: 3.0, distance: 22, decay: 1, flicker: true },
+    { type: 'point', position: { x: 14, y: 4, z: 7 }, color: 0xFFCC66, intensity: 3.0, distance: 22, decay: 1, flicker: true },
     // Torches along west wall
-    { type: 'point', position: { x: -14, y: 4, z: -7 }, color: 0xFFCC66, intensity: 2.0, distance: 15, decay: 1, flicker: true },
-    { type: 'point', position: { x: -14, y: 4, z: 0 }, color: 0xFFCC66, intensity: 2.0, distance: 15, decay: 1, flicker: true },
-    { type: 'point', position: { x: -14, y: 4, z: 7 }, color: 0xFFCC66, intensity: 2.0, distance: 15, decay: 1, flicker: true },
+    { type: 'point', position: { x: -14, y: 4, z: -7 }, color: 0xFFCC66, intensity: 3.0, distance: 22, decay: 1, flicker: true },
+    { type: 'point', position: { x: -14, y: 4, z: 0 }, color: 0xFFCC66, intensity: 3.0, distance: 22, decay: 1, flicker: true },
+    { type: 'point', position: { x: -14, y: 4, z: 7 }, color: 0xFFCC66, intensity: 3.0, distance: 22, decay: 1, flicker: true },
     // Torch behind throne
-    { type: 'point', position: { x: 0, y: 5, z: -8.5 }, color: 0xFFCC66, intensity: 2.5, distance: 18, decay: 1, flicker: true },
+    { type: 'point', position: { x: 0, y: 5, z: -8.5 }, color: 0xFFCC66, intensity: 4.0, distance: 25, decay: 1, flicker: true },
   ],
 
   doors: [

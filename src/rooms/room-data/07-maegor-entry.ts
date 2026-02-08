@@ -15,13 +15,13 @@ const maegorsEntry: RoomData = {
   wallTexture: { basePath: 'assets/textures/stone/worn-stone' },
   ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
 
-  ambientLight: { color: 0x1A1A2E, intensity: 0.08 },
+  ambientLight: { color: 0x2A2A3E, intensity: 0.3 },
 
   lights: [
     // 3 sparse torches — deep shadows between them
-    { type: 'point', position: { x: -7, y: 3.5, z: -2 }, color: 0xFFAA44, intensity: 1.5, distance: 10, decay: 1.2, flicker: true },
-    { type: 'point', position: { x: 0, y: 3.5, z: -2 }, color: 0xFFAA44, intensity: 1.5, distance: 10, decay: 1.2, flicker: true },
-    { type: 'point', position: { x: 7, y: 3.5, z: -2 }, color: 0xFFAA44, intensity: 1.5, distance: 10, decay: 1.2, flicker: true },
+    { type: 'point', position: { x: -7, y: 3.5, z: -2 }, color: 0xFFAA44, intensity: 3.0, distance: 16, decay: 1, flicker: true },
+    { type: 'point', position: { x: 0, y: 3.5, z: -2 }, color: 0xFFAA44, intensity: 3.0, distance: 16, decay: 1, flicker: true },
+    { type: 'point', position: { x: 7, y: 3.5, z: -2 }, color: 0xFFAA44, intensity: 3.0, distance: 16, decay: 1, flicker: true },
   ],
 
   doors: [

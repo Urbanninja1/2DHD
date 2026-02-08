@@ -15,17 +15,17 @@ const smallCouncil: RoomData = {
   wallTexture: { basePath: 'assets/textures/stone/stone-wall' },
   ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
 
-  ambientLight: { color: 0x443322, intensity: 0.15 },
+  ambientLight: { color: 0x554433, intensity: 0.45 },
 
   lights: [
     // 6 candle-style point lights around the council table
-    { type: 'point', position: { x: -1.5, y: 2.5, z: -1 }, color: 0xFFCC66, intensity: 1.2, distance: 8, decay: 1.5, flicker: true },
-    { type: 'point', position: { x: 1.5, y: 2.5, z: -1 }, color: 0xFFCC66, intensity: 1.2, distance: 8, decay: 1.5, flicker: true },
-    { type: 'point', position: { x: -1.5, y: 2.5, z: 1 }, color: 0xFFCC66, intensity: 1.2, distance: 8, decay: 1.5, flicker: true },
-    { type: 'point', position: { x: 1.5, y: 2.5, z: 1 }, color: 0xFFCC66, intensity: 1.2, distance: 8, decay: 1.5, flicker: true },
+    { type: 'point', position: { x: -1.5, y: 2.5, z: -1 }, color: 0xFFCC66, intensity: 2.5, distance: 12, decay: 1.2, flicker: true },
+    { type: 'point', position: { x: 1.5, y: 2.5, z: -1 }, color: 0xFFCC66, intensity: 2.5, distance: 12, decay: 1.2, flicker: true },
+    { type: 'point', position: { x: -1.5, y: 2.5, z: 1 }, color: 0xFFCC66, intensity: 2.5, distance: 12, decay: 1.2, flicker: true },
+    { type: 'point', position: { x: 1.5, y: 2.5, z: 1 }, color: 0xFFCC66, intensity: 2.5, distance: 12, decay: 1.2, flicker: true },
     // Wall sconces
-    { type: 'point', position: { x: -4.5, y: 3, z: 0 }, color: 0xFFBB44, intensity: 0.8, distance: 6, decay: 1.5, flicker: true },
-    { type: 'point', position: { x: 4.5, y: 3, z: 0 }, color: 0xFFBB44, intensity: 0.8, distance: 6, decay: 1.5, flicker: true },
+    { type: 'point', position: { x: -4.5, y: 3, z: 0 }, color: 0xFFBB44, intensity: 1.8, distance: 10, decay: 1.2, flicker: true },
+    { type: 'point', position: { x: 4.5, y: 3, z: 0 }, color: 0xFFBB44, intensity: 1.8, distance: 10, decay: 1.2, flicker: true },
   ],
 
   doors: [

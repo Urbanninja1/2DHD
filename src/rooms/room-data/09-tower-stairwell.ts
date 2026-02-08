@@ -15,12 +15,12 @@ const towerStairwell: RoomData = {
   wallTexture: { basePath: 'assets/textures/stone/worn-stone' },
   ceilingTexture: { basePath: 'assets/textures/stone/brick-arch' },
 
-  ambientLight: { color: 0x1A1A2E, intensity: 0.08 },
+  ambientLight: { color: 0x2A2A3E, intensity: 0.3 },
 
   lights: [
     // 2 torches, 180° apart on curved walls
-    { type: 'point', position: { x: -2, y: 3, z: -2 }, color: 0xFFAA44, intensity: 1.8, distance: 8, decay: 1.2, flicker: true },
-    { type: 'point', position: { x: 2, y: 3, z: 2 }, color: 0xFFAA44, intensity: 1.8, distance: 8, decay: 1.2, flicker: true },
+    { type: 'point', position: { x: -2, y: 3, z: -2 }, color: 0xFFAA44, intensity: 3.5, distance: 12, decay: 1, flicker: true },
+    { type: 'point', position: { x: 2, y: 3, z: 2 }, color: 0xFFAA44, intensity: 3.5, distance: 12, decay: 1, flicker: true },
   ],
 
   doors: [

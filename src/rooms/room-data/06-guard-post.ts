@@ -15,14 +15,14 @@ const guardPost: RoomData = {
   wallTexture: { basePath: 'assets/textures/stone/worn-stone' },
   ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
 
-  ambientLight: { color: 0x1A1A2E, intensity: 0.1 },
+  ambientLight: { color: 0x2A2A3E, intensity: 0.35 },
 
   lights: [
     // Central brazier — strong warm glow
-    { type: 'point', position: { x: 0, y: 2, z: 0 }, color: 0xFF6B35, intensity: 3.0, distance: 12, decay: 1, flicker: true },
+    { type: 'point', position: { x: 0, y: 2, z: 0 }, color: 0xFF6B35, intensity: 5.0, distance: 16, decay: 1, flicker: true },
     // 2 sparse wall torches
-    { type: 'point', position: { x: -4.5, y: 2.5, z: -3.5 }, color: 0xFFCC66, intensity: 1.0, distance: 8, decay: 1.5, flicker: true },
-    { type: 'point', position: { x: 4.5, y: 2.5, z: -3.5 }, color: 0xFFCC66, intensity: 1.0, distance: 8, decay: 1.5, flicker: true },
+    { type: 'point', position: { x: -4.5, y: 2.5, z: -3.5 }, color: 0xFFCC66, intensity: 2.0, distance: 12, decay: 1.2, flicker: true },
+    { type: 'point', position: { x: 4.5, y: 2.5, z: -3.5 }, color: 0xFFCC66, intensity: 2.0, distance: 12, decay: 1.2, flicker: true },
   ],
 
   doors: [

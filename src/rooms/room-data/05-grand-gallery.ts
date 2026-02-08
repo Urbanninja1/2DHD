@@ -15,7 +15,7 @@ const grandGallery: RoomData = {
   wallTexture: { basePath: 'assets/textures/stone/castle-wall-slates' },
   ceilingTexture: { basePath: 'assets/textures/stone/vaulted-stone' },
 
-  ambientLight: { color: 0x6688BB, intensity: 0.35 },
+  ambientLight: { color: 0x7799CC, intensity: 0.6 },
 
   lights: [
     // Directional — natural daylight through arched windows
@@ -23,14 +23,14 @@ const grandGallery: RoomData = {
       type: 'directional',
       position: { x: 5, y: 10, z: -2 },
       color: 0xFFF5E0,
-      intensity: 1.2,
+      intensity: 2.0,
       castShadow: true,
     },
     // 4 torch sconces along the gallery
-    { type: 'point', position: { x: -10, y: 4, z: -2.5 }, color: 0xFFCC66, intensity: 1.5, distance: 10, decay: 1, flicker: true },
-    { type: 'point', position: { x: -3, y: 4, z: -2.5 }, color: 0xFFCC66, intensity: 1.5, distance: 10, decay: 1, flicker: true },
-    { type: 'point', position: { x: 3, y: 4, z: -2.5 }, color: 0xFFCC66, intensity: 1.5, distance: 10, decay: 1, flicker: true },
-    { type: 'point', position: { x: 10, y: 4, z: -2.5 }, color: 0xFFCC66, intensity: 1.5, distance: 10, decay: 1, flicker: true },
+    { type: 'point', position: { x: -10, y: 4, z: -2.5 }, color: 0xFFCC66, intensity: 2.5, distance: 16, decay: 1, flicker: true },
+    { type: 'point', position: { x: -3, y: 4, z: -2.5 }, color: 0xFFCC66, intensity: 2.5, distance: 16, decay: 1, flicker: true },
+    { type: 'point', position: { x: 3, y: 4, z: -2.5 }, color: 0xFFCC66, intensity: 2.5, distance: 16, decay: 1, flicker: true },
+    { type: 'point', position: { x: 10, y: 4, z: -2.5 }, color: 0xFFCC66, intensity: 2.5, distance: 16, decay: 1, flicker: true },
   ],
 
   doors: [

@@ -15,14 +15,14 @@ const antechamber: RoomData = {
   wallTexture: { basePath: 'assets/textures/stone/stone-wall' },
   ceilingTexture: { basePath: 'assets/textures/ceiling/dark-stone' },
 
-  ambientLight: { color: 0x443322, intensity: 0.2 },
+  ambientLight: { color: 0x665544, intensity: 0.5 },
 
   lights: [
     // 4 wall-mounted torches
-    { type: 'point', position: { x: -6, y: 3.5, z: -5.5 }, color: 0xFFCC66, intensity: 1.8, distance: 12, decay: 1, flicker: true },
-    { type: 'point', position: { x: 6, y: 3.5, z: -5.5 }, color: 0xFFCC66, intensity: 1.8, distance: 12, decay: 1, flicker: true },
-    { type: 'point', position: { x: -6, y: 3.5, z: 5.5 }, color: 0xFFCC66, intensity: 1.8, distance: 12, decay: 1, flicker: true },
-    { type: 'point', position: { x: 6, y: 3.5, z: 5.5 }, color: 0xFFCC66, intensity: 1.8, distance: 12, decay: 1, flicker: true },
+    { type: 'point', position: { x: -6, y: 3.5, z: -5.5 }, color: 0xFFCC66, intensity: 3.0, distance: 18, decay: 1, flicker: true },
+    { type: 'point', position: { x: 6, y: 3.5, z: -5.5 }, color: 0xFFCC66, intensity: 3.0, distance: 18, decay: 1, flicker: true },
+    { type: 'point', position: { x: -6, y: 3.5, z: 5.5 }, color: 0xFFCC66, intensity: 3.0, distance: 18, decay: 1, flicker: true },
+    { type: 'point', position: { x: 6, y: 3.5, z: 5.5 }, color: 0xFFCC66, intensity: 3.0, distance: 18, decay: 1, flicker: true },
   ],
 
   doors: [
