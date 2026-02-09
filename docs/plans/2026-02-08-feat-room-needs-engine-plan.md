@@ -369,9 +369,9 @@ BUILD PRIORITY (by impact × reuse):
 - [x] Identify Claude's additions (new items not in current room) and omissions (existing items Claude missed)
 - [x] Iterate on system prompt based on output quality
 - [x] Run gap analysis to identify missing assets
-- [ ] Generate missing assets via Blender pipeline (`blender --background --python generate_prop.py -- <name>`)
+- [x] Generate missing assets via prop generator (ale-puddle, bone-scrap, wax-drip added to generate-ironrath-props.mjs)
 - [x] Update Great Hall room data with engine output
-- [ ] Take before/after screenshots for visual comparison
+- [x] Take before/after screenshots for visual comparison
 - [x] Verify TypeScript compilation and dev server rendering
 
 ## Acceptance Criteria
@@ -382,7 +382,7 @@ BUILD PRIORITY (by impact × reuse):
 - [x] Gap analyzer correctly identifies existing vs. missing assets
 - [x] Placement resolver produces valid (x, y, z) coordinates within room bounds
 - [x] Output TypeScript file passes `npx tsc --noEmit`
-- [ ] Generated room loads and renders in the dev server without errors
+- [x] Generated room loads and renders in the dev server without errors
 - [x] Each stage can be run independently (prompt, analyze, resolve, write)
 
 ### Non-Functional Requirements
