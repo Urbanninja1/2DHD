@@ -1,0 +1,23 @@
+{
+  "id": "IronrathGreatHall",
+  "name": "Great Hall",
+  "type": "great-hall",
+  "dimensions": { "width": 24, "depth": 14, "height": 10 },
+  "culture": "northern",
+  "wealth": "modest",
+  "era": "pre-war",
+  "lore": "Seat of House Forrester, lords of Ironrath and wardens of the ironwood forests. The great hall is the heart of the keep — where the lord holds court, hosts feasts, and dispenses justice. The Forresters are known for their ironwood, which features prominently in the architecture. The hall has stood for generations, with the marks of age and daily life worn into every surface. A great stone hearth dominates the north wall. The lord's ironwood throne sits on a raised dais before it.",
+  "purpose": "feasting, audience, justice",
+  "castle": "ironrath",
+  "featuresFile": "scripts/room-needs/data/features/great-hall.json",
+  "doors": [
+    {
+      "position": { "x": -12, "y": 0, "z": 0 },
+      "halfExtents": { "x": 0.8, "z": 1.5 },
+      "wall": "west"
+    }
+  ],
+  "floorTexture": "assets/textures/stone/northern-floor",
+  "wallTexture": "assets/textures/stone/northern-wall",
+  "ceilingTexture": "assets/textures/wood/ironwood-ceiling"
+}

@@ -1,0 +1,43 @@
+{
+  "hearth": {
+    "position": { "x": 0, "y": 0, "z": -6.8 },
+    "extent": { "xRange": [-2.5, 2.5] }
+  },
+  "dais": {
+    "position": { "x": 0, "y": 0.3, "z": -5.5 },
+    "extent": { "xRange": [-4, 4], "zRange": [-6.5, -4.5] }
+  },
+  "throne": {
+    "position": { "x": 0, "y": 0.3, "z": -5.8 }
+  },
+  "long-table": {
+    "position": { "x": 0, "y": 0.85, "z": 0 },
+    "extent": { "xRange": [-5, 5] }
+  },
+  "east-wall": {
+    "position": { "x": 12, "y": 0, "z": 0 },
+    "extent": { "zRange": [-7, 7] }
+  },
+  "west-wall": {
+    "position": { "x": -12, "y": 0, "z": 0 },
+    "extent": { "zRange": [-7, 7] }
+  },
+  "north-wall": {
+    "position": { "x": 0, "y": 0, "z": -7 },
+    "extent": { "xRange": [-12, 12] }
+  },
+  "south-wall": {
+    "position": { "x": 0, "y": 0, "z": 7 },
+    "extent": { "xRange": [-12, 12] }
+  },
+  "west-door": {
+    "position": { "x": -12, "y": 0, "z": 0 },
+    "exclusionRadius": 2.0
+  },
+  "window-slit": {
+    "position": { "x": 12, "y": 5, "z": -2 }
+  },
+  "room-center": {
+    "position": { "x": 0, "y": 0, "z": 0 }
+  }
+}

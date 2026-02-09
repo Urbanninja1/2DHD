@@ -1,0 +1,184 @@
+{
+  "room": {
+    "type": "great-hall",
+    "culture": "northern",
+    "wealth": "modest",
+    "era": "pre-war",
+    "lore": "Seat of House Forrester, ironwood lords. Hall for feasting, court, and justice.",
+    "mood": "grand"
+  },
+  "features": {
+    "hearth": { "position": {"x": 0, "y": 0, "z": -6.8}, "extent": {"xRange": [-2.5, 2.5]} },
+    "dais": { "position": {"x": 0, "y": 0.3, "z": -5.5}, "extent": {"xRange": [-4, 4], "zRange": [-6.5, -4.5]} },
+    "long-table": { "position": {"x": 0, "y": 0.85, "z": 0}, "extent": {"xRange": [-5, 5]} },
+    "east-wall": { "position": {"x": 12, "y": 0, "z": 0}, "extent": {"zRange": [-7, 7]} },
+    "west-wall": { "position": {"x": -12, "y": 0, "z": 0}, "extent": {"zRange": [-7, 7]} },
+    "north-wall": { "position": {"x": 0, "y": 0, "z": -7}, "extent": {"xRange": [-12, 12]} },
+    "south-wall": { "position": {"x": 0, "y": 0, "z": 7}, "extent": {"xRange": [-12, 12]} },
+    "west-door": { "position": {"x": -12, "y": 0, "z": 0}, "exclusionRadius": 2.0 }
+  },
+  "layers": {
+    "architecture": [
+      {
+        "name": "stone-arch",
+        "isNew": false,
+        "description": "Load-bearing stone arches spanning the hall width — typical Northern castle construction",
+        "category": "structural",
+        "material": "northern-stone",
+        "scale": 1.0,
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [
+            {"x": 0, "y": 0, "z": -4.5},
+            {"x": 0, "y": 0, "z": -1.5},
+            {"x": 0, "y": 0, "z": 1.5},
+            {"x": 0, "y": 0, "z": 4.5}
+          ],
+          "yPlacement": "floor"
+        }
+      },
+      {
+        "name": "ironwood-column",
+        "isNew": false,
+        "description": "Ironwood pillars flanking the central hall — Forrester signature material",
+        "category": "structural",
+        "material": "ironwood",
+        "scale": 1.0,
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [
+            {"x": -6, "y": 0, "z": -4.5},
+            {"x": 6, "y": 0, "z": -4.5},
+            {"x": -6, "y": 0, "z": -1.5},
+            {"x": 6, "y": 0, "z": -1.5},
+            {"x": -6, "y": 0, "z": 1.5},
+            {"x": 6, "y": 0, "z": 1.5}
+          ],
+          "yPlacement": "floor"
+        }
+      }
+    ],
+    "essentialFurnishing": [
+      {
+        "name": "long-table",
+        "isNew": false,
+        "description": "Great feasting table — center of social life in any medieval great hall",
+        "category": "furniture",
+        "material": "ironwood",
+        "scale": 1.0,
+        "placement": {
+          "strategy": "at-anchor",
+          "anchor": "long-table",
+          "yPlacement": "floor"
+        }
+      },
+      {
+        "name": "wall-sconce",
+        "isNew": false,
+        "description": "Iron wall sconces for torches — primary wall lighting in a medieval hall",
+        "category": "lighting-fixture",
+        "material": "dark-iron",
+        "scale": 1.0,
+        "compound": {
+          "light": {"color": 16764006, "intensity": 4.0, "distance": 12, "flicker": true},
+          "particles": {"type": "embers", "count": 8}
+        },
+        "placement": {
+          "strategy": "along-surface",
+          "anchor": "west-wall",
+          "count": 2,
+          "spacing": 7.0,
+          "excludeDoors": true,
+          "yPlacement": "wall-mount",
+          "rotationY": 1.5708
+        }
+      }
+    ],
+    "functionalObjects": [
+      {
+        "name": "goblet",
+        "isNew": false,
+        "description": "Drinking vessels set for the evening meal — Northerners drink ale from wooden cups",
+        "category": "tableware",
+        "material": "ceramic",
+        "scale": 0.6,
+        "placement": {
+          "strategy": "along-surface",
+          "anchor": "long-table",
+          "count": 8,
+          "spacing": 1.2,
+          "yPlacement": "table-height",
+          "rotationY": "random"
+        }
+      }
+    ],
+    "lifeLayer": [
+      {
+        "name": "rushes",
+        "isNew": false,
+        "description": "Dried reeds and rushes scattered across the stone floor — universal medieval floor covering, changed weekly. Thicker near center where foot traffic compresses them, thinner near walls.",
+        "category": "floor-cover",
+        "material": "fabric",
+        "scale": 1.0,
+        "placement": {
+          "strategy": "scattered",
+          "anchor": "room-center",
+          "count": 12,
+          "density": 3.5,
+          "yPlacement": "floor",
+          "rotationY": "random"
+        }
+      },
+      {
+        "name": "hearth-scorch",
+        "isNew": false,
+        "description": "Years of sparks and embers have scorched the stone floor in front of the hearth",
+        "category": "surface-detail",
+        "material": "northern-stone",
+        "scale": 1.2,
+        "placement": {
+          "strategy": "at-anchor",
+          "anchor": "hearth",
+          "offset": {"x": 0, "y": 0, "z": 1.5},
+          "yPlacement": "floor"
+        }
+      },
+      {
+        "name": "ale-puddle",
+        "isNew": true,
+        "description": "Spilled ale near the feasting table — evidence of last night's revelry",
+        "category": "surface-detail",
+        "material": "food",
+        "scale": 0.5,
+        "placement": {
+          "strategy": "at-anchor",
+          "anchor": "long-table",
+          "offset": {"x": -2, "y": 0, "z": 1.5},
+          "yPlacement": "floor"
+        }
+      }
+    ],
+    "atmosphere": {
+      "ambientLight": {"color": 8943462, "intensity": 0.85},
+      "lights": [
+        {"type": "directional", "position": {"x": 10, "y": 8, "z": -2}, "color": 11584734, "intensity": 2.0, "castShadow": true},
+        {"type": "point", "position": {"x": 0, "y": 3, "z": -6.5}, "color": 16738101, "intensity": 10.0, "distance": 14, "decay": 1, "flicker": true}
+      ],
+      "particles": [
+        {"type": "dust", "region": {"center": {"x": 0, "y": 4.5, "z": -0.5}, "size": {"x": 20, "y": 7, "z": 11}}, "count": 100},
+        {"type": "embers", "position": {"x": 0, "y": 3, "z": -6.5}, "count": 30},
+        {"type": "smoke", "position": {"x": 0, "y": 4, "z": -6.5}, "count": 25}
+      ],
+      "postProcess": {
+        "bloom": {"intensity": 0.7, "luminanceThreshold": 0.75},
+        "tiltShift": {"focusArea": 0.28, "feather": 0.18},
+        "vignette": {"darkness": 0.42},
+        "colorGrading": {"hue": 0.04, "saturation": 0.12, "brightness": 0, "contrast": 0.10},
+        "ssao": {"aoRadius": 4.5, "intensity": 2.8, "distanceFalloff": 1.0}
+      },
+      "godRays": {"color": 11584734, "density": 0.008, "maxDensity": 0.5}
+    }
+  }
+}
