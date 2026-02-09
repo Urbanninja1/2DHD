@@ -12,6 +12,9 @@ export class GameClockSystem extends System {
   /** Current time of day — readable from outside ECS (debug overlay) */
   static timeOfDay = 10.0;
 
+  /** Set from outside ECS to jump to a specific time (consumed next frame) */
+  static pendingTimeOverride: number | null = null;
+
   private clock = this.singleton.write(GameClock);
 
   initialize(): void {
@@ -24,6 +27,17 @@ export class GameClockSystem extends System {
 
   execute(): void {
     const clock = this.clock;
+
+    // Apply pending time override from debug controls
+    if (GameClockSystem.pendingTimeOverride !== null) {
+      let t = GameClockSystem.pendingTimeOverride;
+      t = ((t % 24) + 24) % 24;
+      clock.timeOfDay = t;
+      GameClockSystem.timeOfDay = t;
+      GameClockSystem.pendingTimeOverride = null;
+      return;
+    }
+
     if (clock.paused) return;
 
     // dt in seconds, timeScale = game-minutes per real second

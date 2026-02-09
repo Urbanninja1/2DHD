@@ -16,6 +16,8 @@ import { SpriteAnimator, registerAnimator, updateAnimators } from './rendering/s
 import { createPlayerSpriteTexture } from './rendering/placeholder-textures.js';
 import { getKeyboard, disposeKeyboard } from './input/keyboard.js';
 import { createQualityScaler } from './rendering/quality-scaler.js';
+import { applyDayNightGrading } from './rendering/day-night-grading.js';
+import { GameClockSystem } from './ecs/systems/game-clock.js';
 import { assetManager } from './loaders/asset-manager.js';
 import { createLoaders, textureLoader } from './loaders/texture-loaders.js';
 
@@ -124,6 +126,9 @@ async function init(): Promise<void> {
     }
 
     updateAnimators(dt);
+
+    // Day/night color grading — add time-of-day offsets to room's base values
+    applyDayNightGrading(pipeline, GameClockSystem.timeOfDay, roomManager.baseColorGrading);
   };
   loop.start();
 

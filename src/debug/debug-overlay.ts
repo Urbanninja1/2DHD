@@ -71,9 +71,16 @@ export function createDebugOverlay(pipeline: HD2DPipeline, renderer?: THREE.WebG
     const minutes = Math.floor((tod - hours) * 60);
     const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
+    // Determine time period label
+    let period: string;
+    if (tod >= 5 && tod < 7) period = 'Dawn';
+    else if (tod >= 7 && tod < 17) period = 'Day';
+    else if (tod >= 17 && tod < 19) period = 'Dusk';
+    else period = 'Night';
+
     const lines = [
       `[Room: ${roomName}]`,
-      `[Time: ${timeStr}]`,
+      `[Time: ${timeStr} (${period})]`,
       '',
       '[Debug Controls]',
       `F1: Bloom      ${effects.bloom ? 'ON' : 'OFF'}`,
@@ -85,11 +92,17 @@ export function createDebugOverlay(pipeline: HD2DPipeline, renderer?: THREE.WebG
       '',
       '1-9,0: Teleport to room (Red Keep)',
       'G:     Ironrath Great Hall',
+      '[/]:   Time -/+ 3 hours',
       'F9:    GPU Leak Test',
     ];
     panel.textContent = lines.join('\n');
   }
   updatePanel();
+
+  // Expose time setter for debug scripts (Playwright, console)
+  (window as unknown as Record<string, unknown>).__setGameTime = (hours: number) => {
+    GameClockSystem.pendingTimeOverride = hours;
+  };
 
   // Update panel periodically to show current room
   const panelInterval = setInterval(updatePanel, 500);
@@ -148,6 +161,16 @@ export function createDebugOverlay(pipeline: HD2DPipeline, renderer?: THREE.WebG
         if (pipeline.godraysPass) {
           pipeline.godraysPass.enabled = effects.godrays;
         }
+        updatePanel();
+        break;
+      case 'BracketLeft':
+        // Jump time back 3 hours
+        GameClockSystem.pendingTimeOverride = GameClockSystem.timeOfDay - 3;
+        updatePanel();
+        break;
+      case 'BracketRight':
+        // Jump time forward 3 hours
+        GameClockSystem.pendingTimeOverride = GameClockSystem.timeOfDay + 3;
         updatePanel();
         break;
       case 'F9':

@@ -307,13 +307,14 @@ const greatHall: RoomData = {
   ],
 
   postProcessOverrides: {
-    bloom: { intensity: 0.6, luminanceThreshold: 0.80 },
-    tiltShift: { focusArea: 0.30, feather: 0.20 },
-    vignette: { darkness: 0.38 },
-    colorGrading: { hue: 0.05, saturation: 0.1, brightness: 0, contrast: 0.08 },
+    bloom: { intensity: 0.7, luminanceThreshold: 0.75 },     // richer bloom on torch/chandelier glow
+    tiltShift: { focusArea: 0.28, feather: 0.18 },           // tighter focus for stronger diorama effect
+    vignette: { darkness: 0.42 },                             // deeper framing (still below 0.50 max)
+    colorGrading: { hue: 0.04, saturation: 0.12, brightness: 0, contrast: 0.10 },  // warm base tint
+    ssao: { aoRadius: 4.5, intensity: 2.8, distanceFalloff: 1.0 },  // stronger contact shadows
   },
 
-  godRays: { color: 0xB0C4DE, density: 1 / 128, maxDensity: 0.4 },
+  godRays: { color: 0xB0C4DE, density: 1 / 128, maxDensity: 0.45 },  // slightly stronger god rays
 };
 
 export default greatHall;

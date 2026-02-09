@@ -7,7 +7,7 @@ import { buildRoom, disposeRoom, type BuiltRoom, type DoorTrigger } from './Room
 import type { ParticleSystem } from '../rendering/particles/types.js';
 import { unregisterAnimator } from '../rendering/sprite-animator.js';
 import { CollisionSystem } from '../ecs/systems/collision.js';
-import { updatePipelineSettings, setGodraysLight, removeGodrays, type HD2DPipeline } from '../rendering/hd2d-pipeline.js';
+import { updatePipelineSettings, setGodraysLight, removeGodrays, type HD2DPipeline, type ColorGradingSettings } from '../rendering/hd2d-pipeline.js';
 import { profileRoom, profileDisposal } from '../debug/room-profiler.js';
 import type { LoaderSet } from '../loaders/texture-loaders.js';
 
@@ -84,6 +84,12 @@ export class RoomManager {
 
   get isTransitioning(): boolean {
     return this.transitioning;
+  }
+
+  /** Base color grading for the current room (from postProcessOverrides). */
+  get baseColorGrading(): ColorGradingSettings {
+    const cg = this.currentRoomData?.postProcessOverrides?.colorGrading;
+    return cg ?? { hue: 0, saturation: 0, brightness: 0, contrast: 0 };
   }
 
   /**
