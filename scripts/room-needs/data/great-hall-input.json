@@ -20,5 +20,27 @@
   ],
   "floorTexture": "assets/textures/stone/northern-floor",
   "wallTexture": "assets/textures/stone/northern-wall",
-  "ceilingTexture": "assets/textures/wood/ironwood-ceiling"
+  "ceilingTexture": "assets/textures/wood/ironwood-ceiling",
+  "floorColor": "0x5A5550",
+  "wallColor": "0x6A6560",
+  "ceilingColor": "0x3a2a1a",
+  "npcs": [
+    { "label": "Lord Forrester", "spriteColor": "#2d2318", "spritePath": "assets/sprites/npcs/forrester-lord.png", "position": { "x": 0, "y": 0.3, "z": -5.8 } },
+    { "label": "Lady Forrester", "spriteColor": "#2d5a27", "spritePath": "assets/sprites/npcs/forrester-lady.png", "position": { "x": -2.5, "y": 0.3, "z": -5.5 } },
+    { "label": "Guard (door)", "spriteColor": "#3c3228", "spritePath": "assets/sprites/npcs/forrester-guard.png", "position": { "x": -10, "y": 0, "z": 0 } },
+    { "label": "Guard (dais)", "spriteColor": "#3c3228", "spritePath": "assets/sprites/npcs/forrester-guard.png", "position": { "x": 4, "y": 0, "z": -4.5 } },
+    { "label": "Servant (table)", "spriteColor": "#6e5f4b", "spritePath": "assets/sprites/npcs/forrester-servant.png", "position": { "x": -3, "y": 0, "z": 1 } },
+    { "label": "Servant (hearth)", "spriteColor": "#6e5f4b", "spritePath": "assets/sprites/npcs/forrester-servant.png", "position": { "x": 1.5, "y": 0, "z": -6 } },
+    { "label": "Maester", "spriteColor": "#5f5c58", "spritePath": "assets/sprites/npcs/forrester-maester.png", "position": { "x": 2.5, "y": 0.3, "z": -5.5 } }
+  ],
+  "parallaxBackground": [
+    { "texturePath": "assets/backgrounds/ironrath/layer-sky.png", "depth": 20, "scrollFactor": 0, "height": 10, "yOffset": 6 },
+    { "texturePath": "assets/backgrounds/ironrath/layer-mountains.png", "depth": 15, "scrollFactor": 0.1, "height": 10, "yOffset": 5 },
+    { "texturePath": "assets/backgrounds/ironrath/layer-canopy.png", "depth": 10, "scrollFactor": 0.2, "height": 10, "yOffset": 4 },
+    { "texturePath": "assets/backgrounds/ironrath/layer-trees.png", "depth": 5, "scrollFactor": 0.3, "height": 10, "yOffset": 3 }
+  ],
+  "extraParticles": [
+    { "type": "dust-in-light", "region": { "minX": 2, "maxX": 10, "minY": 2, "maxY": 8, "minZ": -5, "maxZ": 1 }, "count": 40, "lightDirection": { "x": -0.7, "y": -0.5, "z": 0.5 } },
+    { "type": "dust", "region": { "minX": -3, "maxX": 3, "minY": 1, "maxY": 7, "minZ": -7, "maxZ": -4 }, "count": 15, "driftDirection": { "x": 0, "y": -0.3, "z": 0 } }
+  ]
 }

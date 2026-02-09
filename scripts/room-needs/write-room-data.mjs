@@ -108,7 +108,7 @@ function extractCompoundLights(resolvedManifest) {
           color: lightDef.color,
           intensity: Math.max(lightDef.intensity, 2.0), // guardrail
           distance: Math.max(lightDef.distance, 10),     // guardrail
-          decay: 1,
+          decay: lightDef.decay ?? 1,
           flicker: lightDef.flicker,
           _source: item.name,
         });
@@ -253,7 +253,15 @@ function generateTypeScript(resolvedManifest, roomInput, warnings) {
 
   // Combine atmosphere particles + compound particles
   const atmosphereParticles = convertAtmosphereParticles(atmosphere.particles || []);
-  const allParticles = [...atmosphereParticles, ...compoundParticles];
+  const extraParticles = (roomInput.extraParticles || []).map(p => {
+    // Convert atmosphere-style regions to flat format
+    if (p.region && p.region.center) {
+      const c = p.region.center, s = p.region.size;
+      return { ...p, region: { minX: c.x - s.x/2, maxX: c.x + s.x/2, minY: c.y - s.y/2, maxY: c.y + s.y/2, minZ: c.z - s.z/2, maxZ: c.z + s.z/2 } };
+    }
+    return p;
+  });
+  const allParticles = [...atmosphereParticles, ...compoundParticles, ...extraParticles];
 
   // Build props sorted by category
   const sortedGroups = [...propGroups.values()].sort((a, b) => {
@@ -315,6 +323,20 @@ function generateTypeScript(resolvedManifest, roomInput, warnings) {
     lines.push('');
   }
 
+  // Fallback colors (when PBR textures aren't loaded)
+  if (roomInput.floorColor) {
+    lines.push(`  floorColor: ${roomInput.floorColor},`);
+  }
+  if (roomInput.wallColor) {
+    lines.push(`  wallColor: ${roomInput.wallColor},`);
+  }
+  if (roomInput.ceilingColor) {
+    lines.push(`  ceilingColor: ${roomInput.ceilingColor},`);
+  }
+  if (roomInput.floorColor || roomInput.wallColor || roomInput.ceilingColor) {
+    lines.push('');
+  }
+
   // Ambient light
   lines.push(`  ambientLight: { color: ${toHex(atmosphere.ambientLight.color)}, intensity: ${atmosphere.ambientLight.intensity} },`);
   lines.push('');
@@ -353,24 +375,39 @@ function generateTypeScript(resolvedManifest, roomInput, warnings) {
   lines.push(`  ],`);
   lines.push('');
 
-  // NPCs (empty — engine doesn't generate NPCs yet)
-  lines.push(`  npcs: [],`);
+  // NPCs
+  if (roomInput.npcs && roomInput.npcs.length > 0) {
+    lines.push(`  npcs: [`);
+    for (const npc of roomInput.npcs) {
+      lines.push(`    { label: '${npc.label}', spriteColor: '${npc.spriteColor}', spritePath: '${npc.spritePath}', position: { x: ${npc.position.x}, y: ${npc.position.y}, z: ${npc.position.z} } },`);
+    }
+    lines.push(`  ],`);
+  } else {
+    lines.push(`  npcs: [],`);
+  }
   lines.push('');
 
   // Particles
   lines.push(`  particles: [`);
   for (const p of allParticles) {
+    const parts = [`type: '${p.type}'`];
     if (p.region) {
       const r = p.region;
-      const parts = [`type: '${p.type}'`];
       parts.push(`region: { minX: ${r.minX}, maxX: ${r.maxX}, minY: ${r.minY}, maxY: ${r.maxY}, minZ: ${r.minZ}, maxZ: ${r.maxZ} }`);
-      parts.push(`count: ${p.count}`);
-      const comment = p._source ? ` // ${p._source}` : '';
-      lines.push(`    { ${parts.join(', ')} },${comment}`);
     } else if (p.position) {
-      const parts = [`type: '${p.type}'`];
       parts.push(`position: { x: ${p.position.x}, y: ${p.position.y}, z: ${p.position.z} }`);
-      parts.push(`count: ${p.count}`);
+    }
+    parts.push(`count: ${p.count}`);
+    if (p.lightDirection) {
+      parts.push(`lightDirection: { x: ${p.lightDirection.x}, y: ${p.lightDirection.y}, z: ${p.lightDirection.z} }`);
+    }
+    if (p.driftDirection) {
+      parts.push(`driftDirection: { x: ${p.driftDirection.x}, y: ${p.driftDirection.y}, z: ${p.driftDirection.z} }`);
+    }
+    if (p.spread) {
+      parts.push(`spread: ${p.spread}`);
+    }
+    if (p.region || p.position) {
       const comment = p._source ? ` // ${p._source}` : '';
       lines.push(`    { ${parts.join(', ')} },${comment}`);
     }
@@ -412,6 +449,16 @@ function generateTypeScript(resolvedManifest, roomInput, warnings) {
   }
   lines.push(`  ],`);
   lines.push('');
+
+  // Parallax background
+  if (roomInput.parallaxBackground && roomInput.parallaxBackground.length > 0) {
+    lines.push(`  parallaxBackground: [`);
+    for (const layer of roomInput.parallaxBackground) {
+      lines.push(`    { texturePath: '${layer.texturePath}', depth: ${layer.depth}, scrollFactor: ${layer.scrollFactor}, height: ${layer.height}, yOffset: ${layer.yOffset} },`);
+    }
+    lines.push(`  ],`);
+    lines.push('');
+  }
 
   // Post-process overrides
   if (atmosphere.postProcess) {

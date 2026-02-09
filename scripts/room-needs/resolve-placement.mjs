@@ -20,7 +20,9 @@ function resolveY(yPlacement, roomHeight) {
     case 'table-height': return Y_TABLE;
     case 'wall-mount': return Y_WALL_MOUNT;
     case 'ceiling': return roomHeight - 0.5;
-    default: return 0;
+    default:
+      console.warn(`Unknown yPlacement "${yPlacement}" — defaulting to floor (y=${Y_FLOOR})`);
+      return Y_FLOOR;
   }
 }
 

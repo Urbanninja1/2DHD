@@ -135,6 +135,21 @@ export function validateManifest(manifest, roomDims, densityTier = 'moderate') {
     }
   }
 
+  // --- Wall-decor at floor level check ---
+  for (const layerName of layerNames) {
+    const items = manifest.layers[layerName] || [];
+    for (const item of items) {
+      if (item.category === 'wall-decor') {
+        const positions = item.resolvedPositions || item.placement?.positions || [];
+        for (const pos of positions) {
+          if (pos.y < 1.0) {
+            warnings.push(`${item.name} is wall-decor but at y=${pos.y} (floor level) — should be y=2.5-5.0`);
+          }
+        }
+      }
+    }
+  }
+
   // --- Life layer minimum ---
   const lifeCount = (manifest.layers.lifeLayer || []).length;
   if (lifeCount < 5) {
