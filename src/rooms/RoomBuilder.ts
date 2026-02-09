@@ -12,6 +12,8 @@ import { createSpriteMesh, createBlobShadow } from '../rendering/sprite-factory.
 import { SpriteAnimator, registerAnimator } from '../rendering/sprite-animator.js';
 import { createDustMotes } from '../rendering/particles/dust-motes.js';
 import { createTorchEmbers } from '../rendering/particles/torch-embers.js';
+import { createSmoke } from '../rendering/particles/smoke.js';
+import { createDustInLight } from '../rendering/particles/dust-in-light.js';
 import type { ParticleSystem } from '../rendering/particles/types.js';
 import { assetManager } from '../loaders/asset-manager.js';
 import { loadPBRTexture, textureLoader, type PBRTextureSet, type LoaderSet } from '../loaders/texture-loaders.js';
@@ -45,17 +47,17 @@ export interface DoorTrigger {
   door: DoorDef;
 }
 
-/** Create a particle system from a ParticleDef. Returns null for unimplemented types. */
-function createParticleSystem(def: ParticleDef): ParticleSystem | null {
+/** Create a particle system from a ParticleDef. */
+function createParticleSystem(def: ParticleDef): ParticleSystem {
   switch (def.type) {
     case 'dust':
-      return createDustMotes({ count: def.count, region: def.region });
+      return createDustMotes({ count: def.count, region: def.region, driftDirection: def.driftDirection });
     case 'embers':
       return createTorchEmbers({ position: def.position, count: def.count });
     case 'smoke':
+      return createSmoke({ position: def.position, count: def.count, spread: def.spread });
     case 'dust-in-light':
-      // Implemented in Phase 3 — skip silently for now
-      return null;
+      return createDustInLight({ region: def.region, count: def.count, lightDirection: def.lightDirection });
     default: {
       const _exhaustive: never = def;
       throw new Error(`Unknown particle type: ${(_exhaustive as ParticleDef).type}`);
@@ -246,10 +248,8 @@ export async function buildRoom(data: RoomData, loaderSet?: LoaderSet): Promise<
   if (data.particles) {
     for (const pDef of data.particles) {
       const system = createParticleSystem(pDef);
-      if (system) {
-        group.add(system.object3d);
-        particleSystems.push(system);
-      }
+      group.add(system.object3d);
+      particleSystems.push(system);
     }
   }
 

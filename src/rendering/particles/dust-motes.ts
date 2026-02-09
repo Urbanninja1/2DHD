@@ -13,9 +13,11 @@ export interface DustMoteSystem extends ParticleSystem {
   object3d: THREE.Points;
 }
 
-interface DustConfig {
+export interface DustConfig {
   count: number;
   region: { minX: number; maxX: number; minY: number; maxY: number; minZ: number; maxZ: number };
+  /** Optional drift direction override (default: gentle sine wave, no net drift) */
+  driftDirection?: { x: number; y: number; z: number };
 }
 
 const VERT = /* glsl */`
@@ -41,7 +43,7 @@ const FRAG = /* glsl */`
 `;
 
 export function createDustMotes(config: DustConfig): DustMoteSystem {
-  const { count, region } = config;
+  const { count, region, driftDirection } = config;
 
   const positions = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
@@ -106,6 +108,19 @@ export function createDustMotes(config: DustConfig): DustMoteSystem {
         pos[i3] = basePositions[i3]! + Math.sin(elapsed * fx + phase) * 0.3;
         pos[i3 + 1] = basePositions[i3 + 1]! + Math.sin(elapsed * fy + phase * 1.3) * 0.15;
         pos[i3 + 2] = basePositions[i3 + 2]! + Math.sin(elapsed * fz + phase * 0.7) * 0.25;
+
+        // Apply linear drift (e.g. falling ash) and wrap within region
+        if (driftDirection) {
+          basePositions[i3] = basePositions[i3]! + driftDirection.x * dt;
+          basePositions[i3 + 1] = basePositions[i3 + 1]! + driftDirection.y * dt;
+          basePositions[i3 + 2] = basePositions[i3 + 2]! + driftDirection.z * dt;
+          // Wrap Y when below region min (falling ash respawns at top)
+          if (basePositions[i3 + 1]! < region.minY) {
+            basePositions[i3 + 1] = region.maxY;
+            basePositions[i3] = region.minX + Math.random() * (region.maxX - region.minX);
+            basePositions[i3 + 2] = region.minZ + Math.random() * (region.maxZ - region.minZ);
+          }
+        }
       }
 
       posAttr.needsUpdate = true;

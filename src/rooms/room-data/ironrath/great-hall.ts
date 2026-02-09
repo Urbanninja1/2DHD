@@ -79,6 +79,22 @@ const greatHall: RoomData = {
     // Brazier embers (2x)
     { type: 'embers', position: { x: -4, y: 2, z: -5 }, count: 12 },
     { type: 'embers', position: { x: 4, y: 2, z: -5 }, count: 12 },
+    // Hearth smoke — rises from hearth opening
+    { type: 'smoke', position: { x: 0, y: 4, z: -6.5 }, count: 25, spread: 0.8 },
+    // Dust in light beams — region matching east-wall window directional
+    {
+      type: 'dust-in-light',
+      region: { minX: 2, maxX: 10, minY: 2, maxY: 8, minZ: -5, maxZ: 1 },
+      count: 40,
+      lightDirection: { x: -0.7, y: -0.5, z: 0.5 }, // angled from east wall downward
+    },
+    // Falling ash near hearth — dust motes with downward drift, warm tint
+    {
+      type: 'dust',
+      region: { minX: -3, maxX: 3, minY: 1, maxY: 7, minZ: -7, maxZ: -4 },
+      count: 15,
+      driftDirection: { x: 0, y: -0.3, z: 0 },
+    },
   ],
 
   props: [
