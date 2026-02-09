@@ -10,6 +10,7 @@ import { CollisionSystem } from '../ecs/systems/collision.js';
 import { updatePipelineSettings, setGodraysLight, removeGodrays, type HD2DPipeline, type ColorGradingSettings } from '../rendering/hd2d-pipeline.js';
 import { profileRoom, profileDisposal } from '../debug/room-profiler.js';
 import type { LoaderSet } from '../loaders/texture-loaders.js';
+import type { QualityScaler } from '../rendering/quality-scaler.js';
 
 const FADE_OUT_MS = 800;
 const HOLD_BLACK_MS = 200;
@@ -21,6 +22,7 @@ export interface RoomManagerDeps {
   camera: THREE.PerspectiveCamera;
   pipeline: HD2DPipeline;
   loaderSet: LoaderSet;
+  qualityScaler?: QualityScaler;
 }
 
 /**
@@ -80,6 +82,11 @@ export class RoomManager {
       transition: 'none',
     });
     document.body.appendChild(this.fadeOverlay);
+  }
+
+  /** Wire in quality scaler for texture engine degradation (levels 7-11) */
+  setQualityScaler(qs: QualityScaler): void {
+    this.deps.qualityScaler = qs;
   }
 
   get isTransitioning(): boolean {
@@ -149,6 +156,14 @@ export class RoomManager {
 
     // Force shadow map update for static scene
     this.deps.renderer.shadowMap.needsUpdate = true;
+
+    // Register texture engine handles with quality scaler
+    if (this.deps.qualityScaler) {
+      this.deps.qualityScaler.setTextureEngineHandles(
+        built.surfaceDetailHandles,
+        built.decalSystem,
+      );
+    }
 
     // Profile room after load
     profileRoom(this.deps.renderer, roomId, data.name);
@@ -232,6 +247,14 @@ export class RoomManager {
       // Force shadow map update
       this.deps.renderer.shadowMap.needsUpdate = true;
 
+      // Register texture engine handles with quality scaler
+      if (this.deps.qualityScaler) {
+        this.deps.qualityScaler.setTextureEngineHandles(
+          built.surfaceDetailHandles,
+          built.decalSystem,
+        );
+      }
+
       // Profile room after load
       profileRoom(this.deps.renderer, roomId, data.name);
 
@@ -298,6 +321,11 @@ export class RoomManager {
       for (const anim of this.currentRoom.spriteAnimators) {
         unregisterAnimator(anim);
       }
+    }
+
+    // Dispose decal system
+    if (this.currentRoom.decalSystem) {
+      this.currentRoom.decalSystem.dispose();
     }
 
     // Dispose particle systems before clearing references

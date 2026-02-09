@@ -18,6 +18,11 @@ import type { ParticleSystem } from '../rendering/particles/types.js';
 import { assetManager } from '../loaders/asset-manager.js';
 import { loadPBRTexture, textureLoader, type PBRTextureSet, type LoaderSet } from '../loaders/texture-loaders.js';
 import { applyDetailOverlay } from '../rendering/detail-overlay.js';
+import { loadTemplate } from '../rendering/hd2d-surface/texture-template.js';
+import { injectSurfaceDetail, type SurfaceDetailConfig, type SurfaceDetailHandle } from '../rendering/hd2d-surface/surface-injector.js';
+import { DecalSystem } from '../rendering/hd2d-surface/decal-system.js';
+import { placeDecals, type DecalInstance } from '../rendering/hd2d-surface/decal-placer.js';
+import type { TextureTemplate } from '../rendering/hd2d-surface/texture-template.js';
 
 export interface BuiltRoom {
   /** Root group containing all room objects — scene.remove(group) cleans everything */
@@ -36,6 +41,10 @@ export interface BuiltRoom {
   parallaxLayers: THREE.Mesh[];
   /** Active sprite animators — unregister on room unload */
   spriteAnimators: SpriteAnimator[];
+  /** Decal system — dispose on room unload (null if no texture template) */
+  decalSystem: DecalSystem | null;
+  /** Surface detail handles for quality scaler uniform control */
+  surfaceDetailHandles: SurfaceDetailHandle[];
 }
 
 export interface DoorTrigger {
@@ -79,10 +88,26 @@ export async function buildRoom(data: RoomData, loaderSet?: LoaderSet): Promise<
   const halfW = width / 2;
   const halfD = depth / 2;
 
+  // --- Texture Engine: load template ---
+  const template = data.textureTemplate
+    ? await loadTemplate(data.textureTemplate)
+    : null;
+
+  const surfaceConfig = template
+    ? await buildSurfaceConfig(template)
+    : null;
+
+  const surfaceDetailHandles: SurfaceDetailHandle[] = [];
+
   // --- Floor ---
   const floorMat = data.floorTexture
     ? await buildPBRMaterial(data.floorTexture, `floor-${data.id}`, width / 4, depth / 4, data.floorColor)
     : buildProceduralFloorMaterial(data, width, depth);
+
+  // Inject surface detail into floor
+  if (surfaceConfig && template?.shaderLayers.tilingBreakup.appliesTo.includes('floor')) {
+    surfaceDetailHandles.push(injectSurfaceDetail(floorMat, surfaceConfig));
+  }
 
   const floorGeo = new THREE.PlaneGeometry(width, depth);
   floorGeo.rotateX(-Math.PI / 2);
@@ -131,6 +156,12 @@ export async function buildRoom(data: RoomData, loaderSet?: LoaderSet): Promise<
       metalness: 0,
     });
   }
+
+  // Inject surface detail into ceiling
+  if (surfaceConfig && template?.shaderLayers.tilingBreakup.appliesTo.includes('ceiling')) {
+    surfaceDetailHandles.push(injectSurfaceDetail(ceilingMat, surfaceConfig));
+  }
+
   const ceiling = new THREE.Mesh(ceilingGeo, ceilingMat);
   ceiling.position.y = height;
   group.add(ceiling);
@@ -275,6 +306,69 @@ export async function buildRoom(data: RoomData, loaderSet?: LoaderSet): Promise<
     }
   }
 
+  // --- Texture Engine: Decal System ---
+  let decalSystem: DecalSystem | null = null;
+  if (template?.decals) {
+    try {
+      const atlas = await assetManager.loadTextureAsync(
+        `decal-atlas-${data.textureTemplate}`,
+        () => textureLoader.loadAsync(template.decals.atlas),
+      );
+      atlas.colorSpace = THREE.SRGBColorSpace;
+      atlas.wrapS = THREE.ClampToEdgeWrapping;
+      atlas.wrapT = THREE.ClampToEdgeWrapping;
+      atlas.minFilter = THREE.LinearMipmapLinearFilter;
+      atlas.magFilter = THREE.LinearFilter;
+
+      // Resolve zone triggers from room data
+      const zoneTriggers = resolveZoneTriggers(data, template.zones);
+
+      // Generate decal instances from template
+      const instances = placeDecals({
+        roomDimensions: data.dimensions,
+        palette: template.decals.palette,
+        density: template.decals.density,
+        zones: zoneTriggers,
+        gridSize: template.decals.gridSize ?? 8,
+        seed: 42,
+      });
+
+      // Add room-specific overrides
+      if (data.decalOverrides) {
+        const gs = template.decals.gridSize ?? 8;
+        for (const override of data.decalOverrides) {
+          const cellSize = 1.0 / gs;
+          const gutterUV = 2.0 / (gs * 256);
+          instances.push({
+            position: { x: override.position.x, y: override.position.y, z: override.position.z },
+            rotation: override.rotation ?? 0,
+            scale: override.scale ?? 1.0,
+            atlasRegion: {
+              u: override.tile[0] * cellSize + gutterUV,
+              v: override.tile[1] * cellSize + gutterUV,
+              w: cellSize - gutterUV * 2,
+              h: cellSize - gutterUV * 2,
+            },
+            surfaceType: 'floor',
+          });
+        }
+      }
+
+      decalSystem = new DecalSystem(atlas, 1000, 500, 200);
+      for (const inst of instances) decalSystem.addDecal(inst);
+      const decalGroup = decalSystem.finalize();
+      group.add(decalGroup);
+
+      if (import.meta.env.DEV) {
+        console.log(`[RoomBuilder] Decal system: ${instances.length} decals placed`);
+      }
+    } catch (e) {
+      if (import.meta.env.DEV) {
+        console.warn('[RoomBuilder] Decal system failed, skipping:', e);
+      }
+    }
+  }
+
   // --- Parallax background layers ---
   const parallaxLayers: THREE.Mesh[] = [];
   if (data.parallaxBackground) {
@@ -296,7 +390,7 @@ export async function buildRoom(data: RoomData, loaderSet?: LoaderSet): Promise<
     maxZ: halfD - margin,
   };
 
-  return { group, flickerLights, directionalLight, doorTriggers, bounds, particleSystems, parallaxLayers, spriteAnimators };
+  return { group, flickerLights, directionalLight, doorTriggers, bounds, particleSystems, parallaxLayers, spriteAnimators, decalSystem, surfaceDetailHandles };
 }
 
 // --- PBR Material Helpers ---
@@ -661,6 +755,100 @@ function addDoorOpenings(
   }
 }
 
+// --- Texture Engine Helpers ---
+
+/**
+ * Build a SurfaceDetailConfig from a loaded TextureTemplate.
+ * Loads detail normal and grunge textures via AssetManager.
+ */
+async function buildSurfaceConfig(template: TextureTemplate): Promise<SurfaceDetailConfig> {
+  let detailNormalTex: THREE.Texture | null = null;
+  let grungeTex: THREE.Texture | null = null;
+
+  try {
+    detailNormalTex = await assetManager.loadTextureAsync(
+      `detail-normal-${template.id}`,
+      () => textureLoader.loadAsync(template.shaderLayers.detailNormal.texture),
+    );
+    detailNormalTex.wrapS = THREE.RepeatWrapping;
+    detailNormalTex.wrapT = THREE.RepeatWrapping;
+    detailNormalTex.colorSpace = THREE.LinearSRGBColorSpace;
+  } catch {
+    if (import.meta.env.DEV) {
+      console.warn(`[RoomBuilder] Failed to load detail normal texture, skipping layer`);
+    }
+  }
+
+  try {
+    grungeTex = await assetManager.loadTextureAsync(
+      `grunge-${template.id}`,
+      () => textureLoader.loadAsync(template.shaderLayers.grunge.texture),
+    );
+    grungeTex.wrapS = THREE.RepeatWrapping;
+    grungeTex.wrapT = THREE.RepeatWrapping;
+    grungeTex.colorSpace = THREE.LinearSRGBColorSpace;
+  } catch {
+    if (import.meta.env.DEV) {
+      console.warn(`[RoomBuilder] Failed to load grunge texture, skipping layer`);
+    }
+  }
+
+  return {
+    detailNormalTex,
+    grungeTex,
+    detailScale: template.shaderLayers.detailNormal.scale,
+    detailIntensity: template.shaderLayers.detailNormal.intensity,
+    grungeScale: template.shaderLayers.grunge.scale,
+    grungeIntensity: template.shaderLayers.grunge.intensity,
+    enableStochastic: template.shaderLayers.tilingBreakup.enabled,
+  };
+}
+
+/**
+ * Resolve zone triggers from room data.
+ * Maps template zone rules to actual positions based on room features.
+ */
+function resolveZoneTriggers(
+  data: RoomData,
+  zoneRules: TextureTemplate['zones'],
+): { rule: TextureTemplate['zones'][number]; position: { x: number; y: number; z: number } }[] {
+  const triggers: { rule: TextureTemplate['zones'][number]; position: { x: number; y: number; z: number } }[] = [];
+
+  for (const rule of zoneRules) {
+    switch (rule.trigger) {
+      case 'fire-source':
+        // Map fire-source zones to point lights with flicker (torches, hearths, braziers)
+        for (const light of data.lights) {
+          if (light.type === 'point' && light.flicker) {
+            triggers.push({ rule, position: light.position });
+          }
+        }
+        break;
+
+      case 'door':
+        for (const door of data.doors) {
+          triggers.push({ rule, position: door.position });
+        }
+        break;
+
+      case 'high-traffic':
+        // Place high-traffic zones between doors and at room center
+        for (const door of data.doors) {
+          triggers.push({ rule, position: door.position });
+        }
+        // Room center is always high traffic
+        triggers.push({ rule, position: { x: 0, y: 0, z: 0 } });
+        break;
+
+      case 'water-source':
+        // No auto-detection for water sources — rely on room-specific overrides
+        break;
+    }
+  }
+
+  return triggers;
+}
+
 /**
  * Disposes all GPU resources owned by a room group.
  * Also releases AssetManager references for shared textures.
@@ -700,6 +888,13 @@ export function disposeRoom(group: THREE.Group, roomData?: RoomData, npcColors?:
   });
 
   if (roomData) {
+    // Release texture engine resources
+    if (roomData.textureTemplate) {
+      assetManager.releaseTexture(`decal-atlas-${roomData.textureTemplate}`);
+      assetManager.releaseTexture(`detail-normal-${roomData.textureTemplate}`);
+      assetManager.releaseTexture(`grunge-${roomData.textureTemplate}`);
+    }
+
     // Release PBR texture set refs (cached as full sets)
     if (roomData.floorTexture) {
       assetManager.releasePBRSet(`pbr-floor-${roomData.id}`);
