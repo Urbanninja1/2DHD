@@ -17,7 +17,6 @@
     "validate": "node scripts/validate-assets.mjs"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.74.0",
     "@lastolivegames/becsy": "^0.16.0",
     "n8ao": "^1.10.1",
     "postprocessing": "^6.38.2",

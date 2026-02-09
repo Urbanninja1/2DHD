@@ -1,10 +1,10 @@
 /**
- * Stage 1: Manifest Generator
+ * Stage 1: Prompt Builder + Manifest Validator
  *
- * Calls Claude API with room description + existing asset list + schema
- * to produce a structured FurnishingManifest JSON.
+ * Assembles the full context prompt from room input + asset list + schema,
+ * saves it to a file for use in a Claude Code session.
+ * Also validates and saves manifests produced during the session.
  */
-import Anthropic from '@anthropic-ai/sdk';
 import { readFile, writeFile, readdir, mkdir } from 'fs/promises';
 import { join, basename } from 'path';
 import { FurnishingManifestSchema } from './schemas/manifest.mjs';
@@ -39,9 +39,9 @@ async function getAssetList() {
 }
 
 /**
- * Build the system prompt from template + dynamic data.
+ * Build the full prompt from template + dynamic data.
  */
-async function buildSystemPrompt(roomInput, assetList) {
+async function buildPrompt(roomInput, assetList) {
   const template = await readFile(join(PROMPTS_DIR, 'system-prompt.md'), 'utf-8');
   const materials = await readFile(
     join(PROJECT_ROOT, 'scripts/room-needs/data/materials.json'), 'utf-8',
@@ -97,117 +97,44 @@ async function buildSystemPrompt(roomInput, assetList) {
 }
 
 /**
- * Load features for the room (from features file or manifest features).
- */
-async function loadFeatures(roomInput) {
-  if (roomInput.featuresFile) {
-    try {
-      const featuresPath = join(PROJECT_ROOT, roomInput.featuresFile);
-      const raw = await readFile(featuresPath, 'utf-8');
-      return JSON.parse(raw);
-    } catch {
-      // Fall through to empty features
-    }
-  }
-  return {};
-}
-
-/**
- * Generate a furnishing manifest using Claude API.
+ * Build the full context prompt for a room and save it to a file.
+ * This is used in a Claude Code workflow — you read the prompt file,
+ * then work with Claude Code to produce the manifest JSON.
  *
  * @param {object} roomInput - Parsed room input data
- * @returns {object} Validated FurnishingManifest
+ * @returns {{ promptPath: string, assetCount: number }}
  */
-export async function generateManifest(roomInput) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error(
-      'ANTHROPIC_API_KEY not set. Set it in your environment:\n' +
-      '  export ANTHROPIC_API_KEY=sk-ant-...\n' +
-      '  set ANTHROPIC_API_KEY=sk-ant-...  (Windows cmd)\n' +
-      '  $env:ANTHROPIC_API_KEY="sk-ant-..."  (PowerShell)',
-    );
-  }
-
-  const client = new Anthropic();
+export async function buildRoomPrompt(roomInput) {
   const assetList = await getAssetList();
-  const systemPrompt = await buildSystemPrompt(roomInput, assetList);
+  const prompt = await buildPrompt(roomInput, assetList);
 
-  const userMessage = `Generate the complete furnishing manifest for this ${roomInput.type} room. Return ONLY valid JSON — no markdown fences, no commentary.`;
+  await mkdir(OUTPUT_DIR, { recursive: true });
+  const promptPath = join(OUTPUT_DIR, `${roomInput.type}-prompt.md`);
+  await writeFile(promptPath, prompt);
 
-  console.log(`Calling Claude API for ${roomInput.type} manifest...`);
+  console.log(`Prompt built for ${roomInput.type}`);
   console.log(`  Assets available: ${assetList.length}`);
+  console.log(`  Prompt saved to: ${promptPath}`);
+  console.log(`\nWorkflow:`);
+  console.log(`  1. Read the prompt: ${promptPath}`);
+  console.log(`  2. Ask Claude Code to generate the manifest JSON`);
+  console.log(`  3. Save result to: scripts/room-needs/output/${roomInput.type}-manifest.json`);
+  console.log(`  4. Run: node scripts/room-needs/engine.mjs pipeline scripts/room-needs/data/${roomInput.type}-input.json`);
 
-  let lastError = null;
-
-  // Up to 2 attempts: initial + 1 retry with error context
-  for (let attempt = 0; attempt < 2; attempt++) {
-    const messages = [{ role: 'user', content: userMessage }];
-
-    if (attempt > 0 && lastError) {
-      messages.push({
-        role: 'assistant',
-        content: 'I apologize for the invalid JSON. Let me fix the errors and try again.',
-      });
-      messages.push({
-        role: 'user',
-        content: `The previous response failed validation:\n${lastError}\n\nPlease fix ALL errors and return valid JSON only.`,
-      });
-    }
-
-    const response = await client.messages.create({
-      model: 'claude-sonnet-4-5-20250514',
-      max_tokens: 16000,
-      system: systemPrompt,
-      messages,
-    });
-
-    const text = response.content
-      .filter(block => block.type === 'text')
-      .map(block => block.text)
-      .join('');
-
-    // Extract JSON from response (handle markdown fences)
-    let jsonStr = text.trim();
-    if (jsonStr.startsWith('```')) {
-      jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
-    }
-
-    try {
-      const parsed = JSON.parse(jsonStr);
-      const manifest = FurnishingManifestSchema.parse(parsed);
-
-      // Merge in loaded features if manifest doesn't have them
-      if (!manifest.features || Object.keys(manifest.features).length === 0) {
-        const features = await loadFeatures(roomInput);
-        manifest.features = features;
-      }
-
-      console.log(`  Manifest generated successfully (attempt ${attempt + 1})`);
-      console.log(`  Architecture: ${manifest.layers.architecture.length} items`);
-      console.log(`  Furnishing: ${manifest.layers.essentialFurnishing.length} items`);
-      console.log(`  Functional: ${manifest.layers.functionalObjects.length} items`);
-      console.log(`  Life layer: ${manifest.layers.lifeLayer.length} items`);
-      console.log(`  Lights: ${manifest.layers.atmosphere.lights.length}`);
-
-      // Track token usage
-      if (response.usage) {
-        console.log(`  Tokens: ${response.usage.input_tokens} in / ${response.usage.output_tokens} out`);
-      }
-
-      return manifest;
-    } catch (err) {
-      lastError = err.message;
-      console.warn(`  Attempt ${attempt + 1} failed: ${err.message.slice(0, 200)}`);
-      if (attempt === 1) {
-        throw new Error(`Manifest generation failed after 2 attempts:\n${err.message}`);
-      }
-    }
-  }
+  return { promptPath, assetCount: assetList.length };
 }
 
 /**
- * Save manifest to output directory.
+ * Validate a manifest JSON string or object against the Zod schema.
+ * Returns the validated manifest or throws on failure.
+ */
+export function validateManifestJSON(jsonInput) {
+  const parsed = typeof jsonInput === 'string' ? JSON.parse(jsonInput) : jsonInput;
+  return FurnishingManifestSchema.parse(parsed);
+}
+
+/**
+ * Save a validated manifest to the output directory.
  */
 export async function saveManifest(manifest, roomName) {
   await mkdir(OUTPUT_DIR, { recursive: true });

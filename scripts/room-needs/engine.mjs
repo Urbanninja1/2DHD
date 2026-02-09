@@ -2,21 +2,23 @@
 /**
  * Room Needs Engine — CLI Entry Point
  *
- * A Claude-powered furnishing intelligence system that generates
- * historically/lore-accurate manifests of objects for game rooms.
+ * A Claude Code workflow tool that generates historically/lore-accurate
+ * furnishing manifests for game rooms. Stage 1 (manifest generation)
+ * is done interactively with Claude Code. Stages 2-5 are automated.
  *
  * Usage:
- *   node scripts/room-needs/engine.mjs generate <room-input.json>     # Full pipeline
- *   node scripts/room-needs/engine.mjs analyze <manifest.json>         # Gap analysis only
- *   node scripts/room-needs/engine.mjs resolve <manifest.json>         # Resolve placement only
- *   node scripts/room-needs/engine.mjs write <resolved-manifest.json>  # Write TS only
+ *   node scripts/room-needs/engine.mjs prompt <room-input.json>        # Build context prompt
+ *   node scripts/room-needs/engine.mjs pipeline <room-input.json>      # Run stages 2-5 on existing manifest
+ *   node scripts/room-needs/engine.mjs analyze <manifest.json>          # Gap analysis only
+ *   node scripts/room-needs/engine.mjs resolve <manifest.json> <input>  # Resolve placement only
+ *   node scripts/room-needs/engine.mjs write <resolved.json> <input>    # Write TS only
  */
-import { readFile } from 'fs/promises';
-import { join } from 'path';
+import { readFile, writeFile, mkdir } from 'fs/promises';
+import { join, dirname } from 'path';
 
 import { RoomInputSchema } from './schemas/room-input.mjs';
 import { FurnishingManifestSchema } from './schemas/manifest.mjs';
-import { generateManifest, saveManifest } from './generate-manifest.mjs';
+import { buildRoomPrompt, saveManifest } from './generate-manifest.mjs';
 import { analyzeGaps, formatGapReport } from './analyze-gaps.mjs';
 import { resolvePlacements } from './resolve-placement.mjs';
 import { writeRoomData } from './write-room-data.mjs';
@@ -34,39 +36,42 @@ async function loadJSON(filePath, schema) {
   return parsed;
 }
 
-/**
- * Load features for a room input.
- */
-async function loadFeatures(roomInput) {
-  if (roomInput.featuresFile) {
-    try {
-      const raw = await readFile(join(PROJECT_ROOT, roomInput.featuresFile), 'utf-8');
-      return JSON.parse(raw);
-    } catch {
-      console.warn(`Warning: Could not load features file: ${roomInput.featuresFile}`);
-    }
-  }
-  return {};
-}
-
 // ─── Commands ─────────────────────────────────────────────────────────
 
 /**
- * Full pipeline: generate → analyze → resolve → validate → write
+ * Build the context prompt for Claude Code to generate a manifest.
  */
-async function cmdGenerate(inputPath) {
-  console.log('=== ROOM NEEDS ENGINE: FULL PIPELINE ===\n');
+async function cmdPrompt(inputPath) {
+  console.log('=== ROOM NEEDS ENGINE: BUILD PROMPT ===\n');
+  const roomInput = await loadJSON(inputPath, RoomInputSchema);
+  console.log(`Room: ${roomInput.name} (${roomInput.type})`);
+  console.log(`Dimensions: ${roomInput.dimensions.width}×${roomInput.dimensions.depth}×${roomInput.dimensions.height}m\n`);
+  await buildRoomPrompt(roomInput);
+}
+
+/**
+ * Pipeline: analyze → resolve → validate → write
+ * Expects a manifest already exists at output/{room-type}-manifest.json
+ */
+async function cmdPipeline(inputPath) {
+  console.log('=== ROOM NEEDS ENGINE: PIPELINE ===\n');
 
   // 1. Load room input
-  console.log('Stage 0: Loading room input...');
   const roomInput = await loadJSON(inputPath, RoomInputSchema);
-  console.log(`  Room: ${roomInput.name} (${roomInput.type})`);
-  console.log(`  Dimensions: ${roomInput.dimensions.width}×${roomInput.dimensions.depth}×${roomInput.dimensions.height}m`);
+  console.log(`Room: ${roomInput.name} (${roomInput.type})`);
 
-  // 2. Generate manifest via Claude
-  console.log('\nStage 1: Generating furnishing manifest...');
-  const manifest = await generateManifest(roomInput);
-  const manifestPath = await saveManifest(manifest, roomInput.type);
+  // 2. Load existing manifest
+  const manifestPath = join(PROJECT_ROOT, 'scripts/room-needs/output', `${roomInput.type}-manifest.json`);
+  let manifest;
+  try {
+    manifest = await loadJSON(manifestPath, FurnishingManifestSchema);
+  } catch (err) {
+    console.error(`Could not load manifest at: ${manifestPath}`);
+    console.error(`Run 'prompt' first, generate the manifest with Claude Code, then save it there.`);
+    console.error(`\nDetails: ${err.message}`);
+    process.exit(1);
+  }
+  console.log(`Manifest loaded: ${manifestPath}`);
 
   // 3. Analyze gaps
   console.log('\nStage 2: Analyzing asset gaps...');
@@ -83,8 +88,7 @@ async function cmdGenerate(inputPath) {
   console.log(formatValidation(validation));
 
   if (!validation.valid) {
-    console.error('\nValidation FAILED — fix errors before writing RoomData.');
-    console.log(`Manifest saved at: ${manifestPath}`);
+    console.error('\nValidation FAILED — fix errors in manifest before writing RoomData.');
     process.exit(1);
   }
 
@@ -144,10 +148,8 @@ async function cmdResolve(manifestPath, inputPath) {
   console.log(`Resolved ${totalPositions} positions.`);
 
   // Save resolved manifest
-  const { writeFile: wf, mkdir } = await import('fs/promises');
-  const { dirname } = await import('path');
   const outputPath = manifestPath.replace('.json', '-resolved.json');
-  await wf(outputPath, JSON.stringify(resolved, null, 2));
+  await writeFile(outputPath, JSON.stringify(resolved, null, 2));
   console.log(`Resolved manifest saved to ${outputPath}`);
 }
 
@@ -179,11 +181,16 @@ async function cmdWrite(manifestPath, inputPath) {
 const [,, command, ...args] = process.argv;
 
 if (!command) {
-  console.log(`Room Needs Engine — Claude-powered furnishing intelligence
+  console.log(`Room Needs Engine — Claude Code furnishing workflow
 
 Usage:
-  node scripts/room-needs/engine.mjs generate <room-input.json>
-    Full pipeline: Claude API → gap analysis → placement → TypeScript
+  node scripts/room-needs/engine.mjs prompt <room-input.json>
+    Build context prompt for Claude Code manifest generation.
+    Saves the assembled prompt to output/{room-type}-prompt.md
+
+  node scripts/room-needs/engine.mjs pipeline <room-input.json>
+    Run stages 2-5 on an existing manifest (from output/{room-type}-manifest.json).
+    Gap analysis → placement → validation → TypeScript
 
   node scripts/room-needs/engine.mjs analyze <manifest.json>
     Gap analysis only: check which assets exist/missing
@@ -194,16 +201,22 @@ Usage:
   node scripts/room-needs/engine.mjs write <resolved-manifest.json> <room-input.json>
     Write TypeScript RoomData from a resolved manifest
 
-Example:
-  node scripts/room-needs/engine.mjs generate scripts/room-needs/data/great-hall-input.json
+Workflow:
+  1. prompt  → builds the context prompt with room data + asset list
+  2. You + Claude Code → generate the manifest JSON interactively
+  3. Save manifest to scripts/room-needs/output/{room-type}-manifest.json
+  4. pipeline → runs gap analysis, placement, validation, TypeScript output
 `);
   process.exit(0);
 }
 
 try {
   switch (command) {
-    case 'generate':
-      await cmdGenerate(args[0]);
+    case 'prompt':
+      await cmdPrompt(args[0]);
+      break;
+    case 'pipeline':
+      await cmdPipeline(args[0]);
       break;
     case 'analyze':
       await cmdAnalyze(args[0]);
