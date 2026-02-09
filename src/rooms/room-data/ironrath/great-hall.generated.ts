@@ -16,8 +16,8 @@ const greatHall: RoomData = {
   dimensions: { width: 24, depth: 14, height: 10 },
   mood: 'grand',
 
-  floorTexture: { basePath: 'assets/textures/stone/northern-floor' },
-  wallTexture: { basePath: 'assets/textures/stone/northern-wall' },
+  floorTexture: { basePath: 'assets/textures/stone/worn-stone' },
+  wallTexture: { basePath: 'assets/textures/stone/castle-wall-slates' },
   ceilingTexture: { basePath: 'assets/textures/wood/ironwood-ceiling' },
 
   floorColor: 0x5A5550,
