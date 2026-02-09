@@ -144,6 +144,7 @@ export const FurnishingManifestSchema = z.object({
     era: z.string(),
     lore: z.string(),
     mood: z.enum(['grand', 'intimate', 'dark', 'open']),
+    textureTemplate: z.string().optional(),
   }),
   features: z.record(z.string(), FeatureAnchorSchema),
   layers: z.object({

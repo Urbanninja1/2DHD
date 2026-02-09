@@ -107,6 +107,7 @@ async function init(): Promise<void> {
 
   // --- Dynamic quality scaler ---
   const qualityScaler = createQualityScaler(pipeline);
+  roomManager.setQualityScaler(qualityScaler);
 
   // --- Start game loop ---
   const keyboard = getKeyboard();

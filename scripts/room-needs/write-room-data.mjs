@@ -491,6 +491,11 @@ function generateTypeScript(resolvedManifest, roomInput, warnings) {
     lines.push('');
   }
 
+  // Texture engine template
+  if (roomInput.textureTemplate) {
+    lines.push(`  textureTemplate: '${roomInput.textureTemplate}',`);
+  }
+
   lines.push(`};`);
   lines.push('');
   lines.push(`export default ${varName};`);

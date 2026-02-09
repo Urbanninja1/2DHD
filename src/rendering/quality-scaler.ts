@@ -1,4 +1,6 @@
 import type { HD2DPipeline } from './hd2d-pipeline.js';
+import type { SurfaceDetailHandle } from './hd2d-surface/surface-injector.js';
+import type { DecalSystem } from './hd2d-surface/decal-system.js';
 
 /**
  * Dynamic quality scaler.
@@ -6,19 +8,24 @@ import type { HD2DPipeline } from './hd2d-pipeline.js';
  * when the budget is exceeded. Re-enables when headroom returns.
  *
  * Degradation order (cheapest to disable first):
- *   Level 0: Full quality (all effects enabled)
- *   Level 1: Disable god rays (~2-4ms)
- *   Level 2: Disable N8AO SSAO (~2-3ms)
- *   Level 3: Disable tilt-shift DoF (~1-1.5ms)
- *   Level 4: Reduce shadow map 2048 -> 1024
- *   Level 5: Signal 50% particle count reduction
- *   Level 6: Apply texture mipmap LOD bias (blurrier textures, less bandwidth)
+ *   Level 0:  Full quality (all effects enabled)
+ *   Level 1:  Disable god rays (~2-4ms)
+ *   Level 2:  Disable N8AO SSAO (~2-3ms)
+ *   Level 3:  Disable tilt-shift DoF (~1-1.5ms)
+ *   Level 4:  Reduce shadow map 2048 -> 1024
+ *   Level 5:  Signal 50% particle count reduction
+ *   Level 6:  Apply texture mipmap LOD bias (blurrier textures, less bandwidth)
+ *   Level 7:  Disable grunge overlay (surface detail)
+ *   Level 8:  Disable detail normals (surface detail)
+ *   Level 9:  Disable stochastic tiling
+ *   Level 10: Reduce floor decal count by 50%
+ *   Level 11: Hide ceiling decals entirely
  */
 
 const WINDOW_SIZE = 60; // ~1 second of samples at 60fps
 const DOWNGRADE_THRESHOLD_MS = 14; // Start downgrading above 14ms (leaves 2.67ms headroom for 60fps)
 const UPGRADE_THRESHOLD_MS = 10; // Re-enable effects when below 10ms (generous headroom)
-const MAX_LEVEL = 6;
+const MAX_LEVEL = 11;
 
 /** Exposed quality settings that other systems can read */
 export const qualitySettings = {
@@ -33,6 +40,8 @@ export interface QualityScaler {
   readonly level: number;
   /** Whether particle systems should run at reduced count (level >= 5) */
   readonly reduceParticles: boolean;
+  /** Register texture engine handles from the current room (call after room load) */
+  setTextureEngineHandles(handles: SurfaceDetailHandle[], decalSystem: DecalSystem | null): void;
 }
 
 export function createQualityScaler(pipeline: HD2DPipeline): QualityScaler {
@@ -40,6 +49,10 @@ export function createQualityScaler(pipeline: HD2DPipeline): QualityScaler {
   let sampleIdx = 0;
   let level = 0;
   let cooldown = 0; // Frames to wait before next level change
+
+  // Texture engine handles — set per-room via setTextureEngineHandles()
+  let surfaceHandles: SurfaceDetailHandle[] = [];
+  let decalSys: DecalSystem | null = null;
 
   function getAverage(): number {
     if (samples.length === 0) return 0;
@@ -76,6 +89,39 @@ export function createQualityScaler(pipeline: HD2DPipeline): QualityScaler {
 
     // Level 6: Texture LOD bias — stored in qualitySettings for texture loader to read
     qualitySettings.textureLodBias = level >= 6 ? 1.0 : 0.0;
+
+    // Level 7: Disable grunge overlay
+    for (const h of surfaceHandles) {
+      h.setGrungeIntensity(level >= 7 ? 0 : 0.35);
+    }
+
+    // Level 8: Disable detail normals
+    for (const h of surfaceHandles) {
+      h.setDetailIntensity(level >= 8 ? 0 : 0.3);
+    }
+
+    // Level 9: Disable stochastic tiling
+    for (const h of surfaceHandles) {
+      h.setStochasticEnabled(level < 9);
+    }
+
+    // Level 10: Reduce floor decal count by 50%
+    if (decalSys) {
+      const floorMesh = decalSys.getFloorMesh();
+      if (floorMesh) {
+        floorMesh.count = level >= 10
+          ? Math.ceil(decalSys.totalFloorCount * 0.5)
+          : decalSys.totalFloorCount;
+      }
+    }
+
+    // Level 11: Hide ceiling decals entirely
+    if (decalSys) {
+      const ceilingMesh = decalSys.getCeilingMesh();
+      if (ceilingMesh) {
+        ceilingMesh.visible = level < 11;
+      }
+    }
   }
 
   return {
@@ -85,6 +131,13 @@ export function createQualityScaler(pipeline: HD2DPipeline): QualityScaler {
 
     get reduceParticles() {
       return level >= 5;
+    },
+
+    setTextureEngineHandles(handles: SurfaceDetailHandle[], decalSystem: DecalSystem | null): void {
+      surfaceHandles = handles;
+      decalSys = decalSystem;
+      // Re-apply current level to new handles
+      if (level >= 7) applyLevel(level);
     },
 
     update(deltaMs: number): void {

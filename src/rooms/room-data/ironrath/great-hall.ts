@@ -474,6 +474,8 @@ const greatHall: RoomData = {
   },
 
   godRays: { color: 0xB0C4DE, density: 1 / 128, maxDensity: 0.45 },  // slightly stronger god rays
+
+  textureTemplate: 'northern-grand',
 };
 
 export default greatHall;
