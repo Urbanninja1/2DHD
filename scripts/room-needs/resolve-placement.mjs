@@ -7,7 +7,8 @@
 
 // Y-placement constants
 const Y_FLOOR = 0.005;
-const Y_TABLE = 0.85;
+// Default table surface height. Override with explicit Y in array positions for specific models.
+const Y_TABLE = 1.07;
 const Y_WALL_MOUNT = 3.5;
 
 /**

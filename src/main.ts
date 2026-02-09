@@ -204,6 +204,7 @@ async function init(): Promise<void> {
 
   // --- Dev-mode debug ---
   if (import.meta.env.DEV) {
+    (window as any).__debugCamera = camera;
     const { createDebugOverlay } = await import('./debug/debug-overlay.js');
     const debugOverlay = createDebugOverlay(pipeline, renderer);
 
