@@ -1,9 +1,13 @@
 /**
  * Cross-cutting Validation
  *
- * Enforces lighting guardrails, bounds checks, and budget constraints
- * on a FurnishingManifest or resolved manifest.
+ * Enforces lighting guardrails, bounds checks, budget constraints,
+ * and model-aware surface overflow checks on a FurnishingManifest
+ * or resolved manifest.
  */
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { readModelBounds } from './read-model-bounds.mjs';
 
 // Lighting guardrails (from docs/fixes/LIGHTING_BUG_PREVENTION.md)
 const GUARDRAILS = {
@@ -48,9 +52,10 @@ const DEFAULT_TRI = 600;
  * @param {object} manifest
  * @param {object} roomDims - { width, depth, height }
  * @param {string} [densityTier='moderate'] - density tier for budget/target validation
+ * @param {object} [options] - { castle?: string } for model-aware validation
  * Returns { valid, errors[], warnings[] }.
  */
-export function validateManifest(manifest, roomDims, densityTier = 'moderate') {
+export function validateManifest(manifest, roomDims, densityTier = 'moderate', options = {}) {
   const errors = [];
   const warnings = [];
   const triBudget = DENSITY_TRI_BUDGETS[densityTier] || GUARDRAILS.triBudget;
@@ -144,6 +149,54 @@ export function validateManifest(manifest, roomDims, densityTier = 'moderate') {
         for (const pos of positions) {
           if (pos.y < 1.0) {
             warnings.push(`${item.name} is wall-decor but at y=${pos.y} (floor level) — should be y=2.5-5.0`);
+          }
+        }
+      }
+    }
+  }
+
+  // --- Surface overflow validation (model-aware) ---
+  if (options.castle) {
+    const modelBase = join(process.cwd(), 'public/assets/models/props', options.castle);
+    // Build a set of anchor names that are actual furniture models (not walls/room-center)
+    const wallAnchors = new Set(['east-wall', 'west-wall', 'north-wall', 'south-wall', 'room-center']);
+    const boundsCache = new Map();
+
+    for (const layerName of layerNames) {
+      const items = manifest.layers[layerName] || [];
+      for (const item of items) {
+        const anchor = item.anchorName;
+        if (!anchor || wallAnchors.has(anchor)) continue;
+
+        // Try to read the anchor model's bounding box
+        if (!boundsCache.has(anchor)) {
+          const glbPath = join(modelBase, `${anchor}.glb`);
+          if (existsSync(glbPath)) {
+            try {
+              boundsCache.set(anchor, readModelBounds(glbPath));
+            } catch {
+              boundsCache.set(anchor, null);
+            }
+          } else {
+            boundsCache.set(anchor, null);
+          }
+        }
+
+        const anchorBounds = boundsCache.get(anchor);
+        if (!anchorBounds) continue;
+
+        const margin = 0.3;
+        const surfaceY = anchorBounds.max.y;
+        const positions = item.resolvedPositions || [];
+        for (const pos of positions) {
+          // Only check items near the anchor's surface height (skip floor-placed items like benches)
+          if (Math.abs(pos.y - surfaceY) > 0.5) continue;
+
+          if (pos.x < anchorBounds.min.x - margin || pos.x > anchorBounds.max.x + margin) {
+            warnings.push(`${item.name} at x=${pos.x.toFixed(2)} overflows anchor ${anchor} (x: ${anchorBounds.min.x.toFixed(2)} to ${anchorBounds.max.x.toFixed(2)})`);
+          }
+          if (pos.z < anchorBounds.min.z - margin || pos.z > anchorBounds.max.z + margin) {
+            warnings.push(`${item.name} at z=${pos.z.toFixed(2)} overflows anchor ${anchor} (z: ${anchorBounds.min.z.toFixed(2)} to ${anchorBounds.max.z.toFixed(2)})`);
           }
         }
       }

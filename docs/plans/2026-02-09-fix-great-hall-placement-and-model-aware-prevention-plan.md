@@ -110,8 +110,8 @@ export function readModelBounds(glbPath) {
 
 This is fast (no GPU needed) and works in the pipeline.
 
-- [ ] **3.1** Create `scripts/room-needs/read-model-bounds.mjs` with `readModelBounds(glbPath)` function
-- [ ] **3.2** Test against known models: long-table (6.0 x 1.06 x 1.4), iron-chandelier (1.32 x 1.55 x 1.32)
+- [x] **3.1** Create `scripts/room-needs/read-model-bounds.mjs` with `readModelBounds(glbPath)` function
+- [x] **3.2** Test against known models: long-table (6.0 x 1.06 x 1.4), iron-chandelier (1.32 x 1.55 x 1.32)
 
 #### 3.2 Surface Overflow Validation
 
@@ -144,10 +144,10 @@ for (const item of surfaceItems) {
 
 Option (a) is simpler — add `anchorModelPath` to resolved items when the placement strategy is "on-surface" or "array" with an anchor.
 
-- [ ] **3.3** Add `anchorModelPath` passthrough in `resolve-placement.mjs` for items with surface anchors
-- [ ] **3.4** Add surface overflow validation in `validate.mjs` using `readModelBounds()`
-- [ ] **3.5** Run pipeline on Great Hall — should produce zero surface overflow warnings (since Phase 1 fixed the data)
-- [ ] **3.6** Test with intentionally bad data to verify warnings fire
+- [x] **3.3** Add `anchorModelPath` passthrough in `resolve-placement.mjs` for items with surface anchors
+- [x] **3.4** Add surface overflow validation in `validate.mjs` using `readModelBounds()`
+- [x] **3.5** Run pipeline on Great Hall — should produce zero surface overflow warnings (since Phase 1 fixed the data)
+- [x] **3.6** Test with intentionally bad data to verify warnings fire
 
 ---
 

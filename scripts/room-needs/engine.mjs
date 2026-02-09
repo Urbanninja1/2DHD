@@ -85,7 +85,7 @@ async function cmdPipeline(inputPath) {
 
   // 5. Validate
   console.log('\nStage 4: Validating...');
-  const validation = validateManifest(resolved, roomInput.dimensions, roomInput.densityTier);
+  const validation = validateManifest(resolved, roomInput.dimensions, roomInput.densityTier, { castle: roomInput.castle });
   console.log(formatValidation(validation));
 
   if (!validation.valid) {

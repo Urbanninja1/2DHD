@@ -248,6 +248,7 @@ export function resolvePlacements(manifest, roomDims, doors = []) {
       return {
         ...item,
         resolvedPositions: positions,
+        ...(p.anchor ? { anchorName: p.anchor } : {}),
       };
     });
   }
