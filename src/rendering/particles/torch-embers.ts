@@ -5,10 +5,12 @@ import * as THREE from 'three';
  * Embers spawn at torch position, float upward with turbulence, fade from
  * gold → orange → red → transparent, then respawn.
  */
-export interface EmberSystem {
+import type { ParticleSystem } from './types.js';
+
+export interface EmberSystem extends ParticleSystem {
+  /** @deprecated Use object3d instead */
   points: THREE.Points;
-  update(dt: number): void;
-  dispose(): void;
+  object3d: THREE.Points;
 }
 
 interface EmberConfig {
@@ -116,6 +118,7 @@ export function createTorchEmbers(config: EmberConfig): EmberSystem {
 
   return {
     points,
+    object3d: points,
     update(dt: number) {
       elapsed += dt;
       const posAttr = geometry.getAttribute('position') as THREE.BufferAttribute;

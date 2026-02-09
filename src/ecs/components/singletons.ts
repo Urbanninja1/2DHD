@@ -10,6 +10,7 @@ export const TransitionState = {
 
 export type TransitionStateValue = (typeof TransitionState)[keyof typeof TransitionState];
 
+// 1-99: Red Keep, 100-199: Ironrath Castle, 200-255: future locations
 export const RoomId = {
   ThroneRoom: 1,
   Antechamber: 2,
@@ -21,6 +22,8 @@ export const RoomId = {
   QueensBallroom: 8,
   TowerStairwell: 9,
   Battlements: 10,
+  // Ironrath Castle
+  IronrathGreatHall: 101,
 } as const;
 
 export type RoomIdValue = (typeof RoomId)[keyof typeof RoomId];

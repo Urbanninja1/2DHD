@@ -25,6 +25,7 @@ const ROOM_NAMES: Record<number, string> = {
   [RoomId.QueensBallroom]: "Queen's Ballroom",
   [RoomId.TowerStairwell]: 'Tower Stairwell',
   [RoomId.Battlements]: 'Battlements',
+  [RoomId.IronrathGreatHall]: 'Ironrath Great Hall',
 };
 
 export function createDebugOverlay(pipeline: HD2DPipeline, renderer?: THREE.WebGLRenderer): DebugOverlay {
@@ -75,7 +76,8 @@ export function createDebugOverlay(pipeline: HD2DPipeline, renderer?: THREE.WebG
       `F5: SSAO       ${effects.ssao ? 'ON' : 'OFF'}`,
       `F6: GodRays    ${effects.godrays ? 'ON' : 'OFF'}`,
       '',
-      '1-9,0: Teleport to room',
+      '1-9,0: Teleport to room (Red Keep)',
+      'G:     Ironrath Great Hall',
       'F9:    GPU Leak Test',
     ];
     panel.textContent = lines.join('\n');
@@ -97,6 +99,8 @@ export function createDebugOverlay(pipeline: HD2DPipeline, renderer?: THREE.WebG
     'Digit8': RoomId.QueensBallroom,
     'Digit9': RoomId.TowerStairwell,
     'Digit0': RoomId.Battlements,
+    // Ironrath Castle
+    'KeyG': RoomId.IronrathGreatHall,
   };
 
   window.addEventListener('keydown', (e: KeyboardEvent) => {

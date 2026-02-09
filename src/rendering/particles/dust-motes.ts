@@ -5,10 +5,12 @@ import * as THREE from 'three';
  * Soft circle via gl_PointCoord distance check, additive blending, no depth write.
  * Gentle sine-wave drift for a floating, peaceful feel.
  */
-export interface DustMoteSystem {
+import type { ParticleSystem } from './types.js';
+
+export interface DustMoteSystem extends ParticleSystem {
+  /** @deprecated Use object3d instead */
   points: THREE.Points;
-  update(dt: number): void;
-  dispose(): void;
+  object3d: THREE.Points;
 }
 
 interface DustConfig {
@@ -86,6 +88,7 @@ export function createDustMotes(config: DustConfig): DustMoteSystem {
 
   return {
     points,
+    object3d: points,
     update(dt: number) {
       elapsed += dt;
       const posAttr = geometry.getAttribute('position') as THREE.BufferAttribute;

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import type { RoomData, DoorDef, PropDef, ProceduralPropDef, ModelPropDef, TextureSetDef, ParallaxLayerDef } from './room-data/types.js';
+import type { RoomData, DoorDef, PropDef, ProceduralPropDef, ModelPropDef, TextureSetDef, ParallaxLayerDef, ParticleDef } from './room-data/types.js';
 import {
   createStoneFloorTexture,
   createStoneWallTexture,
@@ -10,12 +10,11 @@ import {
 } from '../rendering/placeholder-textures.js';
 import { createSpriteMesh, createBlobShadow } from '../rendering/sprite-factory.js';
 import { SpriteAnimator, registerAnimator } from '../rendering/sprite-animator.js';
-import { createDustMotes, type DustMoteSystem } from '../rendering/particles/dust-motes.js';
-import { createTorchEmbers, type EmberSystem } from '../rendering/particles/torch-embers.js';
+import { createDustMotes } from '../rendering/particles/dust-motes.js';
+import { createTorchEmbers } from '../rendering/particles/torch-embers.js';
+import type { ParticleSystem } from '../rendering/particles/types.js';
 import { assetManager } from '../loaders/asset-manager.js';
 import { loadPBRTexture, textureLoader, type PBRTextureSet, type LoaderSet } from '../loaders/texture-loaders.js';
-
-export type ParticleSystem = DustMoteSystem | EmberSystem;
 
 export interface BuiltRoom {
   /** Root group containing all room objects — scene.remove(group) cleans everything */
@@ -44,6 +43,24 @@ export interface DoorTrigger {
   maxZ: number;
   /** The door definition (target room, spawn point, etc.) */
   door: DoorDef;
+}
+
+/** Create a particle system from a ParticleDef. Returns null for unimplemented types. */
+function createParticleSystem(def: ParticleDef): ParticleSystem | null {
+  switch (def.type) {
+    case 'dust':
+      return createDustMotes({ count: def.count, region: def.region });
+    case 'embers':
+      return createTorchEmbers({ position: def.position, count: def.count });
+    case 'smoke':
+    case 'dust-in-light':
+      // Implemented in Phase 3 — skip silently for now
+      return null;
+    default: {
+      const _exhaustive: never = def;
+      throw new Error(`Unknown particle type: ${(_exhaustive as ParticleDef).type}`);
+    }
+  }
 }
 
 /**
@@ -228,20 +245,10 @@ export async function buildRoom(data: RoomData, loaderSet?: LoaderSet): Promise<
 
   if (data.particles) {
     for (const pDef of data.particles) {
-      if (pDef.type === 'dust') {
-        const dust = createDustMotes({
-          count: pDef.count,
-          region: pDef.region,
-        });
-        group.add(dust.points);
-        particleSystems.push(dust);
-      } else if (pDef.type === 'embers') {
-        const embers = createTorchEmbers({
-          position: pDef.position,
-          count: pDef.count,
-        });
-        group.add(embers.points);
-        particleSystems.push(embers);
+      const system = createParticleSystem(pDef);
+      if (system) {
+        group.add(system.object3d);
+        particleSystems.push(system);
       }
     }
   }

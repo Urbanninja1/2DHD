@@ -11,6 +11,7 @@ import maegorsEntry from './07-maegor-entry.js';
 import queensBallroom from './08-queens-ballroom.js';
 import towerStairwell from './09-tower-stairwell.js';
 import battlements from './10-battlements.js';
+import ironrathGreatHall from './ironrath/great-hall.js';
 
 const roomRegistry = new Map<RoomIdValue, RoomData>([
   [RoomId.ThroneRoom, throneRoom],
@@ -23,6 +24,8 @@ const roomRegistry = new Map<RoomIdValue, RoomData>([
   [RoomId.QueensBallroom, queensBallroom],
   [RoomId.TowerStairwell, towerStairwell],
   [RoomId.Battlements, battlements],
+  // Ironrath Castle
+  [RoomId.IronrathGreatHall, ironrathGreatHall],
 ]);
 
 export function getRoomData(id: RoomIdValue): RoomData | undefined {
