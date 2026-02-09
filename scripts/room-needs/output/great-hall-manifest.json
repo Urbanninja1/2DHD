@@ -43,7 +43,7 @@
       {
         "name": "stone-hearth",
         "isNew": false,
-        "description": "Great stone hearth dominating the north wall — the heart of any Northern great hall",
+        "description": "Great stone hearth dominating the north wall",
         "category": "structural",
         "material": "northern-stone",
         "scale": 1.2,
@@ -52,7 +52,7 @@
       {
         "name": "raised-dais",
         "isNew": false,
-        "description": "Stone platform elevating the lord's seat — symbol of authority before the hearth",
+        "description": "Stone platform elevating the lord's seat",
         "category": "structural",
         "material": "northern-stone",
         "scale": 1.0,
@@ -127,7 +127,7 @@
       {
         "name": "door-frame",
         "isNew": false,
-        "description": "Heavy stone door frame on the west wall — connects to kitchen passage",
+        "description": "Heavy stone door frame on the west wall",
         "category": "structural",
         "material": "northern-stone",
         "scale": 1.0,
@@ -157,7 +157,7 @@
       {
         "name": "roof-joist",
         "isNew": false,
-        "description": "Cross joists spanning between main beams — secondary structural timber",
+        "description": "Cross joists spanning between main beams",
         "category": "structural",
         "material": "ironwood",
         "scale": 1.0,
@@ -174,7 +174,7 @@
       {
         "name": "rafter-set",
         "isNew": false,
-        "description": "Visible rafter sets at north and south ends — exposed roof structure",
+        "description": "Visible rafter sets at north and south ends",
         "category": "structural",
         "material": "ironwood",
         "scale": 0.8,
@@ -184,40 +184,13 @@
           "positions": [{"x": 0, "y": 9.0, "z": -6}, {"x": 0, "y": 9.0, "z": 6}],
           "yPlacement": "floor"
         }
-      },
-      {
-        "name": "floor-flagstone",
-        "isNew": true,
-        "description": "Individual stone flagstone detail tiles — variations in the floor surface showing centuries of wear, replacement, and patching",
-        "category": "structural",
-        "material": "northern-stone",
-        "scale": 0.8,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 5.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "ceiling-board",
-        "isNew": true,
-        "description": "Visible wooden ceiling planks between rafters — ironwood boarding showing the underside of the upper floor",
-        "category": "structural",
-        "material": "ironwood",
-        "scale": 0.7,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.0, "yPlacement": "ceiling", "rotationY": "random" }
-      },
-      {
-        "name": "wall-stone-block",
-        "isNew": true,
-        "description": "Exposed dressed stone blocks where render has fallen away — reveals the raw Northern stone construction beneath",
-        "category": "structural",
-        "material": "northern-stone",
-        "scale": 0.5,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.0, "yPlacement": "wall-mount", "rotationY": "random" }
       }
     ],
     "essentialFurnishing": [
       {
         "name": "ironwood-throne",
         "isNew": false,
-        "description": "The lord's ironwood throne — carved from a single trunk, seat of Forrester authority",
+        "description": "The lord's ironwood throne — carved from a single trunk",
         "category": "furniture",
         "material": "ironwood",
         "scale": 1.0,
@@ -231,7 +204,7 @@
       {
         "name": "high-seat",
         "isNew": false,
-        "description": "High seats flanking the throne — for the lord's lady and honored guests",
+        "description": "High seats flanking the throne",
         "category": "furniture",
         "material": "ironwood",
         "scale": 0.9,
@@ -248,7 +221,7 @@
       {
         "name": "long-table",
         "isNew": false,
-        "description": "Great feasting table — center of social life where the household gathers",
+        "description": "Great feasting table — center of social life",
         "category": "furniture",
         "material": "ironwood",
         "scale": 1.0,
@@ -257,7 +230,7 @@
       {
         "name": "bench",
         "isNew": false,
-        "description": "Ironwood benches flanking the feasting table — seating for the household",
+        "description": "Ironwood benches flanking the feasting table",
         "category": "furniture",
         "material": "ironwood",
         "scale": 1.0,
@@ -274,7 +247,7 @@
       {
         "name": "chair",
         "isNew": false,
-        "description": "Chairs at the table ends — reserved for steward and captain of the guard",
+        "description": "Chairs at the table ends",
         "category": "furniture",
         "material": "ironwood",
         "scale": 0.9,
@@ -308,7 +281,7 @@
       {
         "name": "stool",
         "isNew": false,
-        "description": "Stools at specific positions — overflow seating for lesser household members",
+        "description": "Stools at specific positions — overflow seating",
         "category": "furniture",
         "material": "ironwood",
         "scale": 0.8,
@@ -317,7 +290,10 @@
           "anchor": "room-center",
           "positions": [
             {"x": -9, "y": 0, "z": -3}, {"x": 9, "y": 0, "z": -3},
-            {"x": -8, "y": 0, "z": 2}, {"x": 8, "y": 0, "z": 2}
+            {"x": -8, "y": 0, "z": 2}, {"x": 8, "y": 0, "z": 2},
+            {"x": -7, "y": 0, "z": 4, "rotationY": 0.3}, {"x": 7, "y": 0, "z": 4, "rotationY": -0.2},
+            {"x": -6, "y": 0, "z": -2, "rotationY": 0.5}, {"x": 6, "y": 0, "z": 3, "rotationY": -0.4},
+            {"x": -3, "y": 0, "z": 4, "rotationY": 1.2}, {"x": 3, "y": 0, "z": 5, "rotationY": -0.8}
           ],
           "yPlacement": "floor"
         }
@@ -325,7 +301,7 @@
       {
         "name": "iron-chandelier",
         "isNew": false,
-        "description": "Three iron chandeliers along the central axis — primary overhead illumination",
+        "description": "Three iron chandeliers along the central axis",
         "category": "lighting-fixture",
         "material": "dark-iron",
         "scale": 1.0,
@@ -345,7 +321,7 @@
       {
         "name": "wall-sconce",
         "isNew": false,
-        "description": "Iron wall sconces — primary wall lighting with flickering torches",
+        "description": "Iron wall sconces — primary wall lighting",
         "category": "lighting-fixture",
         "material": "dark-iron",
         "scale": 0.5,
@@ -383,7 +359,7 @@
       {
         "name": "iron-brazier",
         "isNew": false,
-        "description": "Standing iron braziers flanking the dais — warmth and firelight for the lord",
+        "description": "Standing iron braziers flanking the dais",
         "category": "lighting-fixture",
         "material": "dark-iron",
         "scale": 0.9,
@@ -401,7 +377,7 @@
       {
         "name": "iron-candle-tree",
         "isNew": false,
-        "description": "Iron candle trees flanking the throne — tall standing candelabra",
+        "description": "Iron candle trees flanking the throne",
         "category": "lighting-fixture",
         "material": "dark-iron",
         "scale": 0.8,
@@ -415,7 +391,7 @@
       {
         "name": "weapon-rack",
         "isNew": false,
-        "description": "Weapon racks near the south wall — household arms kept ready",
+        "description": "Weapon racks near the south wall",
         "category": "furniture",
         "material": "dark-iron",
         "scale": 0.9,
@@ -427,9 +403,9 @@
         }
       },
       {
-        "name": "wooden-chest-large",
+        "name": "wooden-chest",
         "isNew": false,
-        "description": "Iron-bound storage chests — for linens, spare tableware, valuables",
+        "description": "Iron-bound storage chests — household goods",
         "category": "furniture",
         "material": "ironwood",
         "scale": 0.9,
@@ -438,96 +414,17 @@
           "anchor": "room-center",
           "positions": [
             {"x": 9, "y": 0, "z": -5, "rotationY": -0.3},
-            {"x": 10, "y": 0, "z": 6, "rotationY": 0.5}
+            {"x": 10, "y": 0, "z": 6, "rotationY": 0.5},
+            {"x": -10.5, "y": 0, "z": 6, "rotationY": -0.4},
+            {"x": -9, "y": 0, "z": 4, "rotationY": 0.2}
           ],
           "yPlacement": "floor"
         }
       },
       {
-        "name": "stool",
-        "isNew": false,
-        "description": "Scattered stools throughout the hall — extra seating brought in for feasts and gatherings, left wherever last used",
-        "category": "furniture",
-        "material": "ironwood",
-        "scale": 0.7,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "bench",
-        "isNew": false,
-        "description": "Additional benches along walls and aisles — seating for petitioners, servants waiting, household gatherings",
-        "category": "furniture",
-        "material": "ironwood",
-        "scale": 0.8,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 1.5, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "wooden-chest",
-        "isNew": false,
-        "description": "Smaller storage chests scattered throughout — household goods, spare candles, tools",
-        "category": "furniture",
-        "material": "ironwood",
-        "scale": 0.7,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 1.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "table-small",
-        "isNew": false,
-        "description": "Small side tables against columns and walls — for drinks, candles, personal items",
-        "category": "furniture",
-        "material": "ironwood",
-        "scale": 0.7,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 1.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "lantern",
-        "isNew": false,
-        "description": "Iron lanterns on the floor along walls and columns — supplemental lighting for dark corners",
-        "category": "lighting-fixture",
-        "material": "dark-iron",
-        "scale": 0.5,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "armor-stand",
-        "isNew": false,
-        "description": "Armor display stands along the aisles — household armor and trophies of past battles",
-        "category": "furniture",
-        "material": "dark-iron",
-        "scale": 0.9,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 0.5, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "chair",
-        "isNew": false,
-        "description": "Extra chairs throughout the hall — pulled aside after meals, left at odd angles",
-        "category": "furniture",
-        "material": "ironwood",
-        "scale": 0.8,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 1.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "barrel",
-        "isNew": true,
-        "description": "Ale and wine barrels along the walls — drink stores for feasts, tapped and ready",
-        "category": "furniture",
-        "material": "ironwood",
-        "scale": 0.7,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "crate",
-        "isNew": true,
-        "description": "Supply crates stacked near walls — provisions, candles, rushes for changing, household stores",
-        "category": "furniture",
-        "material": "ironwood",
-        "scale": 0.6,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 1.5, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
         "name": "bookshelf",
         "isNew": false,
-        "description": "Bookshelves near the south wall — records of justice, household accounts, a few precious books",
+        "description": "Bookshelves near the south wall — records and accounts",
         "category": "furniture",
         "material": "ironwood",
         "scale": 0.9,
@@ -544,54 +441,123 @@
       {
         "name": "torch-wall",
         "isNew": false,
-        "description": "Wall torches along the east wall — additional lighting for the side aisles",
+        "description": "Wall torches along the east wall — additional lighting for side aisles",
         "category": "lighting-fixture",
         "material": "dark-iron",
         "scale": 0.5,
-        "placement": { "strategy": "along-surface", "anchor": "east-wall", "count": 8, "yPlacement": "wall-mount", "rotationY": -1.5708 }
+        "placement": { "strategy": "along-surface", "anchor": "east-wall", "count": 6, "yPlacement": "wall-mount", "rotationY": -1.5708 }
       },
       {
         "name": "torch-wall",
         "isNew": false,
-        "description": "Wall torches along the west wall — lighting for the service aisle, avoiding the door zone",
+        "description": "Wall torches along the west wall — avoiding the door zone",
         "category": "lighting-fixture",
         "material": "dark-iron",
         "scale": 0.5,
-        "placement": { "strategy": "along-surface", "anchor": "west-wall", "count": 8, "excludeDoors": true, "yPlacement": "wall-mount", "rotationY": 1.5708 }
+        "placement": { "strategy": "along-surface", "anchor": "west-wall", "count": 6, "excludeDoors": true, "yPlacement": "wall-mount", "rotationY": 1.5708 }
       },
       {
-        "name": "brazier",
+        "name": "sconce-iron",
         "isNew": false,
-        "description": "Standing braziers for warmth — scattered in the aisles and near seating areas, Northern halls are cold",
+        "description": "Iron sconces along the north wall",
         "category": "lighting-fixture",
         "material": "dark-iron",
+        "scale": 0.5,
+        "placement": { "strategy": "along-surface", "anchor": "north-wall", "count": 5, "yPlacement": "wall-mount", "rotationY": 0 }
+      },
+      {
+        "name": "sconce-iron",
+        "isNew": false,
+        "description": "Iron sconces along the south wall",
+        "category": "lighting-fixture",
+        "material": "dark-iron",
+        "scale": 0.5,
+        "placement": { "strategy": "along-surface", "anchor": "south-wall", "count": 5, "yPlacement": "wall-mount", "rotationY": 3.14159 }
+      },
+      {
+        "name": "barrel",
+        "isNew": true,
+        "description": "Ale and wine barrels along walls — drink stores for feasts",
+        "category": "furniture",
+        "material": "ironwood",
+        "scale": 0.7,
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [
+            {"x": -11.3, "y": 0, "z": -3, "rotationY": 0.4},
+            {"x": -11.3, "y": 0, "z": -4, "rotationY": -0.2},
+            {"x": 11.3, "y": 0, "z": 2, "rotationY": 0.8},
+            {"x": 11.3, "y": 0, "z": 3, "rotationY": -0.5},
+            {"x": -9, "y": 0, "z": 6.3, "rotationY": 0.1},
+            {"x": 9, "y": 0, "z": 6.3, "rotationY": -0.3}
+          ],
+          "yPlacement": "floor"
+        }
+      },
+      {
+        "name": "crate",
+        "isNew": true,
+        "description": "Supply crates stacked near walls — provisions and household stores",
+        "category": "furniture",
+        "material": "ironwood",
         "scale": 0.6,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 1.5, "yPlacement": "floor", "rotationY": "random" }
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [
+            {"x": -11.2, "y": 0, "z": -2.5, "rotationY": 0.3},
+            {"x": -11.2, "y": 0.5, "z": -2.8, "rotationY": 0.8},
+            {"x": 11.2, "y": 0, "z": 1.5, "rotationY": -0.2},
+            {"x": -7, "y": 0, "z": 6.3, "rotationY": 0.6}
+          ],
+          "yPlacement": "floor"
+        }
       },
       {
-        "name": "sconce-iron",
+        "name": "armor-stand",
         "isNew": false,
-        "description": "Iron sconces along the north wall — lighting behind the dais and throne",
+        "description": "Armor display stands along the aisles",
+        "category": "furniture",
+        "material": "dark-iron",
+        "scale": 0.9,
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [
+            {"x": -6, "y": 0, "z": -6.5},
+            {"x": 6, "y": 0, "z": -6.5, "rotationY": 3.14159},
+            {"x": -11, "y": 0, "z": 5.5, "rotationY": 1.5708},
+            {"x": 11, "y": 0, "z": 5.5, "rotationY": -1.5708}
+          ],
+          "yPlacement": "floor"
+        }
+      },
+      {
+        "name": "lantern",
+        "isNew": false,
+        "description": "Iron lanterns on the floor near columns and walls — supplemental lighting",
         "category": "lighting-fixture",
         "material": "dark-iron",
         "scale": 0.5,
-        "placement": { "strategy": "along-surface", "anchor": "north-wall", "count": 6, "yPlacement": "wall-mount", "rotationY": 0 }
-      },
-      {
-        "name": "sconce-iron",
-        "isNew": false,
-        "description": "Iron sconces along the south wall — lighting near the entrance",
-        "category": "lighting-fixture",
-        "material": "dark-iron",
-        "scale": 0.5,
-        "placement": { "strategy": "along-surface", "anchor": "south-wall", "count": 6, "yPlacement": "wall-mount", "rotationY": 3.14159 }
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [
+            {"x": -5.2, "y": 0, "z": -4.2}, {"x": 5.2, "y": 0, "z": -4.2},
+            {"x": -5.2, "y": 0, "z": 0.2}, {"x": 5.2, "y": 0, "z": 0.2},
+            {"x": -5.2, "y": 0, "z": 4.2}, {"x": 5.2, "y": 0, "z": 4.2},
+            {"x": -8.2, "y": 0, "z": 5.7}, {"x": 8.2, "y": 0, "z": 5.7}
+          ],
+          "yPlacement": "floor"
+        }
       }
     ],
     "functionalObjects": [
       {
         "name": "goblet",
         "isNew": false,
-        "description": "Drinking vessels set along the feasting table — Northerners drink ale and mead from ceramic cups",
+        "description": "Drinking vessels set along the feasting table",
         "category": "tableware",
         "material": "ceramic",
         "scale": 0.7,
@@ -599,10 +565,11 @@
           "strategy": "array",
           "anchor": "long-table",
           "positions": [
-            {"x": -1.2, "y": 0.85, "z": -1.2}, {"x": 1.0, "y": 0.85, "z": -1.0},
-            {"x": -0.8, "y": 0.85, "z": 0.3}, {"x": 1.3, "y": 0.85, "z": 0.5},
-            {"x": -1.5, "y": 0.85, "z": 1.0}, {"x": 0.7, "y": 0.85, "z": 1.3},
-            {"x": -0.3, "y": 0.85, "z": -0.5}, {"x": 0.2, "y": 0.85, "z": 0.8}
+            {"x": -1.2, "y": 0.85, "z": -2.0}, {"x": 1.0, "y": 0.85, "z": -2.0},
+            {"x": -1.3, "y": 0.85, "z": -1.0}, {"x": 1.2, "y": 0.85, "z": -1.0},
+            {"x": -1.0, "y": 0.85, "z": 0.0}, {"x": 1.3, "y": 0.85, "z": 0.2},
+            {"x": -1.5, "y": 0.85, "z": 1.0}, {"x": 0.9, "y": 0.85, "z": 1.2},
+            {"x": -0.8, "y": 0.85, "z": 2.0}, {"x": 1.1, "y": 0.85, "z": 1.8}
           ],
           "yPlacement": "floor"
         }
@@ -610,7 +577,7 @@
       {
         "name": "plate",
         "isNew": false,
-        "description": "Ceramic plates set for the evening meal — each place gets a plate",
+        "description": "Ceramic plates set for the evening meal",
         "category": "tableware",
         "material": "ceramic",
         "scale": 0.7,
@@ -618,10 +585,11 @@
           "strategy": "array",
           "anchor": "long-table",
           "positions": [
-            {"x": -1.5, "y": 0.85, "z": -1.5}, {"x": 1.5, "y": 0.85, "z": -1.3},
-            {"x": -1.0, "y": 0.85, "z": -0.2}, {"x": 1.0, "y": 0.85, "z": 0.0},
-            {"x": -1.3, "y": 0.85, "z": 0.8}, {"x": 1.2, "y": 0.85, "z": 1.0},
-            {"x": -0.5, "y": 0.85, "z": 1.5}, {"x": 0.5, "y": 0.85, "z": -0.8}
+            {"x": -1.5, "y": 0.85, "z": -2.2}, {"x": 1.5, "y": 0.85, "z": -2.0},
+            {"x": -1.2, "y": 0.85, "z": -1.2}, {"x": 1.0, "y": 0.85, "z": -0.8},
+            {"x": -1.3, "y": 0.85, "z": 0.2}, {"x": 1.2, "y": 0.85, "z": 0.5},
+            {"x": -1.0, "y": 0.85, "z": 1.2}, {"x": 1.4, "y": 0.85, "z": 1.5},
+            {"x": -0.5, "y": 0.85, "z": 2.2}, {"x": 0.7, "y": 0.85, "z": -0.3}
           ],
           "yPlacement": "floor"
         }
@@ -629,7 +597,7 @@
       {
         "name": "food-platter",
         "isNew": false,
-        "description": "Serving platters down the table center — communal dishes of roast meat and bread",
+        "description": "Serving platters down the table center — communal dishes",
         "category": "tableware",
         "material": "ceramic",
         "scale": 0.8,
@@ -637,8 +605,8 @@
           "strategy": "array",
           "anchor": "long-table",
           "positions": [
-            {"x": 0, "y": 0.85, "z": -1.0}, {"x": 0, "y": 0.85, "z": 0.5},
-            {"x": 0, "y": 0.85, "z": -0.2}, {"x": 0, "y": 0.85, "z": 1.2}
+            {"x": 0, "y": 0.85, "z": -1.5}, {"x": 0, "y": 0.85, "z": -0.3},
+            {"x": 0, "y": 0.85, "z": 0.8}, {"x": 0, "y": 0.85, "z": 1.8}
           ],
           "yPlacement": "floor"
         }
@@ -646,7 +614,7 @@
       {
         "name": "candelabra",
         "isNew": false,
-        "description": "Table candelabras along the feasting table — tallow candles half-burned",
+        "description": "Table candelabras along the feasting table",
         "category": "tableware",
         "material": "dark-iron",
         "scale": 0.6,
@@ -654,7 +622,8 @@
           "strategy": "array",
           "anchor": "long-table",
           "positions": [
-            {"x": 0, "y": 0.85, "z": -1.5}, {"x": 0, "y": 0.85, "z": 0}, {"x": 0, "y": 0.85, "z": 1.5}
+            {"x": 0, "y": 0.85, "z": -2.0}, {"x": 0, "y": 0.85, "z": -0.5},
+            {"x": 0, "y": 0.85, "z": 1.0}, {"x": 0, "y": 0.85, "z": 2.3}
           ],
           "yPlacement": "floor"
         }
@@ -662,7 +631,7 @@
       {
         "name": "wine-jug",
         "isNew": false,
-        "description": "Ceramic wine jugs on the sideboards — servants refill goblets from these",
+        "description": "Ceramic wine jugs on the sideboards",
         "category": "tableware",
         "material": "ceramic",
         "scale": 0.7,
@@ -670,7 +639,8 @@
           "strategy": "array",
           "anchor": "room-center",
           "positions": [
-            {"x": -9.8, "y": 0.88, "z": -5}, {"x": -10.2, "y": 0.88, "z": -4.8}, {"x": 10, "y": 0.88, "z": -5}
+            {"x": -9.8, "y": 0.88, "z": -5}, {"x": -10.2, "y": 0.88, "z": -4.8},
+            {"x": 10, "y": 0.88, "z": -5}, {"x": 10.3, "y": 0.88, "z": -5.2}
           ],
           "yPlacement": "floor"
         }
@@ -678,7 +648,7 @@
       {
         "name": "candle-stub",
         "isNew": false,
-        "description": "Half-burned candle stubs on sideboards and windowsill — evidence of long evenings",
+        "description": "Half-burned candle stubs on sideboards and windowsill",
         "category": "tableware",
         "material": "wax",
         "scale": 0.5,
@@ -688,7 +658,26 @@
           "positions": [
             {"x": -10.3, "y": 0.88, "z": -5.2}, {"x": 10.2, "y": 0.88, "z": -4.7},
             {"x": 11.6, "y": 4.0, "z": -2},
-            {"x": -9.5, "y": 0.88, "z": -4.6}, {"x": 9.8, "y": 0.88, "z": -5.3}
+            {"x": -9.5, "y": 0.88, "z": -4.6}, {"x": 9.8, "y": 0.88, "z": -5.3},
+            {"x": 0, "y": 0.85, "z": -2.3}, {"x": 0.3, "y": 0.85, "z": 0.3}
+          ],
+          "yPlacement": "floor"
+        }
+      },
+      {
+        "name": "tankard",
+        "isNew": true,
+        "description": "Wooden drinking tankards on the table — cheaper than goblets, used by common household",
+        "category": "tableware",
+        "material": "ironwood",
+        "scale": 0.5,
+        "placement": {
+          "strategy": "array",
+          "anchor": "long-table",
+          "positions": [
+            {"x": -0.5, "y": 0.85, "z": -1.5}, {"x": 0.5, "y": 0.85, "z": -0.7},
+            {"x": -0.3, "y": 0.85, "z": 0.6}, {"x": 0.8, "y": 0.85, "z": 1.4},
+            {"x": -1.0, "y": 0.85, "z": 1.8}, {"x": 1.5, "y": 0.85, "z": -1.8}
           ],
           "yPlacement": "floor"
         }
@@ -696,153 +685,222 @@
       {
         "name": "goblet",
         "isNew": false,
-        "description": "Fallen goblets on the floor — knocked over during revelry, rolled under benches",
-        "category": "tableware",
-        "material": "ceramic",
-        "scale": 0.5,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "plate",
-        "isNew": false,
-        "description": "Plates set down on the floor — servants stacking used dishes, dogs licking scraps",
-        "category": "tableware",
-        "material": "ceramic",
-        "scale": 0.5,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "candle-stub",
-        "isNew": false,
-        "description": "Candle stubs dropped on the floor and surfaces — burned down to nothing, wax pooled beneath",
-        "category": "tableware",
-        "material": "wax",
-        "scale": 0.4,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 3.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "wine-jug",
-        "isNew": false,
-        "description": "Empty wine jugs on the floor near tables — drained during feasts, awaiting collection",
+        "description": "Goblets on the sideboards — ready for refilling",
         "category": "tableware",
         "material": "ceramic",
         "scale": 0.6,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 1.5, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "food-platter",
-        "isNew": false,
-        "description": "Used platters on the floor — set down for hounds, or stacked by servants after a meal",
-        "category": "tableware",
-        "material": "ceramic",
-        "scale": 0.6,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 1.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "tankard",
-        "isNew": true,
-        "description": "Wooden drinking tankards — cheaper than goblets, used by common household members and guards",
-        "category": "tableware",
-        "material": "ironwood",
-        "scale": 0.5,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.0, "yPlacement": "floor", "rotationY": "random" }
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [
+            {"x": -10.1, "y": 0.88, "z": -5.3}, {"x": -9.7, "y": 0.88, "z": -4.5},
+            {"x": 10.1, "y": 0.88, "z": -4.9}, {"x": 9.7, "y": 0.88, "z": -5.4}
+          ],
+          "yPlacement": "floor"
+        }
       },
       {
         "name": "candelabra",
         "isNew": false,
-        "description": "Candelabras on side tables and floor — moved around the hall as needed for light",
+        "description": "Candelabras on sideboards — tallow candles half-burned",
         "category": "tableware",
         "material": "dark-iron",
         "scale": 0.5,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 1.5, "yPlacement": "floor", "rotationY": "random" }
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [
+            {"x": -10, "y": 0.88, "z": -4.5},
+            {"x": 10, "y": 0.88, "z": -5.5}
+          ],
+          "yPlacement": "floor"
+        }
+      },
+      {
+        "name": "goblet",
+        "isNew": false,
+        "description": "A few knocked-over goblets near the table — evidence of revelry",
+        "category": "tableware",
+        "material": "ceramic",
+        "scale": 0.5,
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [
+            {"x": -3, "y": 0.005, "z": -0.5, "rotationY": 1.2},
+            {"x": 2.5, "y": 0.005, "z": 1.0, "rotationY": 2.8},
+            {"x": -1, "y": 0.005, "z": 2.0, "rotationY": 0.6}
+          ],
+          "yPlacement": "floor"
+        }
+      },
+      {
+        "name": "plate",
+        "isNew": false,
+        "description": "A couple of plates on the floor near the table — servants stacking",
+        "category": "tableware",
+        "material": "ceramic",
+        "scale": 0.5,
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [
+            {"x": -2, "y": 0.005, "z": 1.5, "rotationY": 0.4},
+            {"x": 3, "y": 0.005, "z": -1.0, "rotationY": 2.1}
+          ],
+          "yPlacement": "floor"
+        }
       }
     ],
     "lifeLayer": [
       {
         "name": "rushes",
         "isNew": false,
-        "description": "Large bundles of dried rushes covering the stone floor — universal medieval floor covering, changed weekly, thicker near center where foot traffic compresses them",
+        "description": "Dried rushes covering the stone floor — universal medieval floor covering",
         "category": "floor-cover",
         "material": "fabric",
         "scale": 1.0,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 6.0, "yPlacement": "floor", "rotationY": "random" }
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [
+            {"x": -3, "y": 0.005, "z": -3}, {"x": 0, "y": 0.005, "z": -3}, {"x": 3, "y": 0.005, "z": -3},
+            {"x": -3, "y": 0.005, "z": 0}, {"x": 0, "y": 0.005, "z": 0}, {"x": 3, "y": 0.005, "z": 0},
+            {"x": -3, "y": 0.005, "z": 3}, {"x": 0, "y": 0.005, "z": 3}, {"x": 3, "y": 0.005, "z": 3},
+            {"x": -6, "y": 0.005, "z": -5}, {"x": 6, "y": 0.005, "z": -5},
+            {"x": -6, "y": 0.005, "z": 0}, {"x": 6, "y": 0.005, "z": 0},
+            {"x": -6, "y": 0.005, "z": 4}, {"x": 6, "y": 0.005, "z": 4},
+            {"x": -9, "y": 0.005, "z": -3}, {"x": 9, "y": 0.005, "z": -3},
+            {"x": -9, "y": 0.005, "z": 2}, {"x": 9, "y": 0.005, "z": 2},
+            {"x": 0, "y": 0.005, "z": 5}
+          ],
+          "yPlacement": "floor"
+        }
       },
       {
-        "name": "rushes",
+        "name": "fur-rug",
         "isNew": false,
-        "description": "Small scattered rush tufts and individual reeds — the detritus that accumulates between full floor coverings, kicked aside by boots",
+        "description": "Bear and wolf pelts — one on the dais, one for supplicants",
         "category": "floor-cover",
-        "material": "fabric",
-        "scale": 0.5,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 4.0, "yPlacement": "floor", "rotationY": "random" }
+        "material": "fur",
+        "scale": 1.5,
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [{"x": 0, "y": 0.32, "z": -5}, {"x": 0, "y": 0.01, "z": -3.5}],
+          "yPlacement": "floor"
+        }
       },
       {
-        "name": "floor-crack",
+        "name": "hound-sleeping",
         "isNew": false,
-        "description": "Cracks in the stone floor — centuries of boots, furniture, and heavy loads have split the flagstones throughout the hall",
-        "category": "surface-detail",
-        "material": "northern-stone",
+        "description": "A sleeping deerhound near the hearth",
+        "category": "floor-cover",
+        "material": "fur",
         "scale": 0.8,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "worn-path",
-        "isNew": false,
-        "description": "Worn stone paths — polished smooth by generations of servants, soldiers, and supplicants walking the same routes daily",
-        "category": "surface-detail",
-        "material": "northern-stone",
-        "scale": 1.0,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.0, "yPlacement": "floor", "rotationY": "random" }
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [{"x": 2, "y": 0, "z": -4}],
+          "yPlacement": "floor"
+        }
       },
       {
         "name": "hearth-scorch",
         "isNew": false,
-        "description": "Scorch marks from generations of hearth fires — darkened stone radiating outward, spark burns on nearby surfaces",
+        "description": "Scorch marks from generations of hearth fires",
         "category": "surface-detail",
         "material": "northern-stone",
         "scale": 0.8,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 1.5, "yPlacement": "floor", "rotationY": "random" }
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [
+            {"x": -1.5, "y": 0.005, "z": -6}, {"x": 1.5, "y": 0.005, "z": -6},
+            {"x": 0, "y": 0.005, "z": -5.5}, {"x": -3, "y": 0.005, "z": -5.5}, {"x": 3, "y": 0.005, "z": -5.5}
+          ],
+          "yPlacement": "floor"
+        }
       },
       {
-        "name": "table-stain",
+        "name": "floor-crack",
         "isNew": false,
-        "description": "Ring stains, grease marks, and spilled ale on every surface — evidence of countless meals and revels",
+        "description": "Cracks in the stone floor — centuries of wear",
         "category": "surface-detail",
-        "material": "ironwood",
-        "scale": 0.5,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "ale-puddle",
-        "isNew": false,
-        "description": "Spilled ale puddles on the stone floor — evidence of feast revelry, not yet mopped by servants",
-        "category": "surface-detail",
-        "material": "food",
-        "scale": 0.5,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "wax-drip",
-        "isNew": false,
-        "description": "Solidified wax drippings pooled on floor and surfaces beneath chandeliers and sconces — tallow candles drip constantly",
-        "category": "surface-detail",
-        "material": "wax",
-        "scale": 0.3,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.5, "yPlacement": "floor", "rotationY": "random" }
+        "material": "northern-stone",
+        "scale": 0.8,
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [
+            {"x": -4, "y": 0.005, "z": -1, "rotationY": 0.3},
+            {"x": 2, "y": 0.005, "z": 2, "rotationY": 1.1},
+            {"x": -7, "y": 0.005, "z": -4, "rotationY": 0.7},
+            {"x": 6, "y": 0.005, "z": 3, "rotationY": 2.4},
+            {"x": 0, "y": 0.005, "z": -2, "rotationY": 0.5},
+            {"x": -8, "y": 0.005, "z": 1, "rotationY": 1.8},
+            {"x": 8, "y": 0.005, "z": -2, "rotationY": 0.9}
+          ],
+          "yPlacement": "floor"
+        }
       },
       {
         "name": "wall-moss",
         "isNew": false,
-        "description": "Damp moss growing on floor stones and lower walls — the North is cold and wet, moisture seeps through the stone year-round",
+        "description": "Damp moss on lower walls — the North is cold and wet",
         "category": "surface-detail",
         "material": "northern-stone",
         "scale": 0.6,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 3.0, "yPlacement": "floor", "rotationY": "random" }
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [
+            {"x": -11.8, "y": 0.2, "z": -5.5}, {"x": -11.8, "y": 0.3, "z": 1},
+            {"x": 11.8, "y": 0.2, "z": -3}, {"x": 11.8, "y": 0.15, "z": 5},
+            {"x": -5, "y": 0.1, "z": -6.8}, {"x": 5, "y": 0.1, "z": -6.8},
+            {"x": -11.8, "y": 0.25, "z": 4.5}, {"x": 11.8, "y": 0.2, "z": 1}
+          ],
+          "yPlacement": "floor"
+        }
+      },
+      {
+        "name": "table-stain",
+        "isNew": false,
+        "description": "Ring stains, grease marks, and spilled ale on the feasting table",
+        "category": "surface-detail",
+        "material": "ironwood",
+        "scale": 0.5,
+        "placement": {
+          "strategy": "array",
+          "anchor": "long-table",
+          "positions": [
+            {"x": -0.5, "y": 0.86, "z": -1.8}, {"x": 0.8, "y": 0.86, "z": -0.5},
+            {"x": -1.0, "y": 0.86, "z": 0.5}, {"x": 0.3, "y": 0.86, "z": 1.5}
+          ],
+          "yPlacement": "floor"
+        }
+      },
+      {
+        "name": "worn-path",
+        "isNew": false,
+        "description": "Worn stone paths polished smooth by generations of traffic",
+        "category": "surface-detail",
+        "material": "northern-stone",
+        "scale": 1.0,
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [
+            {"x": 0, "y": 0.003, "z": 3, "rotationY": 0},
+            {"x": 0, "y": 0.003, "z": -2, "rotationY": 0}
+          ],
+          "yPlacement": "floor"
+        }
       },
       {
         "name": "cobweb",
         "isNew": false,
-        "description": "Cobwebs in upper corners and between rafters — the ceiling is too high for servants to clean, spiders claim the dark spaces",
+        "description": "Cobwebs in upper corners and between rafters",
         "category": "surface-detail",
         "material": "fabric",
         "scale": 0.6,
@@ -861,7 +919,7 @@
       {
         "name": "banner",
         "isNew": false,
-        "description": "Forrester house banners — ironwood tree sigil on green field, flanking hearth and walls. Some faded, one has a mended tear",
+        "description": "Forrester house banners — ironwood tree sigil on green field",
         "category": "wall-decor",
         "material": "fabric",
         "scale": 1.2,
@@ -880,7 +938,7 @@
       {
         "name": "tapestry",
         "isNew": false,
-        "description": "Woven tapestries depicting Forrester history — ironwood harvesting scenes and the founding of Ironrath, faded with age",
+        "description": "Woven tapestries depicting Forrester history",
         "category": "wall-decor",
         "material": "fabric",
         "scale": 1.0,
@@ -897,7 +955,7 @@
       {
         "name": "dire-wolf-shield",
         "isNew": false,
-        "description": "Stark dire wolf shields mounted above hearth arches — tribute to the Forresters' overlords",
+        "description": "Stark dire wolf shields mounted above hearth arches",
         "category": "wall-decor",
         "material": "dark-iron",
         "scale": 1.2,
@@ -911,7 +969,7 @@
       {
         "name": "mounted-antlers",
         "isNew": false,
-        "description": "Trophy antlers from the Wolfswood — hunting trophies on the east wall, a Forrester tradition",
+        "description": "Trophy antlers from the Wolfswood on the east wall",
         "category": "wall-decor",
         "material": "bone",
         "scale": 0.8,
@@ -927,7 +985,7 @@
       {
         "name": "heraldic-crest",
         "isNew": false,
-        "description": "Forrester ironwood tree crest above the hearth mantel — the largest display of house identity",
+        "description": "Forrester ironwood tree crest above the hearth mantel",
         "category": "wall-decor",
         "material": "ironwood",
         "scale": 1.5,
@@ -939,113 +997,63 @@
         }
       },
       {
-        "name": "soot-mark",
-        "isNew": true,
-        "description": "Soot deposits on ceiling and upper walls from centuries of hearth fires and torches — blackened stone overhead",
+        "name": "ale-puddle",
+        "isNew": false,
+        "description": "Spilled ale puddles on the stone floor — evidence of feast revelry",
         "category": "surface-detail",
-        "material": "northern-stone",
-        "scale": 0.6,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "wall-stain",
-        "isNew": true,
-        "description": "Water stains and age marks on walls and floor — moisture seepage, old spills, the patina of centuries of use",
-        "category": "surface-detail",
-        "material": "northern-stone",
+        "material": "food",
         "scale": 0.5,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.0, "yPlacement": "floor", "rotationY": "random" }
+        "placement": {
+          "strategy": "array",
+          "anchor": "room-center",
+          "positions": [
+            {"x": -1, "y": 0.004, "z": 0.5, "rotationY": 0.8},
+            {"x": 2, "y": 0.004, "z": -1, "rotationY": 2.3},
+            {"x": -4, "y": 0.004, "z": 2, "rotationY": 1.5}
+          ],
+          "yPlacement": "floor"
+        }
       },
       {
         "name": "bone-scrap",
         "isNew": false,
-        "description": "Gnawed bones tossed to the floor — hound dinner scraps, common in any hall where dogs roam freely",
+        "description": "Gnawed bones tossed to the floor — hound dinner scraps",
         "category": "surface-detail",
         "material": "bone",
         "scale": 0.4,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "bread-crumb",
-        "isNew": true,
-        "description": "Bread crusts and crumbs scattered from the feasting table — birds peck at them in the morning",
-        "category": "surface-detail",
-        "material": "food",
-        "scale": 0.3,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 2.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "ash-pile",
-        "isNew": true,
-        "description": "Small ash deposits near the hearth and brazier positions — fine grey ash that drifts across the floor when doors open",
-        "category": "surface-detail",
-        "material": "northern-stone",
-        "scale": 0.4,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 1.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "mud-track",
-        "isNew": true,
-        "description": "Muddy boot prints near the entrances — guards and servants track Northern mud into the hall daily",
-        "category": "surface-detail",
-        "material": "northern-stone",
-        "scale": 0.4,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 1.0, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "fur-rug",
-        "isNew": false,
-        "description": "Bear and wolf pelts — one on the dais beneath the throne, one for supplicants to kneel on",
-        "category": "floor-cover",
-        "material": "fur",
-        "scale": 1.5,
         "placement": {
           "strategy": "array",
           "anchor": "room-center",
-          "positions": [{"x": 0, "y": 0.32, "z": -5}, {"x": 0, "y": 0.01, "z": -3.5}],
+          "positions": [
+            {"x": 1.5, "y": 0.005, "z": -3.5, "rotationY": 0.6},
+            {"x": -2, "y": 0.005, "z": -4, "rotationY": 2.1},
+            {"x": 3, "y": 0.005, "z": 1, "rotationY": 1.2},
+            {"x": -1, "y": 0.005, "z": 3, "rotationY": 0.9}
+          ],
           "yPlacement": "floor"
         }
       },
       {
-        "name": "hound-sleeping",
+        "name": "wax-drip",
         "isNew": false,
-        "description": "A sleeping deerhound near the hearth — has claimed the warmest spot in the hall",
-        "category": "floor-cover",
-        "material": "fur",
-        "scale": 0.8,
+        "description": "Solidified wax drippings beneath chandeliers and sconces",
+        "category": "surface-detail",
+        "material": "wax",
+        "scale": 0.3,
         "placement": {
           "strategy": "array",
           "anchor": "room-center",
-          "positions": [{"x": 2, "y": 0, "z": -4}],
+          "positions": [
+            {"x": 0, "y": 0.005, "z": -3, "rotationY": 0.5},
+            {"x": 0, "y": 0.005, "z": 0, "rotationY": 1.8},
+            {"x": 0, "y": 0.005, "z": 3, "rotationY": 2.9},
+            {"x": -11.5, "y": 0.005, "z": -4, "rotationY": 0.3},
+            {"x": 11.5, "y": 0.005, "z": -4, "rotationY": 1.7},
+            {"x": -11.5, "y": 0.005, "z": 3, "rotationY": 0.8},
+            {"x": 11.5, "y": 0.005, "z": 3, "rotationY": 2.2}
+          ],
           "yPlacement": "floor"
         }
-      },
-      {
-        "name": "dropped-cloth",
-        "isNew": true,
-        "description": "Discarded napkins and rags on the floor — dropped during service, forgotten in corners",
-        "category": "floor-cover",
-        "material": "fabric",
-        "scale": 0.3,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 1.5, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "spilled-straw",
-        "isNew": true,
-        "description": "Loose straw and rushes from supply crates — spilling out where fresh floor coverings are stored",
-        "category": "floor-cover",
-        "material": "fabric",
-        "scale": 0.4,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 1.5, "yPlacement": "floor", "rotationY": "random" }
-      },
-      {
-        "name": "fallen-cup",
-        "isNew": true,
-        "description": "Overturned cups and tankards on the floor — knocked from tables, kicked under benches, evidence of a lively feast",
-        "category": "tableware",
-        "material": "ceramic",
-        "scale": 0.4,
-        "placement": { "strategy": "scattered", "anchor": "room-center", "density": 1.0, "yPlacement": "floor", "rotationY": "random" }
       }
     ],
     "atmosphere": {
