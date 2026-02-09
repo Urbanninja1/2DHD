@@ -17,7 +17,7 @@ import { createDustInLight } from '../rendering/particles/dust-in-light.js';
 import type { ParticleSystem } from '../rendering/particles/types.js';
 import { assetManager } from '../loaders/asset-manager.js';
 import { loadPBRTexture, textureLoader, type PBRTextureSet, type LoaderSet } from '../loaders/texture-loaders.js';
-import { applyDetailOverlay } from '../rendering/detail-overlay.js';
+import { getPropCategory, loadCategoryPBR, applyPropMaterial, isHeroProp, loadHeroPBR } from '../rendering/prop-materials.js';
 import { loadTemplate } from '../rendering/hd2d-surface/texture-template.js';
 import { injectSurfaceDetail, type SurfaceDetailConfig, type SurfaceDetailHandle } from '../rendering/hd2d-surface/surface-injector.js';
 import { DecalSystem } from '../rendering/hd2d-surface/decal-system.js';
@@ -432,9 +432,6 @@ async function buildPBRMaterial(
     metalness: 0,
   });
 
-  // Break tiling repetition on large surfaces via detail map overlay
-  applyDetailOverlay(mat);
-
   return mat;
 }
 
@@ -482,6 +479,16 @@ async function buildModelProp(propDef: ModelPropDef, loaderSet?: LoaderSet): Pro
     });
 
     if (sourceMeshes.length === 0) return null;
+
+    // Replace baked GLB materials with proper PBR materials
+    const category = getPropCategory(modelPath);
+    const pbrSet = isHeroProp(modelPath)
+      ? (await loadHeroPBR(modelPath)) ?? (await loadCategoryPBR(category))
+      : await loadCategoryPBR(category);
+
+    for (const mesh of sourceMeshes) {
+      applyPropMaterial(mesh, category, pbrSet, modelPath);
+    }
 
     const modelName = modelPath.split('/').pop()?.replace('.glb', '') ?? 'unknown';
 
@@ -715,9 +722,6 @@ function buildWallPBR(
     roughness: pbrSet.roughness ? 1.0 : 0.9,
     metalness: 0,
   });
-
-  // Break tiling repetition on walls via detail map overlay
-  applyDetailOverlay(wallMat, 0.5, 0.3);
 
   const wall = new THREE.Mesh(wallGeo, wallMat);
   wall.position.set(position.x, position.y, position.z);
