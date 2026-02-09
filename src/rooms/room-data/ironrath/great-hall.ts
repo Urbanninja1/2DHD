@@ -18,37 +18,37 @@ const greatHall: RoomData = {
   dimensions: { width: 24, depth: 14, height: 10 },
   mood: 'grand',
 
-  // Northern stone — all channels >= 0x30 per lighting prevention rules
-  floorColor: 0x3A3530,
-  wallColor: 0x4A4540,
-  ceilingColor: 0x1f1510, // ironwood ceiling (dark)
+  // Northern stone — brightened base colors for denser scene
+  floorColor: 0x5A5550,
+  wallColor: 0x6A6560,
+  ceilingColor: 0x3a2a1a, // ironwood ceiling
 
   // PBR textures — Blender-generated northern stone + ironwood ceiling
   floorTexture: { basePath: 'assets/textures/stone/northern-floor' },
   wallTexture: { basePath: 'assets/textures/stone/northern-wall' },
   ceilingTexture: { basePath: 'assets/textures/wood/ironwood-ceiling' },
 
-  // Ambient light — above 0.45 minimum per lighting prevention rules
-  ambientLight: { color: 0x665544, intensity: 0.55 },
+  // Ambient light — boosted for denser scene with more geometry absorbing light
+  ambientLight: { color: 0x887766, intensity: 0.85 },
 
   // 11 lights: 1 directional + 10 point (budget cap)
   lights: [
     // Cool exterior light through east-wall window slit (shadow caster, god rays source)
-    { type: 'directional', position: { x: 10, y: 8, z: -2 }, color: 0xB0C4DE, intensity: 1.2, castShadow: true },
+    { type: 'directional', position: { x: 10, y: 8, z: -2 }, color: 0xB0C4DE, intensity: 2.0, castShadow: true },
     // Great hearth — dominant warm source, center of north wall
-    { type: 'point', position: { x: 0, y: 3, z: -6.5 }, color: 0xFF6B35, intensity: 6.0, distance: 12, decay: 1, flicker: true },
+    { type: 'point', position: { x: 0, y: 3, z: -6.5 }, color: 0xFF6B35, intensity: 10.0, distance: 14, decay: 1, flicker: true },
     // Wall sconces (4x — west and east walls)
-    { type: 'point', position: { x: -11, y: 4, z: -4 }, color: 0xFFCC66, intensity: 2.0, distance: 10, decay: 1, flicker: true },
-    { type: 'point', position: { x: -11, y: 4, z: 3 }, color: 0xFFCC66, intensity: 2.0, distance: 10, decay: 1, flicker: true },
-    { type: 'point', position: { x: 11, y: 4, z: -4 }, color: 0xFFCC66, intensity: 2.0, distance: 10, decay: 1, flicker: true },
-    { type: 'point', position: { x: 11, y: 4, z: 3 }, color: 0xFFCC66, intensity: 2.0, distance: 10, decay: 1, flicker: true },
+    { type: 'point', position: { x: -11, y: 4, z: -4 }, color: 0xFFCC66, intensity: 4.0, distance: 12, decay: 1, flicker: true },
+    { type: 'point', position: { x: -11, y: 4, z: 3 }, color: 0xFFCC66, intensity: 4.0, distance: 12, decay: 1, flicker: true },
+    { type: 'point', position: { x: 11, y: 4, z: -4 }, color: 0xFFCC66, intensity: 4.0, distance: 12, decay: 1, flicker: true },
+    { type: 'point', position: { x: 11, y: 4, z: 3 }, color: 0xFFCC66, intensity: 4.0, distance: 12, decay: 1, flicker: true },
     // Iron chandeliers (3x — overhead along central axis)
-    { type: 'point', position: { x: 0, y: 8.5, z: -3 }, color: 0xFFCC66, intensity: 2.5, distance: 12, decay: 1, flicker: true },
-    { type: 'point', position: { x: 0, y: 8.5, z: 0 }, color: 0xFFCC66, intensity: 2.5, distance: 12, decay: 1, flicker: true },
-    { type: 'point', position: { x: 0, y: 8.5, z: 3 }, color: 0xFFCC66, intensity: 2.5, distance: 12, decay: 1, flicker: true },
+    { type: 'point', position: { x: 0, y: 8.5, z: -3 }, color: 0xFFCC66, intensity: 5.0, distance: 14, decay: 1, flicker: true },
+    { type: 'point', position: { x: 0, y: 8.5, z: 0 }, color: 0xFFCC66, intensity: 5.0, distance: 14, decay: 1, flicker: true },
+    { type: 'point', position: { x: 0, y: 8.5, z: 3 }, color: 0xFFCC66, intensity: 5.0, distance: 14, decay: 1, flicker: true },
     // Braziers flanking dais (2x — warm accent)
-    { type: 'point', position: { x: -4, y: 2, z: -5 }, color: 0xFF6B35, intensity: 3.0, distance: 10, decay: 1, flicker: true },
-    { type: 'point', position: { x: 4, y: 2, z: -5 }, color: 0xFF6B35, intensity: 3.0, distance: 10, decay: 1, flicker: true },
+    { type: 'point', position: { x: -4, y: 2, z: -5 }, color: 0xFF6B35, intensity: 5.0, distance: 12, decay: 1, flicker: true },
+    { type: 'point', position: { x: 4, y: 2, z: -5 }, color: 0xFF6B35, intensity: 5.0, distance: 12, decay: 1, flicker: true },
   ],
 
   doors: [
