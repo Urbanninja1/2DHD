@@ -20,6 +20,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PNG } from 'pngjs';
+import { hex, setPixel, fillRect, createPNG } from './lib/png-helpers.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = join(__dirname, '..');
@@ -33,43 +34,12 @@ const ROWS = 2; // animation rows (idle, walk)
 const SW = FW * COLS; // sheet width: 128
 const SH = FH * ROWS; // sheet height: 96
 
-// --- Color helpers ---
-
-function hex(r, g, b, a = 255) {
-  return { r, g, b, a };
-}
-
 const TRANSPARENT = hex(0, 0, 0, 0);
 
 // --- Pixel drawing helpers ---
 
 function createSheet() {
-  const png = new PNG({ width: SW, height: SH });
-  // Fill transparent
-  for (let i = 0; i < png.data.length; i += 4) {
-    png.data[i] = 0;
-    png.data[i + 1] = 0;
-    png.data[i + 2] = 0;
-    png.data[i + 3] = 0;
-  }
-  return png;
-}
-
-function setPixel(png, x, y, color) {
-  if (x < 0 || x >= png.width || y < 0 || y >= png.height) return;
-  const idx = (y * png.width + x) * 4;
-  png.data[idx] = color.r;
-  png.data[idx + 1] = color.g;
-  png.data[idx + 2] = color.b;
-  png.data[idx + 3] = color.a;
-}
-
-function fillRect(png, x, y, w, h, color) {
-  for (let dy = 0; dy < h; dy++) {
-    for (let dx = 0; dx < w; dx++) {
-      setPixel(png, x + dx, y + dy, color);
-    }
-  }
+  return createPNG(SW, SH);
 }
 
 function drawOutline(png, x, y, w, h, color) {
