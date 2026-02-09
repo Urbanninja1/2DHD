@@ -178,35 +178,35 @@ Standard angles (from brainstorm):
 
 **Simplification:** For now, just capture and store baselines. Pixel-diff comparison can be added as a follow-up. The immediate value is having the screenshots auto-generated so they can be visually inspected.
 
-- [ ] **4.1** Create `playwright.config.ts` with WebGL-compatible settings
-- [ ] **4.2** Add `__debugCamera` exposure in dev mode (behind `import.meta.env.DEV`)
-- [ ] **4.3** Create `tests/visual/great-hall.spec.ts` with 3-angle screenshot capture
-- [ ] **4.4** Add `"test:visual": "playwright test"` script to `package.json`
-- [ ] **4.5** Generate baseline snapshots and store in `tests/visual/snapshots/`
-- [ ] **4.6** Verify test runs and produces screenshots matching current state
+- [x] **4.1** Create `playwright.config.ts` with WebGL-compatible settings
+- [x] **4.2** Add `__debugCamera` exposure in dev mode (behind `import.meta.env.DEV`)
+- [x] **4.3** Create `tests/visual/great-hall.spec.ts` with 3-angle screenshot capture
+- [x] **4.4** Add `"test:visual": "playwright test"` script to `package.json`
+- [x] **4.5** Generate baseline snapshots and store in `tests/visual/snapshots/`
+- [x] **4.6** Verify test runs and produces screenshots matching current state
 
 ---
 
 ## Acceptance Criteria
 
 ### Functional
-- [ ] No table items floating in mid-air (all within model bounds)
-- [ ] Table items at correct surface height (y ≈ 1.07)
-- [ ] Chandeliers in staggered diagonal pattern, not center line
-- [ ] Chandelier lights co-located with props (no orphaned lights)
-- [ ] Pipeline validation catches surface overflow with warnings
-- [ ] GLB bounding box reader returns correct dimensions for test models
+- [x] No table items floating in mid-air (all within model bounds)
+- [x] Table items at correct surface height (y ≈ 1.07)
+- [x] Chandeliers in staggered diagonal pattern, not center line
+- [x] Chandelier lights co-located with props (no orphaned lights)
+- [x] Pipeline validation catches surface overflow with warnings
+- [x] GLB bounding box reader returns correct dimensions for test models
 
 ### Visual
-- [ ] Table closeup screenshot shows items sitting ON the table surface
-- [ ] Default view shows chandeliers distributed across the room
-- [ ] No visual regressions vs. current state (lighting, banners, NPCs still correct)
+- [x] Table closeup screenshot shows items sitting ON the table surface
+- [x] Default view shows chandeliers distributed across the room
+- [x] No visual regressions vs. current state (lighting, banners, NPCs still correct)
 
 ### Infrastructure
-- [ ] `readModelBounds()` utility works on any GLB file
-- [ ] Validator warns when items overflow anchor model bounds
-- [ ] Playwright visual test suite runs and captures screenshots
-- [ ] `npm run test:visual` produces screenshots in `tests/visual/snapshots/`
+- [x] `readModelBounds()` utility works on any GLB file
+- [x] Validator warns when items overflow anchor model bounds
+- [x] Playwright visual test suite runs and captures screenshots
+- [x] `npm run test:visual` produces screenshots in `tests/visual/snapshots/`
 
 ## Implementation Order
 

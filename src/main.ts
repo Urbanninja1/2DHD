@@ -49,7 +49,12 @@ async function init(): Promise<void> {
   RoomTransitionSystem.roomManager = roomManager;
 
   // --- Load initial room (before world.build — queues flicker lights) ---
-  await roomManager.loadRoom(RoomId.ThroneRoom);
+  // Support ?room= URL param for visual testing, default to ThroneRoom
+  const urlRoom = new URLSearchParams(window.location.search).get('room');
+  const initialRoom = urlRoom && (RoomId as any)[urlRoom] !== undefined
+    ? (RoomId as any)[urlRoom] as RoomId
+    : RoomId.ThroneRoom;
+  await roomManager.loadRoom(initialRoom);
 
   // --- Create player entity ---
   let playerTex: THREE.Texture;
