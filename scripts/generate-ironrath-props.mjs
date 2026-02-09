@@ -730,6 +730,58 @@ function generateTableStain() {
   return scene;
 }
 
+function generateAlePuddle() {
+  const scene = new THREE.Scene();
+  // Amber-brown translucent puddle on floor
+  const tex = createDetailTexture(128, 128, 80, 55, 25, 0.55);
+  const mat = new THREE.MeshBasicMaterial({
+    map: tex, transparent: true, depthWrite: false, opacity: 0.7,
+    polygonOffset: true, polygonOffsetFactor: -4,
+  });
+
+  const quad = new THREE.PlaneGeometry(0.6, 0.5);
+  quad.rotateX(-Math.PI / 2);
+  quad.translate(0, 0.005, 0);
+  scene.add(new THREE.Mesh(quad, mat));
+  return scene;
+}
+
+function generateBoneScrap() {
+  const scene = new THREE.Scene();
+  const boneMat = new THREE.MeshStandardMaterial({
+    color: 0xD2C5A0, roughness: 0.85, metalness: 0.0,
+  });
+
+  // Small gnawed bone — cylinder shaft with knobby ends
+  const shaft = new THREE.CylinderGeometry(0.02, 0.018, 0.15, 6);
+  shaft.rotateZ(Math.PI / 2);
+  const knob1 = new THREE.SphereGeometry(0.03, 6, 4);
+  knob1.translate(-0.075, 0, 0);
+  const knob2 = new THREE.SphereGeometry(0.025, 6, 4);
+  knob2.translate(0.075, 0, 0);
+
+  const merged = mergeGeometries([shaft, knob1, knob2]);
+  merged.translate(0, 0.02, 0);
+  scene.add(new THREE.Mesh(merged, boneMat));
+  return scene;
+}
+
+function generateWaxDrip() {
+  const scene = new THREE.Scene();
+  // Off-white/cream solidified wax puddle
+  const tex = createDetailTexture(64, 64, 200, 190, 155, 0.58);
+  const mat = new THREE.MeshBasicMaterial({
+    map: tex, transparent: true, depthWrite: false,
+    polygonOffset: true, polygonOffsetFactor: -4,
+  });
+
+  const quad = new THREE.PlaneGeometry(0.3, 0.3);
+  quad.rotateX(-Math.PI / 2);
+  quad.translate(0, 0.005, 0);
+  scene.add(new THREE.Mesh(quad, mat));
+  return scene;
+}
+
 // ─── Prop Catalog ────────────────────────────────────────────────────
 
 const PROP_CATALOG = [
@@ -765,6 +817,9 @@ const PROP_CATALOG = [
   { name: 'wall-moss', generate: generateWallMoss },
   { name: 'hearth-scorch', generate: generateHearthScorch },
   { name: 'table-stain', generate: generateTableStain },
+  { name: 'ale-puddle', generate: generateAlePuddle },
+  { name: 'bone-scrap', generate: generateBoneScrap },
+  { name: 'wax-drip', generate: generateWaxDrip },
 ];
 
 // ─── Main ────────────────────────────────────────────────────────────
