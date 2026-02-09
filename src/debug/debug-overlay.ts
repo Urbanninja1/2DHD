@@ -1,6 +1,7 @@
 import type * as THREE from 'three';
 import type { HD2DPipeline } from '../rendering/hd2d-pipeline.js';
 import { RoomTransitionSystem } from '../ecs/systems/room-transition.js';
+import { GameClockSystem } from '../ecs/systems/game-clock.js';
 import { RoomId, type RoomIdValue } from '../ecs/components/singletons.js';
 import { runLeakTest } from './leak-test.js';
 
@@ -25,6 +26,7 @@ const ROOM_NAMES: Record<number, string> = {
   [RoomId.QueensBallroom]: "Queen's Ballroom",
   [RoomId.TowerStairwell]: 'Tower Stairwell',
   [RoomId.Battlements]: 'Battlements',
+  [RoomId.IronrathGreatHall]: 'Ironrath Great Hall',
 };
 
 export function createDebugOverlay(pipeline: HD2DPipeline, renderer?: THREE.WebGLRenderer): DebugOverlay {
@@ -64,8 +66,21 @@ export function createDebugOverlay(pipeline: HD2DPipeline, renderer?: THREE.WebG
     const rm = RoomTransitionSystem.roomManager;
     const roomName = rm ? (ROOM_NAMES[rm.currentRoomId] ?? `Room ${rm.currentRoomId}`) : '---';
 
+    const tod = GameClockSystem.timeOfDay;
+    const hours = Math.floor(tod);
+    const minutes = Math.floor((tod - hours) * 60);
+    const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+
+    // Determine time period label
+    let period: string;
+    if (tod >= 5 && tod < 7) period = 'Dawn';
+    else if (tod >= 7 && tod < 17) period = 'Day';
+    else if (tod >= 17 && tod < 19) period = 'Dusk';
+    else period = 'Night';
+
     const lines = [
       `[Room: ${roomName}]`,
+      `[Time: ${timeStr} (${period})]`,
       '',
       '[Debug Controls]',
       `F1: Bloom      ${effects.bloom ? 'ON' : 'OFF'}`,
@@ -75,12 +90,19 @@ export function createDebugOverlay(pipeline: HD2DPipeline, renderer?: THREE.WebG
       `F5: SSAO       ${effects.ssao ? 'ON' : 'OFF'}`,
       `F6: GodRays    ${effects.godrays ? 'ON' : 'OFF'}`,
       '',
-      '1-9,0: Teleport to room',
+      '1-9,0: Teleport to room (Red Keep)',
+      'G:     Ironrath Great Hall',
+      '[/]:   Time -/+ 3 hours',
       'F9:    GPU Leak Test',
     ];
     panel.textContent = lines.join('\n');
   }
   updatePanel();
+
+  // Expose time setter for debug scripts (Playwright, console)
+  (window as unknown as Record<string, unknown>).__setGameTime = (hours: number) => {
+    GameClockSystem.pendingTimeOverride = hours;
+  };
 
   // Update panel periodically to show current room
   const panelInterval = setInterval(updatePanel, 500);
@@ -97,6 +119,8 @@ export function createDebugOverlay(pipeline: HD2DPipeline, renderer?: THREE.WebG
     'Digit8': RoomId.QueensBallroom,
     'Digit9': RoomId.TowerStairwell,
     'Digit0': RoomId.Battlements,
+    // Ironrath Castle
+    'KeyG': RoomId.IronrathGreatHall,
   };
 
   window.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -137,6 +161,16 @@ export function createDebugOverlay(pipeline: HD2DPipeline, renderer?: THREE.WebG
         if (pipeline.godraysPass) {
           pipeline.godraysPass.enabled = effects.godrays;
         }
+        updatePanel();
+        break;
+      case 'BracketLeft':
+        // Jump time back 3 hours
+        GameClockSystem.pendingTimeOverride = GameClockSystem.timeOfDay - 3;
+        updatePanel();
+        break;
+      case 'BracketRight':
+        // Jump time forward 3 hours
+        GameClockSystem.pendingTimeOverride = GameClockSystem.timeOfDay + 3;
         updatePanel();
         break;
       case 'F9':

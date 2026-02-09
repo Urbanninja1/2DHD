@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import type { RoomData, DoorDef, PropDef, ProceduralPropDef, ModelPropDef, TextureSetDef, ParallaxLayerDef } from './room-data/types.js';
+import type { RoomData, DoorDef, PropDef, ProceduralPropDef, ModelPropDef, TextureSetDef, ParallaxLayerDef, ParticleDef } from './room-data/types.js';
 import {
   createStoneFloorTexture,
   createStoneWallTexture,
@@ -10,12 +10,13 @@ import {
 } from '../rendering/placeholder-textures.js';
 import { createSpriteMesh, createBlobShadow } from '../rendering/sprite-factory.js';
 import { SpriteAnimator, registerAnimator } from '../rendering/sprite-animator.js';
-import { createDustMotes, type DustMoteSystem } from '../rendering/particles/dust-motes.js';
-import { createTorchEmbers, type EmberSystem } from '../rendering/particles/torch-embers.js';
+import { createDustMotes } from '../rendering/particles/dust-motes.js';
+import { createTorchEmbers } from '../rendering/particles/torch-embers.js';
+import { createSmoke } from '../rendering/particles/smoke.js';
+import { createDustInLight } from '../rendering/particles/dust-in-light.js';
+import type { ParticleSystem } from '../rendering/particles/types.js';
 import { assetManager } from '../loaders/asset-manager.js';
 import { loadPBRTexture, textureLoader, type PBRTextureSet, type LoaderSet } from '../loaders/texture-loaders.js';
-
-export type ParticleSystem = DustMoteSystem | EmberSystem;
 
 export interface BuiltRoom {
   /** Root group containing all room objects — scene.remove(group) cleans everything */
@@ -44,6 +45,24 @@ export interface DoorTrigger {
   maxZ: number;
   /** The door definition (target room, spawn point, etc.) */
   door: DoorDef;
+}
+
+/** Create a particle system from a ParticleDef. */
+function createParticleSystem(def: ParticleDef): ParticleSystem {
+  switch (def.type) {
+    case 'dust':
+      return createDustMotes({ count: def.count, region: def.region, driftDirection: def.driftDirection });
+    case 'embers':
+      return createTorchEmbers({ position: def.position, count: def.count });
+    case 'smoke':
+      return createSmoke({ position: def.position, count: def.count, spread: def.spread });
+    case 'dust-in-light':
+      return createDustInLight({ region: def.region, count: def.count, lightDirection: def.lightDirection });
+    default: {
+      const _exhaustive: never = def;
+      throw new Error(`Unknown particle type: ${(_exhaustive as ParticleDef).type}`);
+    }
+  }
 }
 
 /**
@@ -228,34 +247,30 @@ export async function buildRoom(data: RoomData, loaderSet?: LoaderSet): Promise<
 
   if (data.particles) {
     for (const pDef of data.particles) {
-      if (pDef.type === 'dust') {
-        const dust = createDustMotes({
-          count: pDef.count,
-          region: pDef.region,
-        });
-        group.add(dust.points);
-        particleSystems.push(dust);
-      } else if (pDef.type === 'embers') {
-        const embers = createTorchEmbers({
-          position: pDef.position,
-          count: pDef.count,
-        });
-        group.add(embers.points);
-        particleSystems.push(embers);
-      }
+      const system = createParticleSystem(pDef);
+      group.add(system.object3d);
+      particleSystems.push(system);
     }
   }
 
   // --- Instanced props (columns, sconces, models) ---
+  // Load all model props in parallel (P0 perf fix — prevents sequential N-fetch stall)
   if (data.props) {
-    for (const propDef of data.props) {
-      if (propDef.type === 'model') {
-        const mesh = await buildModelProp(propDef as ModelPropDef, loaderSet);
-        if (mesh) group.add(mesh);
-      } else {
-        const mesh = buildInstancedProp(propDef as ProceduralPropDef, height);
-        if (mesh) group.add(mesh);
-      }
+    const modelDefs = data.props.filter((p): p is ModelPropDef => p.type === 'model');
+    const proceduralDefs = data.props.filter((p): p is ProceduralPropDef => p.type !== 'model');
+
+    // Procedural props are synchronous — build immediately
+    for (const propDef of proceduralDefs) {
+      const mesh = buildInstancedProp(propDef, height);
+      if (mesh) group.add(mesh);
+    }
+
+    // Model props — load all in parallel
+    const modelResults = await Promise.all(
+      modelDefs.map(propDef => buildModelProp(propDef, loaderSet)),
+    );
+    for (const mesh of modelResults) {
+      if (mesh) group.add(mesh);
     }
   }
 

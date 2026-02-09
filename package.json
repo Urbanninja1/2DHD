@@ -11,6 +11,8 @@
     "generate-sprites": "node scripts/generate-sprites.mjs",
     "generate-parallax": "node scripts/generate-parallax.mjs",
     "compress-textures": "node scripts/compress-textures.mjs",
+    "generate-props": "node scripts/generate-ironrath-props.mjs",
+    "generate-ironrath-parallax": "node scripts/generate-ironrath-parallax.mjs",
     "compress-models": "node scripts/compress-models.mjs",
     "validate": "node scripts/validate-assets.mjs"
   },
@@ -18,12 +20,16 @@
     "@lastolivegames/becsy": "^0.16.0",
     "n8ao": "^1.10.1",
     "postprocessing": "^6.38.2",
+    "simplex-noise": "^4.0.3",
     "stats-gl": "^4.0.2",
     "three": "^0.182.0",
+    "three-bvh-csg": "^0.0.17",
     "three-good-godrays": "^0.9.0"
   },
   "devDependencies": {
     "@types/three": "^0.182.0",
+    "node-three-gltf": "^2.1.0",
+    "playwright": "^1.58.2",
     "pngjs": "^7.0.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",

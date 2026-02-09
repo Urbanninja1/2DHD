@@ -3,12 +3,14 @@ import { Transform, MovementIntent } from './components/transform.js';
 import { Object3DRef, SpriteData, FlickerLight } from './components/rendering.js';
 import { PlayerTag } from './components/tags.js';
 import { GameState } from './components/singletons.js';
+import { GameClock } from './components/game-clock.js';
 import { InputSystem } from './systems/input.js';
 import { PlayerMovementSystem } from './systems/player-movement.js';
 import { CollisionSystem } from './systems/collision.js';
 import { RoomTransitionSystem } from './systems/room-transition.js';
 import { CameraFollowSystem } from './systems/camera-follow.js';
 import { TransformSyncSystem } from './systems/transform-sync.js';
+import { GameClockSystem } from './systems/game-clock.js';
 import { LightFlickerSystem } from './systems/light-flicker.js';
 import { ThreeRenderSystem } from './systems/three-render.js';
 
@@ -31,11 +33,13 @@ export async function createWorld(): Promise<World> {
       FlickerLight,
       PlayerTag,
       GameState,
+      GameClock,
       // Systems (order is declarative via schedule, not by position here)
       InputSystem,
       PlayerMovementSystem,
       CollisionSystem,
       RoomTransitionSystem,
+      GameClockSystem,
       CameraFollowSystem,
       TransformSyncSystem,
       LightFlickerSystem,

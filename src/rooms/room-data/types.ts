@@ -45,12 +45,21 @@ export interface NPCDef {
   spritePath?: string;
 }
 
+/** Axis-aligned spawn region for particles (room-local coords) */
+export interface SpawnRegion {
+  minX: number; maxX: number;
+  minY: number; maxY: number;
+  minZ: number; maxZ: number;
+}
+
 export interface DustParticleDef {
   type: 'dust';
   /** Region bounds where dust spawns (room-local coords) */
-  region: { minX: number; maxX: number; minY: number; maxY: number; minZ: number; maxZ: number };
+  region: SpawnRegion;
   /** Number of dust motes */
   count: number;
+  /** Optional drift direction override (default: gentle upward sine wave) */
+  driftDirection?: Vec3;
 }
 
 export interface EmberParticleDef {
@@ -61,7 +70,28 @@ export interface EmberParticleDef {
   count: number;
 }
 
-export type ParticleDef = DustParticleDef | EmberParticleDef;
+export interface SmokeParticleDef {
+  type: 'smoke';
+  /** Smoke emitter position */
+  position: Vec3;
+  /** Number of smoke particles */
+  count: number;
+  /** Horizontal spread radius (default 0.5) */
+  spread?: number;
+}
+
+export interface DustInLightParticleDef {
+  type: 'dust-in-light';
+  /** Region bounds where dust spawns */
+  region: SpawnRegion;
+  /** Number of dust particles */
+  count: number;
+  /** Direction vector of the light beam (MUST be normalized) */
+  lightDirection: Vec3;
+}
+
+/** Discriminated union — use type field in switch with never exhaustiveness check */
+export type ParticleDef = DustParticleDef | EmberParticleDef | SmokeParticleDef | DustInLightParticleDef;
 
 export interface GodRaysDef {
   /** Color tint of the god rays */

@@ -3,10 +3,11 @@ import type { RoomIdValue } from '../ecs/components/singletons.js';
 import { TransitionState, type TransitionStateValue } from '../ecs/components/singletons.js';
 import { getRoomData, hasRoomData } from './room-data/registry.js';
 import type { RoomData } from './room-data/types.js';
-import { buildRoom, disposeRoom, type BuiltRoom, type DoorTrigger, type ParticleSystem } from './RoomBuilder.js';
+import { buildRoom, disposeRoom, type BuiltRoom, type DoorTrigger } from './RoomBuilder.js';
+import type { ParticleSystem } from '../rendering/particles/types.js';
 import { unregisterAnimator } from '../rendering/sprite-animator.js';
 import { CollisionSystem } from '../ecs/systems/collision.js';
-import { updatePipelineSettings, setGodraysLight, removeGodrays, type HD2DPipeline } from '../rendering/hd2d-pipeline.js';
+import { updatePipelineSettings, setGodraysLight, removeGodrays, type HD2DPipeline, type ColorGradingSettings } from '../rendering/hd2d-pipeline.js';
 import { profileRoom, profileDisposal } from '../debug/room-profiler.js';
 import type { LoaderSet } from '../loaders/texture-loaders.js';
 
@@ -83,6 +84,12 @@ export class RoomManager {
 
   get isTransitioning(): boolean {
     return this.transitioning;
+  }
+
+  /** Base color grading for the current room (from postProcessOverrides). */
+  get baseColorGrading(): ColorGradingSettings {
+    const cg = this.currentRoomData?.postProcessOverrides?.colorGrading;
+    return cg ?? { hue: 0, saturation: 0, brightness: 0, contrast: 0 };
   }
 
   /**
