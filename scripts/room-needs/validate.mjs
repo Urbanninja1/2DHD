@@ -13,7 +13,22 @@ const GUARDRAILS = {
   maxLights: 11,
   vignetteDarknessMax: 0.55,
   brightnessMin: 0,
-  triBudget: 75000,
+  triBudget: 75000,  // default, overridden by density tier
+};
+
+/** Density-aware tri budgets and targets */
+const DENSITY_TRI_BUDGETS = {
+  'sparse':       50000,
+  'moderate':     75000,
+  'dense':        150000,
+  'aaa-showcase': 200000,
+};
+
+const DENSITY_PROPS_PER_SQM = {
+  'sparse':       1.5,
+  'moderate':     2.5,
+  'dense':        5.0,
+  'aaa-showcase': 8.0,
 };
 
 // Tri estimates by category
@@ -30,11 +45,15 @@ const DEFAULT_TRI = 600;
 
 /**
  * Validate a manifest against all constraints.
+ * @param {object} manifest
+ * @param {object} roomDims - { width, depth, height }
+ * @param {string} [densityTier='moderate'] - density tier for budget/target validation
  * Returns { valid, errors[], warnings[] }.
  */
-export function validateManifest(manifest, roomDims) {
+export function validateManifest(manifest, roomDims, densityTier = 'moderate') {
   const errors = [];
   const warnings = [];
+  const triBudget = DENSITY_TRI_BUDGETS[densityTier] || GUARDRAILS.triBudget;
 
   // --- Atmosphere validation ---
   const atm = manifest.layers.atmosphere;
@@ -88,8 +107,8 @@ export function validateManifest(manifest, roomDims) {
     }
   }
 
-  if (totalTris > GUARDRAILS.triBudget) {
-    warnings.push(`Estimated ${totalTris.toLocaleString()} tris exceeds budget of ${GUARDRAILS.triBudget.toLocaleString()}`);
+  if (totalTris > triBudget) {
+    warnings.push(`Estimated ${totalTris.toLocaleString()} tris exceeds budget of ${triBudget.toLocaleString()} (${densityTier})`);
   }
 
   // --- Bounds validation (if roomDims provided) ---
@@ -122,14 +141,43 @@ export function validateManifest(manifest, roomDims) {
     warnings.push(`Life layer has only ${lifeCount} items (minimum 5 recommended)`);
   }
 
+  // --- Density validation ---
+  let totalInstances = 0;
+  for (const layerName of layerNames) {
+    const items = manifest.layers[layerName] || [];
+    for (const item of items) {
+      totalInstances += item.resolvedPositions?.length
+        || item.placement?.positions?.length
+        || item.placement?.count
+        || 1;
+    }
+  }
+
+  const propsPerSqM = roomDims
+    ? totalInstances / (roomDims.width * roomDims.depth)
+    : 0;
+  const targetPpsm = DENSITY_PROPS_PER_SQM[densityTier] || 2.5;
+
+  if (roomDims && propsPerSqM < targetPpsm * 0.5) {
+    warnings.push(
+      `Density ${propsPerSqM.toFixed(2)} props/sq m is well below ` +
+      `${densityTier} target of ${targetPpsm} props/sq m (${totalInstances} instances in ` +
+      `${(roomDims.width * roomDims.depth).toFixed(0)} sq m)`
+    );
+  }
+
   return {
     valid: errors.length === 0,
     errors,
     warnings,
     stats: {
       totalTris,
+      triBudget,
       lightCount: totalLights,
       lifeLayerItems: lifeCount,
+      totalInstances,
+      propsPerSqM: roomDims ? propsPerSqM : null,
+      densityTier,
     },
   };
 }
@@ -146,9 +194,16 @@ export function formatValidation(result) {
     lines.push('VALIDATION: FAILED');
   }
 
-  lines.push(`  Estimated tris: ${result.stats.totalTris.toLocaleString()} / ${GUARDRAILS.triBudget.toLocaleString()}`);
+  lines.push(`  Density tier: ${result.stats.densityTier || 'moderate'}`);
+  lines.push(`  Estimated tris: ${result.stats.totalTris.toLocaleString()} / ${(result.stats.triBudget || GUARDRAILS.triBudget).toLocaleString()}`);
   lines.push(`  Lights: ${result.stats.lightCount} / ${GUARDRAILS.maxLights}`);
   lines.push(`  Life layer items: ${result.stats.lifeLayerItems}`);
+  if (result.stats.totalInstances != null) {
+    lines.push(`  Total instances: ${result.stats.totalInstances}`);
+  }
+  if (result.stats.propsPerSqM != null) {
+    lines.push(`  Density: ${result.stats.propsPerSqM.toFixed(2)} props/sq m`);
+  }
 
   if (result.errors.length > 0) {
     lines.push('\nERRORS:');

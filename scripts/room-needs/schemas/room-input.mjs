@@ -23,6 +23,8 @@ export const RoomInputSchema = z.object({
     halfExtents: z.object({ x: z.number(), z: z.number() }),
     wall: z.enum(['north', 'south', 'east', 'west']),
   })).optional(),
+  /** Density tier controlling how many props to generate per sq meter */
+  densityTier: z.enum(['sparse', 'moderate', 'dense', 'aaa-showcase']).default('moderate'),
   /** Optional surface textures */
   floorTexture: z.string().optional(),
   wallTexture: z.string().optional(),

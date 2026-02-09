@@ -8,6 +8,7 @@
   "era": "pre-war",
   "lore": "Seat of House Forrester, lords of Ironrath and wardens of the ironwood forests. The great hall is the heart of the keep — where the lord holds court, hosts feasts, and dispenses justice. The Forresters are known for their ironwood, which features prominently in the architecture. The hall has stood for generations, with the marks of age and daily life worn into every surface. A great stone hearth dominates the north wall. The lord's ironwood throne sits on a raised dais before it.",
   "purpose": "feasting, audience, justice",
+  "densityTier": "aaa-showcase",
   "castle": "ironrath",
   "featuresFile": "scripts/room-needs/data/features/great-hall.json",
   "doors": [

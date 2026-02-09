@@ -10,6 +10,14 @@ import { join, basename } from 'path';
 import { FurnishingManifestSchema } from './schemas/manifest.mjs';
 
 const PROJECT_ROOT = process.cwd();
+
+/** Density tier configurations */
+const DENSITY_CONFIGS = {
+  'sparse':       { propsPerSqM: 1.5, lifeRatio: 0.35, triBudgetK: 50 },
+  'moderate':     { propsPerSqM: 2.5, lifeRatio: 0.40, triBudgetK: 75 },
+  'dense':        { propsPerSqM: 5.0, lifeRatio: 0.45, triBudgetK: 150 },
+  'aaa-showcase': { propsPerSqM: 8.0, lifeRatio: 0.50, triBudgetK: 200 },
+};
 const IRONRATH_PROPS_DIR = join(PROJECT_ROOT, 'public/assets/models/props/ironrath');
 const GENERIC_PROPS_DIR = join(PROJECT_ROOT, 'public/assets/models/props');
 const PROMPTS_DIR = join(PROJECT_ROOT, 'scripts/room-needs/prompts');
@@ -80,18 +88,49 @@ async function buildPrompt(roomInput, assetList) {
     .map(([name, info]) => `- **${name}**: ${info.description}`)
     .join('\n');
 
+  // --- Density calculations ---
+  const densityTier = roomInput.densityTier || 'moderate';
+  const densityCfg = DENSITY_CONFIGS[densityTier];
+  const roomArea = roomInput.dimensions.width * roomInput.dimensions.depth;
+  const targetTotal = Math.round(roomArea * densityCfg.propsPerSqM);
+  const lifeTarget = Math.round(targetTotal * densityCfg.lifeRatio);
+  const remaining = targetTotal - lifeTarget;
+  // Architecture ~15%, Essential ~25%, Functional ~20% of non-life
+  const archTarget = Math.round(remaining * 0.25);
+  const essentialTarget = Math.round(remaining * 0.40);
+  const functionalTarget = remaining - archTarget - essentialTarget;
+
+  // Life layer sub-category breakdowns
+  const lifeFloorClutter = Math.round(lifeTarget * 0.30);
+  const lifeSurfaceDetail = Math.round(lifeTarget * 0.25);
+  const lifeWallDetail = Math.round(lifeTarget * 0.20);
+  const lifeAtmospheric = Math.round(lifeTarget * 0.15);
+  const lifeAsymmetric = lifeTarget - lifeFloorClutter - lifeSurfaceDetail - lifeWallDetail - lifeAtmospheric;
+
   // Apply template substitutions
   let prompt = template
     .replace('{{ROOM_INPUT}}', roomSummary)
-    .replace('{{HALF_WIDTH}}', String(halfWidth))
     .replace(/\{\{HALF_WIDTH\}\}/g, String(halfWidth))
-    .replace('{{HALF_DEPTH}}', String(halfDepth))
     .replace(/\{\{HALF_DEPTH\}\}/g, String(halfDepth))
-    .replace('{{HEIGHT}}', String(height))
     .replace(/\{\{HEIGHT\}\}/g, String(height))
     .replace('{{ASSET_LIST}}', assetList.join('\n'))
     .replace('{{MATERIALS}}', materialList)
-    .replace('{{EXAMPLE_SECTION}}', exampleSection);
+    .replace('{{EXAMPLE_SECTION}}', exampleSection)
+    // Density substitutions
+    .replace(/\{\{DENSITY_TIER\}\}/g, densityTier)
+    .replace(/\{\{ROOM_AREA\}\}/g, String(roomArea))
+    .replace(/\{\{PROPS_PER_SQM\}\}/g, String(densityCfg.propsPerSqM))
+    .replace(/\{\{TOTAL_TARGET\}\}/g, String(targetTotal))
+    .replace(/\{\{ARCH_TARGET\}\}/g, String(archTarget))
+    .replace(/\{\{ESSENTIAL_TARGET\}\}/g, String(essentialTarget))
+    .replace(/\{\{FUNCTIONAL_TARGET\}\}/g, String(functionalTarget))
+    .replace(/\{\{LIFE_TARGET\}\}/g, String(lifeTarget))
+    .replace(/\{\{TRI_BUDGET\}\}/g, String(densityCfg.triBudgetK))
+    .replace(/\{\{LIFE_FLOOR_CLUTTER\}\}/g, String(lifeFloorClutter))
+    .replace(/\{\{LIFE_SURFACE_DETAIL\}\}/g, String(lifeSurfaceDetail))
+    .replace(/\{\{LIFE_WALL_DETAIL\}\}/g, String(lifeWallDetail))
+    .replace(/\{\{LIFE_ATMOSPHERIC\}\}/g, String(lifeAtmospheric))
+    .replace(/\{\{LIFE_ASYMMETRIC\}\}/g, String(lifeAsymmetric));
 
   return prompt;
 }
@@ -112,8 +151,14 @@ export async function buildRoomPrompt(roomInput) {
   const promptPath = join(OUTPUT_DIR, `${roomInput.type}-prompt.md`);
   await writeFile(promptPath, prompt);
 
+  const tier = roomInput.densityTier || 'moderate';
+  const cfg = DENSITY_CONFIGS[tier];
+  const area = roomInput.dimensions.width * roomInput.dimensions.depth;
   console.log(`Prompt built for ${roomInput.type}`);
   console.log(`  Assets available: ${assetList.length}`);
+  console.log(`  Density tier: ${tier} (${cfg.propsPerSqM} props/sq m)`);
+  console.log(`  Room area: ${area} sq m → target ~${Math.round(area * cfg.propsPerSqM)} instances`);
+  console.log(`  Tri budget: ${cfg.triBudgetK}K`);
   console.log(`  Prompt saved to: ${promptPath}`);
   console.log(`\nWorkflow:`);
   console.log(`  1. Read the prompt: ${promptPath}`);

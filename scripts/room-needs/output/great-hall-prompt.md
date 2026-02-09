@@ -26,9 +26,11 @@ Use these exact names when the item matches. Set `isNew: false`.
 For new items not in this list, invent a kebab-case name and set `isNew: true`.
 
 ```
+ale-puddle
 armor-stand
 banner
 bench
+bone-scrap
 bonfire
 bookshelf
 brazier
@@ -84,6 +86,7 @@ torch-wall
 wall-flag
 wall-moss
 wall-sconce
+wax-drip
 weapon-rack
 wine-jug
 wooden-chest
@@ -104,6 +107,43 @@ worn-path
 - **fur**: Animal fur/pelt. Used for rugs, cloaks, sleeping hounds.
 - **food**: Food items. Colors vary. Used for bread, cheese, meat, fruit on platters.
 
+## DENSITY REQUIREMENTS — READ THIS CAREFULLY
+
+This room requires **aaa-showcase** density. You MUST hit these targets:
+
+| Layer | Target Count |
+|-------|-------------|
+| Architecture | 336 items |
+| Essential Furnishing | 538 items |
+| Functional Objects | 470 items |
+| Life Layer | 1344 items |
+| **TOTAL** | **2688 instances** |
+
+Room area: 336 sq meters. Target density: 8 props/sq meter.
+
+### Life Layer Sub-Categories (1344 items total)
+
+The Life Layer is the largest layer. Distribute items across these 5 sub-categories:
+
+1. **Floor Clutter (30% = ~403)** — Rushes EVERYWHERE (use scattered strategy with high density), dropped items, food scraps, bone fragments, spilled ale stains, floor cracks, worn stone paths. Every square meter of floor should have something.
+
+2. **Surface Detail (25% = ~336)** — EVERY horizontal surface gets items. Tables need plates, goblets, food, candles, spills. Chests get draped fabric, stacked items. Window sills get dust, dead insects, wax drips. No bare surfaces.
+
+3. **Wall Detail (20% = ~269)** — Distributed along ALL walls. Sconces with wax drips, mounted trophies, faded marks, moss patches, water stains, hanging herbs, weapon nicks. Use along-surface strategy for even distribution.
+
+4. **Atmospheric Props (15% = ~202)** — Signs of recent activity at key zones. Hearth area: ash, embers, scorching, wood pile. Table area: half-eaten food, overturned cup, crumbs. Entrance: muddy footprints, cloak left behind. Throne area: petitioner's items.
+
+5. **Asymmetric Detail (10% = ~134)** — Intentional imperfection. A bench slightly askew, a leaning broom, a crooked tapestry, a chair pushed back from the table. One corner messier than others. A dog's chewed bone far from the hearth.
+
+### CRITICAL DENSITY RULES
+
+- **Empty floor is FAILURE.** If you can see bare stone between the table and the hearth, you haven't added enough floor rushes/clutter.
+- **Every surface needs items.** A table with nothing on it is wrong. A mantelpiece with no objects is wrong.
+- **Use `density` field generously for scattered items.** `density: 2.0` on a 336 sq m room = ~67 items from ONE entry. This is how you hit targets efficiently.
+- **Prefer fewer manifest entries with high density/count** over many individual items. 5 entries with `density: 1.5-3.0` each can produce 300+ instances.
+- **Layer rushes, stains, and cracks.** These overlap in real spaces — floor rushes on TOP of stains, cracks visible between rushes.
+- **Scale variety.** Same item at scale 0.4, 0.6, 0.8 creates visual variety without new assets.
+
 ## HARD CONSTRAINTS
 
 - Maximum 10 point lights + 1 directional = 11 lights total
@@ -111,7 +151,7 @@ worn-path
 - Point light intensity >= 2.0, distance >= 10, decay 1.0-1.2
 - Brightness in postProcess >= 0 (negative causes invisible floors)
 - Vignette darkness <= 0.55
-- Triangle budget: ~75K total. Small props (~300 tris) scale 0.5-0.7, medium (~1200 tris) scale 0.8-1.0, large (~2500 tris) scale 1.0-1.5.
+- Triangle budget: ~200K total. Small props (~300 tris) scale 0.5-0.7, medium (~1200 tris) scale 0.8-1.0, large (~2500 tris) scale 1.0-1.5.
 - All prop origins are at base center. Scale 1.0 = designed size.
 - Positions must be INSIDE room bounds (with 0.3m inset from walls for floor items).
 
@@ -227,7 +267,7 @@ Generate ALL five layers:
 ## CRITICAL RULES
 
 1. EVERY object must have a historical/lore justification in `description`.
-2. The Life Layer must have AT LEAST 8 items. A room without clutter is a dead room.
+2. The Life Layer must have AT LEAST 1344 items (manifest entries — each can produce many instances via density/count). A room without clutter is a dead room.
 3. Use existing asset names from the list wherever possible. Only create new items when nothing matches.
 4. Compound items (things that emit light or particles) MUST include the `compound` field.
 5. Colors in the atmosphere must be hex integers (e.g., 0xFF6B35 → 16738101 in decimal).

@@ -72,24 +72,28 @@ function isInBounds(pos, dims, margin = 0.3) {
 /**
  * Simple Poisson-ish disk sampling for scattered placement.
  * Weighted toward center of room.
+ * minDist is auto-calculated from count and area to allow dense packing.
  */
 function scatterPositions(count, dims, margin = 1.0) {
   const positions = [];
   const halfW = dims.width / 2 - margin;
   const halfD = dims.depth / 2 - margin;
-  const maxAttempts = count * 10;
+  const area = (halfW * 2) * (halfD * 2);
+  // Auto-scale min distance so dense counts can actually fit
+  const minDist = Math.max(0.3, Math.sqrt(area / count) * 0.5);
+  const maxAttempts = count * 20;
   let attempts = 0;
 
   while (positions.length < count && attempts < maxAttempts) {
     attempts++;
-    // Gaussian-ish distribution: bias toward center
+    // Gaussian-ish distribution: bias toward center but use full width for high counts
+    const spread = count > 50 ? 0.95 : 0.8;
     const u1 = Math.random();
     const u2 = Math.random();
-    const x = (u1 * 2 - 1) * halfW * 0.8; // 80% of half-width for center bias
-    const z = (u2 * 2 - 1) * halfD * 0.8;
+    const x = (u1 * 2 - 1) * halfW * spread;
+    const z = (u2 * 2 - 1) * halfD * spread;
 
     // Min distance check against existing positions
-    const minDist = 1.0;
     const tooClose = positions.some(p =>
       Math.hypot(p.x - x, p.z - z) < minDist
     );
@@ -220,7 +224,8 @@ export function resolvePlacements(manifest, roomDims, doors = []) {
         }
 
         case 'scattered': {
-          const count = p.count || Math.max(1, Math.round((p.density || 1) * 3));
+          const roomArea = roomDims.width * roomDims.depth;
+          const count = p.count || Math.max(1, Math.round((roomArea / 10) * (p.density || 1)));
           const rawPositions = scatterPositions(count, roomDims);
           positions = rawPositions.map(pos => {
             const fullPos = { x: pos.x, y, z: pos.z };

@@ -59,6 +59,7 @@ async function cmdPipeline(inputPath) {
   // 1. Load room input
   const roomInput = await loadJSON(inputPath, RoomInputSchema);
   console.log(`Room: ${roomInput.name} (${roomInput.type})`);
+  console.log(`Density tier: ${roomInput.densityTier || 'moderate'}`);
 
   // 2. Load existing manifest
   const manifestPath = join(PROJECT_ROOT, 'scripts/room-needs/output', `${roomInput.type}-manifest.json`);
@@ -84,7 +85,7 @@ async function cmdPipeline(inputPath) {
 
   // 5. Validate
   console.log('\nStage 4: Validating...');
-  const validation = validateManifest(resolved, roomInput.dimensions);
+  const validation = validateManifest(resolved, roomInput.dimensions, roomInput.densityTier);
   console.log(formatValidation(validation));
 
   if (!validation.valid) {
