@@ -53,6 +53,8 @@ export const FurnishingItemSchema = z.object({
   description: z.string(),
   category: z.string(),
   material: z.string(),
+  /** PBR material category — overrides auto-detection from prop name (required for isNew props) */
+  materialCategory: z.enum(['stone', 'ironwood', 'dark-wood', 'iron', 'fabric', 'leather', 'organic', 'micro']).optional(),
   scale: z.number().positive().default(1.0),
   compound: CompoundExpansionSchema.optional(),
   placement: PlacementRuleSchema,

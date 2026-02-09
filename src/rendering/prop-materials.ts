@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { loadPBRTexture, type PBRTextureSet } from '../loaders/texture-loaders.js';
 import { assetManager } from '../loaders/asset-manager.js';
+import { injectSurfaceDetail, type SurfaceDetailConfig, type SurfaceDetailHandle } from './hd2d-surface/surface-injector.js';
 
 /**
  * Prop PBR Material System
@@ -225,4 +226,26 @@ export function applyPropMaterial(
   }
 
   mesh.material = mat;
+}
+
+/**
+ * Apply surface detail (triplanar detail normal + grunge overlay) to a prop mesh.
+ * Uses prop-tuned parameters: higher detail frequency, lower intensity, no stochastic tiling.
+ * Skips micro props (too small to benefit from detail injection).
+ */
+export function applyPropSurfaceDetail(
+  mesh: THREE.Mesh,
+  category: PropMaterialCategory,
+  surfaceConfig: SurfaceDetailConfig | null,
+): SurfaceDetailHandle | null {
+  if (category === 'micro' || !surfaceConfig) return null;
+  if (!(mesh.material instanceof THREE.MeshStandardMaterial)) return null;
+
+  return injectSurfaceDetail(mesh.material, {
+    ...surfaceConfig,
+    detailScale: 8.0,         // Higher frequency for small objects
+    detailIntensity: 0.2,     // Subtle — don't overwhelm prop textures
+    grungeIntensity: 0.2,     // Light grunge variation
+    enableStochastic: false,  // Props use their own UVs, not tiled
+  });
 }

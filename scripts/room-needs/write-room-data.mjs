@@ -61,7 +61,7 @@ function roundNum(n) {
  * Group resolved items by asset name and category, collecting all positions.
  */
 function groupProps(resolvedManifest, castle) {
-  const groups = new Map(); // name → { category, scale, positions[] }
+  const groups = new Map(); // name → { category, scale, positions[], materialCategory? }
 
   const layerNames = ['architecture', 'essentialFurnishing', 'functionalObjects', 'lifeLayer'];
   for (const layerName of layerNames) {
@@ -74,6 +74,7 @@ function groupProps(resolvedManifest, castle) {
         groups.set(key, {
           name: item.name,
           category: item.category,
+          materialCategory: item.materialCategory,
           scale: item.scale,
           description: item.description,
           positions: [],
@@ -422,12 +423,13 @@ function generateTypeScript(resolvedManifest, roomInput, warnings) {
     lines.push(`    // ─── ${label} ${'─'.repeat(Math.max(1, 55 - label.length))}`);
     for (const group of groups) {
       const comment = group.description ? ` // ${truncate(group.description, 60)}` : '';
+      const matOverride = group.materialCategory ? `, materialOverride: '${group.materialCategory}'` : '';
       if (group.positions.length === 1) {
         const pos = formatPos(group.positions[0]);
-        lines.push(`    { type: 'model', modelPath: P('${group.name}'), positions: [${pos}], scale: ${group.scale} },${comment}`);
+        lines.push(`    { type: 'model', modelPath: P('${group.name}'), positions: [${pos}], scale: ${group.scale}${matOverride} },${comment}`);
       } else {
         lines.push(`    {${comment}`);
-        lines.push(`      type: 'model', modelPath: P('${group.name}'), scale: ${group.scale},`);
+        lines.push(`      type: 'model', modelPath: P('${group.name}'), scale: ${group.scale},${matOverride ? ` ${matOverride.slice(2)},` : ''}`);
         lines.push(`      positions: [`);
         // Format positions — multiple per line if compact enough
         const posStrings = group.positions.map(formatPos);

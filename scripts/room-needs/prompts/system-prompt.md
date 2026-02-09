@@ -25,6 +25,26 @@ For new items not in this list, invent a kebab-case name and set `isNew: true`.
 
 {{MATERIALS}}
 
+## PBR MATERIAL CATEGORIES
+
+Every prop gets a PBR material from one of these categories. Existing props are auto-detected, but **new props (`isNew: true`) MUST specify `materialCategory`**.
+
+| Category | Use For | Examples |
+|----------|---------|---------|
+| `stone` | Structural stone, flooring, hearths | stone-hearth, raised-dais, stone-arch, floor-crack |
+| `ironwood` | Dense dark wood (structural) | ironwood-throne, ironwood-column, roof-beam |
+| `dark-wood` | Furniture, containers, tableware | long-table, bench, chair, wooden-chest, goblet |
+| `iron` | Metal fixtures, hardware | iron-chandelier, wall-sconce, candelabra |
+| `fabric` | Textiles, soft goods | banner, tapestry, fur-rug |
+| `leather` | Animal hide, bindings | chair seats, chest bindings |
+| `organic` | Plant matter, living things | rushes, wall-moss, hound-sleeping |
+| `micro` | Tiny detail props (no texture needed) | wax-drip, bone-scrap, cobweb, ale-puddle, table-stain |
+
+**Rules:**
+- Use `micro` for any prop smaller than ~15cm that will never be close to camera
+- Use the category that matches the PRIMARY visible material of the prop
+- When in doubt between two categories, pick the one with more surface area
+
 ## DENSITY REQUIREMENTS — READ THIS CAREFULLY
 
 This room requires **{{DENSITY_TIER}}** density. You MUST hit these targets:
@@ -134,6 +154,7 @@ Return a single JSON object matching this schema EXACTLY:
   "description": "Why this object exists here (historical/lore justification)",
   "category": "structural|furniture|tableware|wall-decor|floor-cover|lighting-fixture|surface-detail",
   "material": "northern-stone|ironwood|dark-iron|leather|ceramic|fabric|wax|bone|fur|food",
+  "materialCategory": "stone|ironwood|dark-wood|iron|fabric|leather|organic|micro",
   "scale": 1.0,
   "compound": {
     "light": {"color": 16764006, "intensity": 4.0, "distance": 12, "flicker": true},
