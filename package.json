@@ -12,6 +12,7 @@
     "generate-parallax": "node scripts/generate-parallax.mjs",
     "compress-textures": "node scripts/compress-textures.mjs",
     "generate-props": "node scripts/generate-ironrath-props.mjs",
+    "generate-ironrath-parallax": "node scripts/generate-ironrath-parallax.mjs",
     "compress-models": "node scripts/compress-models.mjs",
     "validate": "node scripts/validate-assets.mjs"
   },

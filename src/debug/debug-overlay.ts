@@ -1,6 +1,7 @@
 import type * as THREE from 'three';
 import type { HD2DPipeline } from '../rendering/hd2d-pipeline.js';
 import { RoomTransitionSystem } from '../ecs/systems/room-transition.js';
+import { GameClockSystem } from '../ecs/systems/game-clock.js';
 import { RoomId, type RoomIdValue } from '../ecs/components/singletons.js';
 import { runLeakTest } from './leak-test.js';
 
@@ -65,8 +66,14 @@ export function createDebugOverlay(pipeline: HD2DPipeline, renderer?: THREE.WebG
     const rm = RoomTransitionSystem.roomManager;
     const roomName = rm ? (ROOM_NAMES[rm.currentRoomId] ?? `Room ${rm.currentRoomId}`) : '---';
 
+    const tod = GameClockSystem.timeOfDay;
+    const hours = Math.floor(tod);
+    const minutes = Math.floor((tod - hours) * 60);
+    const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+
     const lines = [
       `[Room: ${roomName}]`,
+      `[Time: ${timeStr}]`,
       '',
       '[Debug Controls]',
       `F1: Bloom      ${effects.bloom ? 'ON' : 'OFF'}`,

@@ -336,6 +336,84 @@ const PALETTES = {
     accentColor: hex(220, 180, 50),
     accessory: 'lute',
   },
+
+  // --- Forrester (Ironrath) characters ---
+
+  'forrester-lord': {
+    skin: hex(220, 185, 150),
+    hair: hex(50, 35, 25),
+    eyeColor: hex(55, 70, 50),
+    outlineColor: hex(20, 18, 15),
+    torsoColor: hex(45, 35, 28),       // dark ironwood-toned
+    torsoHighlight: hex(65, 50, 40),
+    torsoShadow: hex(30, 22, 18),
+    legColor: hex(55, 45, 35),
+    legShadow: hex(38, 30, 22),
+    bootColor: hex(50, 38, 25),
+    bootHighlight: hex(72, 55, 38),
+    accentColor: hex(45, 90, 39),       // Forrester green trim
+    accessory: 'cape-fur',
+  },
+  'forrester-lady': {
+    skin: hex(230, 200, 168),
+    hair: hex(120, 70, 35),
+    eyeColor: hex(60, 90, 60),
+    outlineColor: hex(22, 18, 14),
+    torsoColor: hex(45, 100, 50),       // green dress
+    torsoHighlight: hex(60, 130, 65),
+    torsoShadow: hex(30, 70, 35),
+    legColor: hex(45, 100, 50),         // dress continues
+    legShadow: hex(30, 70, 35),
+    bootColor: hex(80, 60, 40),
+    bootHighlight: hex(105, 80, 55),
+    accentColor: hex(180, 160, 100),    // ironwood jewelry
+    accessory: 'dress-skirt',
+  },
+  'forrester-guard': {
+    skin: hex(210, 175, 140),
+    hair: hex(60, 45, 30),
+    eyeColor: hex(50, 50, 45),
+    outlineColor: hex(20, 18, 15),
+    torsoColor: hex(60, 50, 38),        // dark leather armor
+    torsoHighlight: hex(82, 68, 52),
+    torsoShadow: hex(40, 32, 25),
+    legColor: hex(50, 42, 32),
+    legShadow: hex(35, 28, 20),
+    bootColor: hex(45, 35, 25),
+    bootHighlight: hex(65, 50, 35),
+    accentColor: hex(45, 90, 39),       // Forrester surcoat green
+    accessory: 'spear',
+  },
+  'forrester-servant': {
+    skin: hex(215, 180, 145),
+    hair: hex(75, 55, 38),
+    eyeColor: hex(60, 50, 40),
+    outlineColor: hex(28, 24, 18),
+    torsoColor: hex(110, 95, 75),       // brown/grey simple clothing
+    torsoHighlight: hex(135, 118, 95),
+    torsoShadow: hex(82, 70, 55),
+    legColor: hex(85, 72, 55),
+    legShadow: hex(60, 50, 38),
+    bootColor: hex(65, 50, 35),
+    bootHighlight: hex(88, 68, 48),
+    accentColor: hex(140, 120, 90),     // apron
+    accessory: null,
+  },
+  'forrester-maester': {
+    skin: hex(225, 192, 158),
+    hair: hex(150, 145, 140),           // grey hair
+    eyeColor: hex(70, 70, 80),
+    outlineColor: hex(28, 26, 24),
+    torsoColor: hex(95, 92, 88),        // grey robes
+    torsoHighlight: hex(125, 120, 115),
+    torsoShadow: hex(68, 65, 62),
+    legColor: hex(85, 82, 78),
+    legShadow: hex(60, 58, 55),
+    bootColor: hex(55, 48, 40),
+    bootHighlight: hex(75, 65, 55),
+    accentColor: hex(160, 160, 170),    // chain accessory
+    accessory: 'chain',
+  },
 };
 
 // --- Animation pose generators ---
@@ -392,7 +470,10 @@ async function main() {
   const npcDir = join(SPRITES_DIR, 'npcs');
   await mkdir(npcDir, { recursive: true });
 
-  const npcTypes = ['guard', 'kingsguard', 'noble-male', 'noble-female', 'servant', 'council-member', 'musician'];
+  const npcTypes = [
+    'guard', 'kingsguard', 'noble-male', 'noble-female', 'servant', 'council-member', 'musician',
+    'forrester-lord', 'forrester-lady', 'forrester-guard', 'forrester-servant', 'forrester-maester',
+  ];
 
   for (const type of npcTypes) {
     const buf = await generateSpritesheet(type, PALETTES[type]);

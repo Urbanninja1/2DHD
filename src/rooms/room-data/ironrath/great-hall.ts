@@ -60,7 +60,22 @@ const greatHall: RoomData = {
     },
   ],
 
-  npcs: [],      // Populated in Phase 4
+  npcs: [
+    // Lord Forrester — on throne
+    { label: 'Lord Forrester', spriteColor: '#2d2318', spritePath: 'assets/sprites/npcs/forrester-lord.png', position: { x: 0, y: 0.3, z: -5.8 } },
+    // Lady Forrester — high seat beside throne
+    { label: 'Lady Forrester', spriteColor: '#2d5a27', spritePath: 'assets/sprites/npcs/forrester-lady.png', position: { x: -2.5, y: 0.3, z: -5.5 } },
+    // Guard at west door
+    { label: 'Guard (door)', spriteColor: '#3c3228', spritePath: 'assets/sprites/npcs/forrester-guard.png', position: { x: -10, y: 0, z: 0 } },
+    // Guard beside dais
+    { label: 'Guard (dais)', spriteColor: '#3c3228', spritePath: 'assets/sprites/npcs/forrester-guard.png', position: { x: 4, y: 0, z: -4.5 } },
+    // Servant near table
+    { label: 'Servant (table)', spriteColor: '#6e5f4b', spritePath: 'assets/sprites/npcs/forrester-servant.png', position: { x: -3, y: 0, z: 1 } },
+    // Servant near hearth
+    { label: 'Servant (hearth)', spriteColor: '#6e5f4b', spritePath: 'assets/sprites/npcs/forrester-servant.png', position: { x: 1.5, y: 0, z: -6 } },
+    // Maester near lord
+    { label: 'Maester', spriteColor: '#5f5c58', spritePath: 'assets/sprites/npcs/forrester-maester.png', position: { x: 2.5, y: 0.3, z: -5.5 } },
+  ],
 
   particles: [
     // Dust motes — full room, 100 count for dense atmosphere
@@ -281,6 +296,14 @@ const greatHall: RoomData = {
     { type: 'model', modelPath: P('hearth-scorch'), positions: [{ x: 0, y: 5, z: -6.95 }], scale: 1.2 },
     // Table stain
     { type: 'model', modelPath: P('table-stain'), positions: [{ x: -0.5, y: 0.86, z: 0.3 }], scale: 0.6 },
+  ],
+
+  // Wolfswood parallax visible through north-wall windows
+  parallaxBackground: [
+    { texturePath: 'assets/backgrounds/ironrath/layer-sky.png', depth: 20, scrollFactor: 0, height: 10, yOffset: 6 },
+    { texturePath: 'assets/backgrounds/ironrath/layer-mountains.png', depth: 15, scrollFactor: 0.1, height: 10, yOffset: 5 },
+    { texturePath: 'assets/backgrounds/ironrath/layer-canopy.png', depth: 10, scrollFactor: 0.2, height: 10, yOffset: 4 },
+    { texturePath: 'assets/backgrounds/ironrath/layer-trees.png', depth: 5, scrollFactor: 0.3, height: 10, yOffset: 3 },
   ],
 
   postProcessOverrides: {
