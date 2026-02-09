@@ -17,6 +17,7 @@ import { createDustInLight } from '../rendering/particles/dust-in-light.js';
 import type { ParticleSystem } from '../rendering/particles/types.js';
 import { assetManager } from '../loaders/asset-manager.js';
 import { loadPBRTexture, textureLoader, type PBRTextureSet, type LoaderSet } from '../loaders/texture-loaders.js';
+import { applyDetailOverlay } from '../rendering/detail-overlay.js';
 
 export interface BuiltRoom {
   /** Root group containing all room objects — scene.remove(group) cleans everything */
@@ -327,15 +328,20 @@ async function buildPBRMaterial(
   if (pbrSet.roughness) configureMap(pbrSet.roughness, repeatX, repeatY);
   if (pbrSet.ao) configureMap(pbrSet.ao, repeatX, repeatY);
 
-  return new THREE.MeshStandardMaterial({
+  const mat = new THREE.MeshStandardMaterial({
     map: pbrSet.diffuse,
     normalMap: pbrSet.normal ?? undefined,
     roughnessMap: pbrSet.roughness ?? undefined,
     aoMap: pbrSet.ao ?? undefined,
     color: def.tint ?? tintColor ?? 0xffffff,
     roughness: pbrSet.roughness ? 1.0 : 0.8,
-    metalness: 0.1,
+    metalness: 0,
   });
+
+  // Break tiling repetition on large surfaces via detail map overlay
+  applyDetailOverlay(mat);
+
+  return mat;
 }
 
 function buildProceduralFloorMaterial(data: RoomData, width: number, depth: number): THREE.MeshStandardMaterial {
@@ -348,7 +354,7 @@ function buildProceduralFloorMaterial(data: RoomData, width: number, depth: numb
     map: floorTex,
     color: data.floorColor ?? 0x3a3a3a,
     roughness: 0.8,
-    metalness: 0.1,
+    metalness: 0,
   });
 }
 
@@ -507,7 +513,7 @@ function getSconceGeometry(): THREE.BufferGeometry {
 const COLUMN_MATERIAL = new THREE.MeshStandardMaterial({
   color: 0x5a554f,
   roughness: 0.85,
-  metalness: 0.05,
+  metalness: 0,
 });
 
 const SCONCE_MATERIAL = new THREE.MeshStandardMaterial({
@@ -574,7 +580,7 @@ function buildWall(
     map: tex,
     color,
     roughness: 0.9,
-    metalness: 0.05,
+    metalness: 0,
   });
   const wall = new THREE.Mesh(wallGeo, wallMat);
   wall.position.set(position.x, position.y, position.z);
@@ -613,8 +619,12 @@ function buildWallPBR(
     aoMap: pbrSet.ao ? configureMap(pbrSet.ao) : undefined,
     color,
     roughness: pbrSet.roughness ? 1.0 : 0.9,
-    metalness: 0.05,
+    metalness: 0,
   });
+
+  // Break tiling repetition on walls via detail map overlay
+  applyDetailOverlay(wallMat, 0.5, 0.3);
+
   const wall = new THREE.Mesh(wallGeo, wallMat);
   wall.position.set(position.x, position.y, position.z);
   wall.rotation.y = rotationY;

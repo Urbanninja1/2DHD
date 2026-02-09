@@ -18,8 +18,8 @@
       "wall": "west"
     }
   ],
-  "floorTexture": "assets/textures/stone/northern-floor",
-  "wallTexture": "assets/textures/stone/northern-wall",
+  "floorTexture": "assets/textures/stone/worn-stone",
+  "wallTexture": "assets/textures/stone/castle-wall-slates",
   "ceilingTexture": "assets/textures/wood/ironwood-ceiling",
   "floorColor": "0x5A5550",
   "wallColor": "0x6A6560",
