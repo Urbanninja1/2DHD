@@ -25,6 +25,8 @@ export const RoomInputSchema = z.object({
   })).optional(),
   /** Density tier controlling how many props to generate per sq meter */
   densityTier: z.enum(['sparse', 'moderate', 'dense', 'aaa-showcase']).default('moderate'),
+  /** Texture engine template ID (e.g. 'northern-grand') — enables shader detail + decals */
+  textureTemplate: z.string().optional(),
   /** Optional surface textures */
   floorTexture: z.string().optional(),
   wallTexture: z.string().optional(),

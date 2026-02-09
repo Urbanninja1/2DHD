@@ -160,6 +160,14 @@ export interface ParallaxLayerDef {
   yOffset: number;
 }
 
+/** Room-specific decal override — places a specific atlas tile at an exact position */
+export interface DecalOverrideDef {
+  tile: [number, number];  // Atlas grid [col, row]
+  position: Vec3;
+  rotation?: number;
+  scale?: number;
+}
+
 export interface RoomData {
   id: RoomIdValue;
   name: string;
@@ -192,4 +200,8 @@ export interface RoomData {
   ceilingTexture?: TextureSetDef;
   /** Parallax background layers — rendered behind the north wall */
   parallaxBackground?: ParallaxLayerDef[];
+  /** Texture engine template ID (e.g. 'northern-grand') — enables shader detail + decals */
+  textureTemplate?: string;
+  /** Room-specific decal overrides — placed at exact positions on top of template-generated decals */
+  decalOverrides?: DecalOverrideDef[];
 }
