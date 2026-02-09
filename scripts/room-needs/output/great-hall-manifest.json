@@ -749,25 +749,16 @@
       {
         "name": "rushes",
         "isNew": false,
-        "description": "Dried rushes covering the stone floor — universal medieval floor covering",
+        "description": "Dried rushes covering the stone floor — universal medieval floor covering, scattered everywhere",
         "category": "floor-cover",
         "material": "fabric",
         "scale": 1.0,
         "placement": {
-          "strategy": "array",
+          "strategy": "scattered",
           "anchor": "room-center",
-          "positions": [
-            {"x": -3, "y": 0.005, "z": -3}, {"x": 0, "y": 0.005, "z": -3}, {"x": 3, "y": 0.005, "z": -3},
-            {"x": -3, "y": 0.005, "z": 0}, {"x": 0, "y": 0.005, "z": 0}, {"x": 3, "y": 0.005, "z": 0},
-            {"x": -3, "y": 0.005, "z": 3}, {"x": 0, "y": 0.005, "z": 3}, {"x": 3, "y": 0.005, "z": 3},
-            {"x": -6, "y": 0.005, "z": -5}, {"x": 6, "y": 0.005, "z": -5},
-            {"x": -6, "y": 0.005, "z": 0}, {"x": 6, "y": 0.005, "z": 0},
-            {"x": -6, "y": 0.005, "z": 4}, {"x": 6, "y": 0.005, "z": 4},
-            {"x": -9, "y": 0.005, "z": -3}, {"x": 9, "y": 0.005, "z": -3},
-            {"x": -9, "y": 0.005, "z": 2}, {"x": 9, "y": 0.005, "z": 2},
-            {"x": 0, "y": 0.005, "z": 5}
-          ],
-          "yPlacement": "floor"
+          "density": 25.0,
+          "yPlacement": "floor",
+          "rotationY": "random"
         }
       },
       {
@@ -801,40 +792,31 @@
       {
         "name": "hearth-scorch",
         "isNew": false,
-        "description": "Scorch marks from generations of hearth fires",
+        "description": "Scorch marks from generations of hearth fires — concentrated near hearth, fading toward edges",
         "category": "surface-detail",
         "material": "northern-stone",
         "scale": 0.8,
         "placement": {
-          "strategy": "array",
+          "strategy": "scattered",
           "anchor": "room-center",
-          "positions": [
-            {"x": -1.5, "y": 0.005, "z": -6}, {"x": 1.5, "y": 0.005, "z": -6},
-            {"x": 0, "y": 0.005, "z": -5.5}, {"x": -3, "y": 0.005, "z": -5.5}, {"x": 3, "y": 0.005, "z": -5.5}
-          ],
-          "yPlacement": "floor"
+          "density": 5.0,
+          "yPlacement": "floor",
+          "rotationY": "random"
         }
       },
       {
         "name": "floor-crack",
         "isNew": false,
-        "description": "Cracks in the stone floor — centuries of wear",
+        "description": "Cracks in the stone floor — centuries of wear, scattered across the entire hall",
         "category": "surface-detail",
         "material": "northern-stone",
         "scale": 0.8,
         "placement": {
-          "strategy": "array",
+          "strategy": "scattered",
           "anchor": "room-center",
-          "positions": [
-            {"x": -4, "y": 0.005, "z": -1, "rotationY": 0.3},
-            {"x": 2, "y": 0.005, "z": 2, "rotationY": 1.1},
-            {"x": -7, "y": 0.005, "z": -4, "rotationY": 0.7},
-            {"x": 6, "y": 0.005, "z": 3, "rotationY": 2.4},
-            {"x": 0, "y": 0.005, "z": -2, "rotationY": 0.5},
-            {"x": -8, "y": 0.005, "z": 1, "rotationY": 1.8},
-            {"x": 8, "y": 0.005, "z": -2, "rotationY": 0.9}
-          ],
-          "yPlacement": "floor"
+          "density": 8.0,
+          "yPlacement": "floor",
+          "rotationY": "random"
         }
       },
       {
@@ -845,15 +827,11 @@
         "material": "northern-stone",
         "scale": 0.6,
         "placement": {
-          "strategy": "array",
+          "strategy": "scattered",
           "anchor": "room-center",
-          "positions": [
-            {"x": -11.8, "y": 0.2, "z": -5.5}, {"x": -11.8, "y": 0.3, "z": 1},
-            {"x": 11.8, "y": 0.2, "z": -3}, {"x": 11.8, "y": 0.15, "z": 5},
-            {"x": -5, "y": 0.1, "z": -6.8}, {"x": 5, "y": 0.1, "z": -6.8},
-            {"x": -11.8, "y": 0.25, "z": 4.5}, {"x": 11.8, "y": 0.2, "z": 1}
-          ],
-          "yPlacement": "floor"
+          "density": 5.0,
+          "yPlacement": "floor",
+          "rotationY": "random"
         }
       },
       {
@@ -881,13 +859,11 @@
         "material": "northern-stone",
         "scale": 1.0,
         "placement": {
-          "strategy": "array",
+          "strategy": "scattered",
           "anchor": "room-center",
-          "positions": [
-            {"x": 0, "y": 0.003, "z": 3, "rotationY": 0},
-            {"x": 0, "y": 0.003, "z": -2, "rotationY": 0}
-          ],
-          "yPlacement": "floor"
+          "density": 3.0,
+          "yPlacement": "floor",
+          "rotationY": "random"
         }
       },
       {
@@ -898,15 +874,11 @@
         "material": "fabric",
         "scale": 0.6,
         "placement": {
-          "strategy": "array",
+          "strategy": "scattered",
           "anchor": "room-center",
-          "positions": [
-            {"x": -11.7, "y": 9.5, "z": -6.8}, {"x": 11.7, "y": 9.5, "z": -6.8},
-            {"x": -11.7, "y": 9.5, "z": 6.8}, {"x": 11.7, "y": 9.5, "z": 6.8},
-            {"x": -11.7, "y": 9.5, "z": 0}, {"x": 11.7, "y": 9.5, "z": 0},
-            {"x": 0, "y": 9.5, "z": -6.8}, {"x": 0, "y": 9.5, "z": 6.8}
-          ],
-          "yPlacement": "floor"
+          "density": 3.0,
+          "yPlacement": "ceiling",
+          "rotationY": "random"
         }
       },
       {
@@ -997,55 +969,41 @@
         "material": "food",
         "scale": 0.5,
         "placement": {
-          "strategy": "array",
+          "strategy": "scattered",
           "anchor": "room-center",
-          "positions": [
-            {"x": -1, "y": 0.004, "z": 0.5, "rotationY": 0.8},
-            {"x": 2, "y": 0.004, "z": -1, "rotationY": 2.3},
-            {"x": -4, "y": 0.004, "z": 2, "rotationY": 1.5}
-          ],
-          "yPlacement": "floor"
+          "density": 4.0,
+          "yPlacement": "floor",
+          "rotationY": "random"
         }
       },
       {
         "name": "bone-scrap",
         "isNew": false,
-        "description": "Gnawed bones tossed to the floor — hound dinner scraps",
+        "description": "Gnawed bones tossed to the floor — hound dinner scraps, scattered near table and hearth",
         "category": "surface-detail",
         "material": "bone",
         "scale": 0.4,
         "placement": {
-          "strategy": "array",
+          "strategy": "scattered",
           "anchor": "room-center",
-          "positions": [
-            {"x": 1.5, "y": 0.005, "z": -3.5, "rotationY": 0.6},
-            {"x": -2, "y": 0.005, "z": -4, "rotationY": 2.1},
-            {"x": 3, "y": 0.005, "z": 1, "rotationY": 1.2},
-            {"x": -1, "y": 0.005, "z": 3, "rotationY": 0.9}
-          ],
-          "yPlacement": "floor"
+          "density": 3.0,
+          "yPlacement": "floor",
+          "rotationY": "random"
         }
       },
       {
         "name": "wax-drip",
         "isNew": false,
-        "description": "Solidified wax drippings beneath chandeliers and sconces",
+        "description": "Solidified wax drippings beneath chandeliers and sconces — scattered along main pathways",
         "category": "surface-detail",
         "material": "wax",
         "scale": 0.3,
         "placement": {
-          "strategy": "array",
+          "strategy": "scattered",
           "anchor": "room-center",
-          "positions": [
-            {"x": 0, "y": 0.005, "z": -3, "rotationY": 0.5},
-            {"x": 0, "y": 0.005, "z": 0, "rotationY": 1.8},
-            {"x": 0, "y": 0.005, "z": 3, "rotationY": 2.9},
-            {"x": -11.5, "y": 0.005, "z": -4, "rotationY": 0.3},
-            {"x": 11.5, "y": 0.005, "z": -4, "rotationY": 1.7},
-            {"x": -11.5, "y": 0.005, "z": 3, "rotationY": 0.8},
-            {"x": 11.5, "y": 0.005, "z": 3, "rotationY": 2.2}
-          ],
-          "yPlacement": "floor"
+          "density": 6.0,
+          "yPlacement": "floor",
+          "rotationY": "random"
         }
       }
     ],

@@ -12,17 +12,26 @@ const IRONRATH_PROPS_DIR = join(PROJECT_ROOT, 'public/assets/models/props/ironra
 const GENERIC_PROPS_DIR = join(PROJECT_ROOT, 'public/assets/models/props');
 
 // Tri budget estimates by category
+// Floor-cover & surface-detail are flat alpha-cutout planes (~4-10 tris each)
 const TRI_ESTIMATES = {
   'structural': 2500,
   'furniture': 1200,
   'lighting-fixture': 1200,
   'tableware': 300,
   'wall-decor': 600,
-  'floor-cover': 300,
-  'surface-detail': 200,
+  'floor-cover': 10,
+  'surface-detail': 10,
 };
 const DEFAULT_TRI = 600;
-const ROOM_TRI_BUDGET = 75000;
+
+/** Density-aware tri budgets (mirrors validate.mjs) */
+const DENSITY_TRI_BUDGETS = {
+  'sparse':       50000,
+  'moderate':     75000,
+  'dense':        150000,
+  'aaa-showcase': 200000,
+};
+const DEFAULT_TRI_BUDGET = 75000;
 
 /**
  * Scan disk for all existing GLB asset names (without extension).
@@ -49,20 +58,27 @@ async function getExistingAssets() {
 
 /**
  * Count total instances for a FurnishingItem based on placement strategy.
+ * @param {object} item - manifest item with .placement
+ * @param {number} roomArea - room width * depth in sq meters (for density-based counts)
  */
-function countInstances(item) {
+function countInstances(item, roomArea) {
   const p = item.placement;
   if (p.positions) return p.positions.length;
   if (p.count) return p.count;
-  if (p.density) return Math.max(1, Math.round(p.density * 3)); // rough estimate
+  if (p.density) return Math.max(1, Math.round((roomArea / 10) * p.density));
   return 1;
 }
 
 /**
  * Analyze a manifest against existing assets.
+ * @param {object} manifest - parsed FurnishingManifest
+ * @param {object} [roomDims] - { width, depth, height } for area-aware density estimates
+ * @param {string} [densityTier='moderate'] - density tier for tri budget
  */
-export async function analyzeGaps(manifest) {
+export async function analyzeGaps(manifest, roomDims, densityTier = 'moderate') {
   const existingAssets = await getExistingAssets();
+  const roomArea = roomDims ? roomDims.width * roomDims.depth : 100; // fallback 100 sq m
+  const triBudget = DENSITY_TRI_BUDGETS[densityTier] || DEFAULT_TRI_BUDGET;
 
   const layerNames = ['architecture', 'essentialFurnishing', 'functionalObjects', 'lifeLayer'];
   const layerLabels = {
@@ -86,7 +102,7 @@ export async function analyzeGaps(manifest) {
 
     for (const item of items) {
       const exists = existingAssets.has(item.name);
-      const instances = countInstances(item);
+      const instances = countInstances(item, roomArea);
       const trisPerItem = TRI_ESTIMATES[item.category] || DEFAULT_TRI;
       const totalItemTris = trisPerItem * instances;
       totalTris += totalItemTris;
@@ -146,8 +162,8 @@ export async function analyzeGaps(manifest) {
     totalExists,
     totalGaps,
     estimatedTris: totalTris,
-    triBudget: ROOM_TRI_BUDGET,
-    overBudget: totalTris > ROOM_TRI_BUDGET,
+    triBudget,
+    overBudget: totalTris > triBudget,
     layerReports,
     gaps,
     buildPriority: gaps.map((g, i) => ({

@@ -36,14 +36,15 @@ const DENSITY_PROPS_PER_SQM = {
 };
 
 // Tri estimates by category
+// Floor-cover & surface-detail are flat alpha-cutout planes (~4-10 tris each)
 const TRI_ESTIMATES = {
   'structural': 2500,
   'furniture': 1200,
   'lighting-fixture': 1200,
   'tableware': 300,
   'wall-decor': 600,
-  'floor-cover': 300,
-  'surface-detail': 200,
+  'floor-cover': 10,
+  'surface-detail': 10,
 };
 const DEFAULT_TRI = 600;
 

@@ -76,7 +76,7 @@ async function cmdPipeline(inputPath) {
 
   // 3. Analyze gaps
   console.log('\nStage 2: Analyzing asset gaps...');
-  const gapReport = await analyzeGaps(manifest);
+  const gapReport = await analyzeGaps(manifest, roomInput.dimensions, roomInput.densityTier);
   console.log(formatGapReport(gapReport));
 
   // 4. Resolve placements
