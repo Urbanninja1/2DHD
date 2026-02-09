@@ -7,8 +7,9 @@ const P = (name: string) => `assets/models/props/ironrath/${name}.glb`;
 /**
  * Ironrath Castle — Great Hall (House Forrester)
  *
- * Dense medieval great hall: ~80 prop instances across structural,
- * furniture, lighting, decorative, and surface-detail categories.
+ * Dense medieval great hall: ~120+ prop instances across structural,
+ * furniture, lighting, decorative, roof, and surface-detail categories.
+ * All props Blender-generated with PBR baked textures.
  * 11 lights (10 point + 1 shadow directional). 4 particle emitter groups.
  */
 const greatHall: RoomData = {
@@ -22,9 +23,10 @@ const greatHall: RoomData = {
   wallColor: 0x4A4540,
   ceilingColor: 0x1f1510, // ironwood ceiling (dark)
 
-  // PBR textures — reuse existing stone/wood sets for now
-  floorTexture: { basePath: 'assets/textures/stone/castle-wall-slates' },
-  wallTexture: { basePath: 'assets/textures/stone/castle-wall-slates' },
+  // PBR textures — Blender-generated northern stone + ironwood ceiling
+  floorTexture: { basePath: 'assets/textures/stone/northern-floor' },
+  wallTexture: { basePath: 'assets/textures/stone/northern-wall' },
+  ceilingTexture: { basePath: 'assets/textures/wood/ironwood-ceiling' },
 
   // Ambient light — above 0.45 minimum per lighting prevention rules
   ambientLight: { color: 0x665544, intensity: 0.55 },
@@ -126,6 +128,34 @@ const greatHall: RoomData = {
     { type: 'model', modelPath: P('stone-hearth'), positions: [{ x: 0, y: 0, z: -6.8 }], scale: 1.2 },
     // Raised dais platform — in front of hearth
     { type: 'model', modelPath: P('raised-dais'), positions: [{ x: 0, y: 0, z: -5.5 }], scale: 1.0 },
+    // Stone arches — north wall flanking hearth, south wall entry
+    {
+      type: 'model', modelPath: P('stone-arch'), scale: 1.0,
+      positions: [
+        { x: -4.5, y: 0, z: -6.9 }, { x: 4.5, y: 0, z: -6.9 },  // flanking hearth
+        { x: 0, y: 0, z: 6.9, rotationY: Math.PI },                // south entry
+      ],
+    },
+    // Stone pilasters — wall articulation (8x along east/west walls)
+    {
+      type: 'model', modelPath: P('stone-pilaster'), scale: 1.0,
+      positions: [
+        { x: -11.9, y: 0, z: -5 }, { x: -11.9, y: 0, z: -1 }, { x: -11.9, y: 0, z: 3 },
+        { x: 11.9, y: 0, z: -5, rotationY: Math.PI }, { x: 11.9, y: 0, z: -1, rotationY: Math.PI }, { x: 11.9, y: 0, z: 3, rotationY: Math.PI },
+      ],
+    },
+    // Corbel brackets — support roof beams at wall junction (6x per side)
+    {
+      type: 'model', modelPath: P('corbel-bracket'), scale: 0.8,
+      positions: [
+        { x: -11.8, y: 8.5, z: -4 }, { x: -11.8, y: 8.5, z: 0 }, { x: -11.8, y: 8.5, z: 4 },
+        { x: 11.8, y: 8.5, z: -4 }, { x: 11.8, y: 8.5, z: 0 }, { x: 11.8, y: 8.5, z: 4 },
+      ],
+    },
+    // Stone window frame — east wall
+    { type: 'model', modelPath: P('stone-window-frame'), positions: [{ x: 11.9, y: 3, z: -2, rotationY: -Math.PI / 2 }], scale: 1.0 },
+    // Door frame — west wall entry
+    { type: 'model', modelPath: P('door-frame'), positions: [{ x: -11.9, y: 0, z: 0, rotationY: Math.PI / 2 }], scale: 1.0 },
 
     // ─── DAIS AREA ────────────────────────────────────────────────
     // Ironwood throne — center of dais
@@ -217,6 +247,57 @@ const greatHall: RoomData = {
       ],
     },
 
+    // Iron torch holders (4x — matching sconce light positions)
+    {
+      type: 'model', modelPath: P('iron-torch-holder'), scale: 0.6,
+      positions: [
+        { x: -11.8, y: 3.8, z: -4 }, { x: -11.8, y: 3.8, z: 3 },
+        { x: 11.8, y: 3.8, z: -4, rotationY: Math.PI }, { x: 11.8, y: 3.8, z: 3, rotationY: Math.PI },
+      ],
+    },
+    // Iron braziers flanking dais (2x)
+    {
+      type: 'model', modelPath: P('iron-brazier'), scale: 0.9,
+      positions: [
+        { x: -4, y: 0, z: -5 },
+        { x: 4, y: 0, z: -5 },
+      ],
+    },
+    // Iron candle trees — flanking throne (2x)
+    {
+      type: 'model', modelPath: P('iron-candle-tree'), scale: 0.8,
+      positions: [
+        { x: -1.2, y: 0.3, z: -5.8 },
+        { x: 1.2, y: 0.3, z: -5.8 },
+      ],
+    },
+
+    // ─── ROOF STRUCTURE ─────────────────────────────────────────────
+    // Main roof beams (3x spanning width)
+    {
+      type: 'model', modelPath: P('roof-beam'), scale: 1.0,
+      positions: [
+        { x: 0, y: 9.2, z: -4 },
+        { x: 0, y: 9.2, z: 0 },
+        { x: 0, y: 9.2, z: 4 },
+      ],
+    },
+    // Cross joists between beams (6x)
+    {
+      type: 'model', modelPath: P('roof-joist'), scale: 1.0,
+      positions: [
+        { x: -4, y: 9.5, z: -2, rotationY: Math.PI / 2 }, { x: 4, y: 9.5, z: -2, rotationY: Math.PI / 2 },
+        { x: -4, y: 9.5, z: 2, rotationY: Math.PI / 2 }, { x: 4, y: 9.5, z: 2, rotationY: Math.PI / 2 },
+      ],
+    },
+    // Rafter set visible above
+    {
+      type: 'model', modelPath: P('rafter-set'), scale: 0.8,
+      positions: [
+        { x: 0, y: 9.0, z: -6 }, { x: 0, y: 9.0, z: 6 },
+      ],
+    },
+
     // ─── DECORATIVE — WALLS ───────────────────────────────────────
     // Forrester banners flanking hearth (2x) + east/west walls (4x)
     {
@@ -243,6 +324,61 @@ const greatHall: RoomData = {
         { x: 11.5, y: 0, z: 5 },
       ],
     },
+    // Dire wolf shields (2x — flanking hearth above arches)
+    {
+      type: 'model', modelPath: P('dire-wolf-shield'), scale: 1.2,
+      positions: [
+        { x: -4.5, y: 5.5, z: -6.9 },
+        { x: 4.5, y: 5.5, z: -6.9 },
+      ],
+    },
+    // Mounted antlers (3x — east wall trophies)
+    {
+      type: 'model', modelPath: P('mounted-antlers'), scale: 0.8,
+      positions: [
+        { x: 11.8, y: 5, z: -4 },
+        { x: 11.8, y: 5.5, z: 0 },
+        { x: 11.8, y: 5, z: 4 },
+      ],
+    },
+    // Heraldic crest — above hearth mantel
+    { type: 'model', modelPath: P('heraldic-crest'), positions: [{ x: 0, y: 5.5, z: -6.85 }], scale: 1.5 },
+
+    // ─── SIDE FURNITURE ────────────────────────────────────────────
+    // Sideboards along walls (2x — serving tables)
+    {
+      type: 'model', modelPath: P('sideboard'), scale: 0.9,
+      positions: [
+        { x: -10, y: 0, z: -5 },
+        { x: 10, y: 0, z: -5, rotationY: Math.PI },
+      ],
+    },
+    // Stools scattered near walls (4x)
+    {
+      type: 'model', modelPath: P('stool'), scale: 0.8,
+      positions: [
+        { x: -9, y: 0, z: -3 }, { x: 9, y: 0, z: -3 },
+        { x: -8, y: 0, z: 2 }, { x: 8, y: 0, z: 2 },
+      ],
+    },
+    // Wine jugs on sideboard (3x)
+    {
+      type: 'model', modelPath: P('wine-jug'), scale: 0.7,
+      positions: [
+        { x: -9.8, y: 0.88, z: -5 },
+        { x: -10.2, y: 0.88, z: -4.8 },
+        { x: 10, y: 0.88, z: -5 },
+      ],
+    },
+    // Candle stubs on sideboards + windowsill (5x)
+    {
+      type: 'model', modelPath: P('candle-stub'), scale: 0.5,
+      positions: [
+        { x: -10.3, y: 0.88, z: -5.2 }, { x: 10.2, y: 0.88, z: -4.7 },
+        { x: 11.6, y: 4.0, z: -2 },  // window sill
+        { x: -9.5, y: 0.88, z: -4.6 }, { x: 9.8, y: 0.88, z: -5.3 },
+      ],
+    },
 
     // ─── DECORATIVE — FLOOR ───────────────────────────────────────
     // Fur rug near hearth (in front of dais)
@@ -258,8 +394,13 @@ const greatHall: RoomData = {
     },
     // Sleeping hound near hearth
     { type: 'model', modelPath: P('hound-sleeping'), positions: [{ x: 2, y: 0, z: -4 }], scale: 0.8 },
-    // Wooden chest near east wall
-    { type: 'model', modelPath: P('wooden-chest'), positions: [{ x: 9, y: 0, z: -5, rotationY: -0.3 }], scale: 0.9 },
+    // Wooden chests (2x)
+    {
+      type: 'model', modelPath: P('wooden-chest-large'), scale: 0.9,
+      positions: [
+        { x: 9, y: 0, z: -5, rotationY: -0.3 },
+      ],
+    },
 
     // ─── FOREGROUND OCCLUSION (positive Z, near camera — blurred by tilt-shift) ──
     // Columns placed near camera for depth layering
@@ -271,7 +412,7 @@ const greatHall: RoomData = {
       ],
     },
     // Chest in foreground
-    { type: 'model', modelPath: P('wooden-chest'), positions: [{ x: 10, y: 0, z: 6, rotationY: 0.5 }], scale: 0.9 },
+    { type: 'model', modelPath: P('wooden-chest-large'), positions: [{ x: 10, y: 0, z: 6, rotationY: 0.5 }], scale: 0.9 },
 
     // ─── SURFACE DETAIL QUADS ─────────────────────────────────────
     // Floor cracks near high-traffic areas (3x)
@@ -296,6 +437,24 @@ const greatHall: RoomData = {
     { type: 'model', modelPath: P('hearth-scorch'), positions: [{ x: 0, y: 5, z: -6.95 }], scale: 1.2 },
     // Table stain
     { type: 'model', modelPath: P('table-stain'), positions: [{ x: -0.5, y: 0.86, z: 0.3 }], scale: 0.6 },
+    // Worn paths at high-traffic areas (2x)
+    {
+      type: 'model', modelPath: P('worn-path'), scale: 1.0,
+      positions: [
+        { x: -5, y: 0.003, z: 0 },  // west aisle between columns
+        { x: 5, y: 0.003, z: 0 },    // east aisle between columns
+      ],
+    },
+    // Cobwebs in upper corners (4x)
+    {
+      type: 'model', modelPath: P('cobweb'), scale: 0.6,
+      positions: [
+        { x: -11.7, y: 9.5, z: -6.8 },
+        { x: 11.7, y: 9.5, z: -6.8 },
+        { x: -11.7, y: 9.5, z: 6.8 },
+        { x: 11.7, y: 9.5, z: 6.8 },
+      ],
+    },
   ],
 
   // Wolfswood parallax visible through north-wall windows
