@@ -254,15 +254,23 @@ export async function buildRoom(data: RoomData, loaderSet?: LoaderSet): Promise<
   }
 
   // --- Instanced props (columns, sconces, models) ---
+  // Load all model props in parallel (P0 perf fix — prevents sequential N-fetch stall)
   if (data.props) {
-    for (const propDef of data.props) {
-      if (propDef.type === 'model') {
-        const mesh = await buildModelProp(propDef as ModelPropDef, loaderSet);
-        if (mesh) group.add(mesh);
-      } else {
-        const mesh = buildInstancedProp(propDef as ProceduralPropDef, height);
-        if (mesh) group.add(mesh);
-      }
+    const modelDefs = data.props.filter((p): p is ModelPropDef => p.type === 'model');
+    const proceduralDefs = data.props.filter((p): p is ProceduralPropDef => p.type !== 'model');
+
+    // Procedural props are synchronous — build immediately
+    for (const propDef of proceduralDefs) {
+      const mesh = buildInstancedProp(propDef, height);
+      if (mesh) group.add(mesh);
+    }
+
+    // Model props — load all in parallel
+    const modelResults = await Promise.all(
+      modelDefs.map(propDef => buildModelProp(propDef, loaderSet)),
+    );
+    for (const mesh of modelResults) {
+      if (mesh) group.add(mesh);
     }
   }
 
