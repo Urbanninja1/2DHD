@@ -17,7 +17,7 @@ import { createDustInLight } from '../rendering/particles/dust-in-light.js';
 import type { ParticleSystem } from '../rendering/particles/types.js';
 import { assetManager } from '../loaders/asset-manager.js';
 import { loadPBRTexture, textureLoader, type PBRTextureSet, type LoaderSet } from '../loaders/texture-loaders.js';
-import { applyDetailOverlay } from '../rendering/detail-overlay.js';
+import { getPropCategory, loadCategoryPBR, applyPropMaterial, isHeroProp, loadHeroPBR, applyPropSurfaceDetail } from '../rendering/prop-materials.js';
 import { loadTemplate } from '../rendering/hd2d-surface/texture-template.js';
 import { injectSurfaceDetail, type SurfaceDetailConfig, type SurfaceDetailHandle } from '../rendering/hd2d-surface/surface-injector.js';
 import { DecalSystem } from '../rendering/hd2d-surface/decal-system.js';
@@ -299,7 +299,7 @@ export async function buildRoom(data: RoomData, loaderSet?: LoaderSet): Promise<
 
     // Model props — load all in parallel
     const modelResults = await Promise.all(
-      modelDefs.map(propDef => buildModelProp(propDef, loaderSet)),
+      modelDefs.map(propDef => buildModelProp(propDef, loaderSet, surfaceConfig, surfaceDetailHandles)),
     );
     for (const mesh of modelResults) {
       if (mesh) group.add(mesh);
@@ -432,9 +432,6 @@ async function buildPBRMaterial(
     metalness: 0,
   });
 
-  // Break tiling repetition on large surfaces via detail map overlay
-  applyDetailOverlay(mat);
-
   return mat;
 }
 
@@ -454,7 +451,12 @@ function buildProceduralFloorMaterial(data: RoomData, width: number, depth: numb
 
 // --- Model Prop Loading ---
 
-async function buildModelProp(propDef: ModelPropDef, loaderSet?: LoaderSet): Promise<THREE.InstancedMesh | THREE.Group | null> {
+async function buildModelProp(
+  propDef: ModelPropDef,
+  loaderSet?: LoaderSet,
+  surfaceConfig?: SurfaceDetailConfig | null,
+  surfaceDetailHandles?: SurfaceDetailHandle[],
+): Promise<THREE.InstancedMesh | THREE.Group | null> {
   const { modelPath, positions, scale = 1.0, rotationY = 0 } = propDef;
   if (positions.length === 0) return null;
 
@@ -482,6 +484,27 @@ async function buildModelProp(propDef: ModelPropDef, loaderSet?: LoaderSet): Pro
     });
 
     if (sourceMeshes.length === 0) return null;
+
+    // Replace baked GLB materials with proper PBR materials
+    // materialOverride lets the Room Needs Engine specify category for new props
+    const category = propDef.materialOverride
+      ? (propDef.materialOverride as ReturnType<typeof getPropCategory>)
+      : getPropCategory(modelPath);
+    const pbrSet = isHeroProp(modelPath)
+      ? (await loadHeroPBR(modelPath)) ?? (await loadCategoryPBR(category))
+      : await loadCategoryPBR(category);
+
+    for (const mesh of sourceMeshes) {
+      applyPropMaterial(mesh, category, pbrSet, modelPath);
+
+      // Inject triplanar detail normal + grunge overlay (prop-tuned)
+      if (surfaceConfig) {
+        const handle = applyPropSurfaceDetail(mesh, category, surfaceConfig);
+        if (handle && surfaceDetailHandles) {
+          surfaceDetailHandles.push(handle);
+        }
+      }
+    }
 
     const modelName = modelPath.split('/').pop()?.replace('.glb', '') ?? 'unknown';
 
@@ -715,9 +738,6 @@ function buildWallPBR(
     roughness: pbrSet.roughness ? 1.0 : 0.9,
     metalness: 0,
   });
-
-  // Break tiling repetition on walls via detail map overlay
-  applyDetailOverlay(wallMat, 0.5, 0.3);
 
   const wall = new THREE.Mesh(wallGeo, wallMat);
   wall.position.set(position.x, position.y, position.z);

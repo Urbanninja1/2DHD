@@ -141,6 +141,8 @@ export interface ModelPropDef {
   scale?: number;
   /** Y-axis rotation in radians (default 0) — used as fallback when per-instance rotationY is not set */
   rotationY?: number;
+  /** Override the auto-detected PBR material category (for new props not in the category map) */
+  materialOverride?: string;
 }
 
 export type PropDef = ProceduralPropDef | ModelPropDef;
